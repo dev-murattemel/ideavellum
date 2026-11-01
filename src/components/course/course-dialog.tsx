@@ -100,7 +100,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
           <DialogDescription>{"Örneğin “İngilizce B2” ya da “Lacan'a Giriş”."}</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
-          <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_140px]">
             <Field label="Ders adı" htmlFor="c-name" error={errors.name?.message}>
               <Input id="c-name" autoFocus placeholder="İngilizce B2" aria-invalid={!!errors.name} {...form.register("name")} />
             </Field>
@@ -114,7 +114,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
           <Field label="Hedef" htmlFor="c-goal" hint="Bu dersi bitirdiğinde ne yapabiliyor olacaksın?">
             <Textarea id="c-goal" rows={2} placeholder="Ocak sonunda B2 sınavına hazır olmak" {...form.register("goal")} />
           </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Dönem">
               <Controller control={form.control} name="term_id" render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>

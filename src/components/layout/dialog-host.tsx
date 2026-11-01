@@ -1,5 +1,6 @@
 "use client";
 
+import { TaskDialog } from "@/components/board/task-dialog";
 import { CourseDialog } from "@/components/course/course-dialog";
 import { TermDialog } from "@/components/course/term-dialog";
 import { SessionDialog } from "@/components/schedule/session-dialog";
@@ -18,6 +19,8 @@ export function DialogHost() {
       return <TermDialog key={dialog.termId ?? "new"} termId={dialog.termId} onClose={close} />;
     case "session":
       return <SessionDialog key={dialog.sessionId ?? "new"} sessionId={dialog.sessionId} preset={dialog.preset} onClose={close} />;
+    case "task":
+      return <TaskDialog preset={dialog.preset} onClose={close} />;
     default:
       return null;
   }

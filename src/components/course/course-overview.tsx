@@ -16,7 +16,7 @@ export function CourseOverview({ course }: { course: Course }) {
   const weekPct = target ? (s.weekMinutes / target) * 100 : 0;
 
   return (
-    <div data-course={course.color} className="grid gap-4 lg:grid-cols-3">
+    <div data-course={course.color} className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       <SectionCard title="Konu ilerlemesi" meta={`%${s.progress}`}>
         <div className="flex flex-col gap-3">
           <Progress value={s.progress} tone="course" label="Konu ilerlemesi" className="h-2" />

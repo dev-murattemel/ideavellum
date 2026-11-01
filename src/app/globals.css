@@ -206,6 +206,8 @@
 
   body {
     @apply bg-background text-sm text-foreground antialiased;
+    /* Yatay kaydırmalı alanlar (pano, takvim) sayfanın kendisini genişletmesin */
+    overflow-x: clip;
     font-feature-settings: "ss01" off;
   }
 

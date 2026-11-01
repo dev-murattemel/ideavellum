@@ -1,49 +1,49 @@
-import { Plus } from "lucide-react";
+"use client";
+
+import * as React from "react";
+import { CalendarDays, List, Plus, SquareKanban } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";
-import { QuickAddButton } from "@/components/layout/quick-add-button";
+import { useNow } from "@/components/schedule/use-now";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ui } from "@/lib/ui-store";
+import { BoardFilters } from "./board-filters";
+import { BoardKanban } from "./board-kanban";
+import { TaskCalendarView } from "./task-calendar-view";
+import { TaskListView } from "./task-list-view";
+import { DEFAULT_FILTERS, useBoardData, type BoardFilters as Filters } from "./use-board-data";
 
-const COLUMNS = [
-  { id: "todo", title: "Yapılacak", dot: "bg-ink-subtle" },
-  { id: "in_progress", title: "Devam ediyor", dot: "bg-[var(--sky-solid)]" },
-  { id: "review", title: "Gözden geçir", dot: "bg-[var(--butter-solid)]" },
-  { id: "done", title: "Bitti", dot: "bg-[var(--mint-solid)]" },
-] as const;
+type View = "board" | "list" | "calendar";
 
 export function BoardView() {
+  const now = useNow(60_000);
+  const [view, setView] = React.useState<View>("board");
+  const [filters, setFilters] = React.useState<Filters>(DEFAULT_FILTERS);
+  const [showOldDone, setShowOldDone] = React.useState(false);
+  const { columns, hiddenDone } = useBoardData(filters, now, showOldDone || view !== "board");
+  const openCount = columns.todo.length + columns.in_progress.length + columns.review.length;
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <PageHeader
         title="Pano"
-        description="Görevlerini Yapılacak'tan Bitti'ye taşı."
-        actions={<QuickAddButton action="task" />}
+        description={`${openCount} açık görev · kartları sürükleyerek durumunu değiştir.`}
+        actions={<Button onClick={() => ui().open({ type: "task" })}><Plus /> Görev ekle</Button>}
       />
-
-      <div className="-mx-4 overflow-x-auto px-4 pb-2 md:mx-0 md:px-0">
-        <div className="grid min-w-[880px] grid-cols-4 gap-4">
-          {COLUMNS.map((col) => (
-            <section
-              key={col.id}
-              aria-label={col.title}
-              className="flex min-h-[420px] flex-col rounded-xl bg-sunken/70 p-2"
-            >
-              <header className="flex h-10 items-center gap-2 px-2">
-                <span className="inline-flex h-6 items-center gap-1.5 rounded-full border border-line bg-surface pr-2 pl-2 text-13 font-medium">
-                  <span className={`size-2 rounded-full ${col.dot}`} aria-hidden />
-                  {col.title}
-                </span>
-                <span className="tabular text-13 text-ink-muted">0</span>
-              </header>
-              <div className="mt-1 flex flex-1 flex-col">
-                <div className="flex h-11 items-center justify-center gap-1.5 rounded-lg border border-dashed border-line-strong text-13 text-ink-subtle">
-                  <Plus className="size-3.5" aria-hidden />
-                  Görevler burada görünecek
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
+      <div className="flex flex-col-reverse gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <BoardFilters value={filters} onChange={setFilters} />
+        <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+          <TabsList aria-label="Görünüm">
+            <TabsTrigger value="board"><SquareKanban /> Pano</TabsTrigger>
+            <TabsTrigger value="list"><List /> Liste</TabsTrigger>
+            <TabsTrigger value="calendar"><CalendarDays /> Takvim</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
+      {view === "board" && <BoardKanban columns={columns} now={now} hiddenDone={hiddenDone} onShowHidden={() => setShowOldDone(true)} />}
+      {view === "list" && <TaskListView columns={columns} now={now} />}
+      {view === "calendar" && <TaskCalendarView columns={columns} now={now} />}
     </div>
   );
 }

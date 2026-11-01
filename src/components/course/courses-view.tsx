@@ -75,7 +75,7 @@ export function CoursesView() {
         />
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {active.map((c) => <CourseCard key={c.id} course={c} />)}
             <button
               type="button"
@@ -89,7 +89,7 @@ export function CoursesView() {
           {paused.length > 0 && (
             <section className="flex flex-col gap-3">
               <h2 className="text-sm font-semibold text-ink-muted">Ara verilen dersler</h2>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {paused.map((c) => <CourseCard key={c.id} course={c} />)}
               </div>
             </section>

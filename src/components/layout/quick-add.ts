@@ -17,7 +17,7 @@ const comingSoon = (what: string, phase: string) => () =>
 
 /** Hızlı ekle menüsü ve komut paletinin paylaştığı eylemler. */
 export const QUICK_ADD_ACTIONS: QuickAddAction[] = [
-  { id: "task", label: "Görev ekle", icon: ListTodo, run: comingSoon("Görev ekleme", "Faz 2") },
+  { id: "task", label: "Görev ekle", icon: ListTodo, run: () => ui().open({ type: "task" }) },
   { id: "note", label: "Not ekle", icon: NotebookPen, run: comingSoon("Not ekleme", "Faz 3") },
   { id: "resource", label: "Kaynak ekle", icon: Library, run: comingSoon("Kaynak ekleme", "Faz 3") },
 ];
