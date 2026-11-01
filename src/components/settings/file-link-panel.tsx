@@ -5,7 +5,8 @@ import { FileCheck2, FilePlus2, FolderOpen, Link2Off, RefreshCw, Share2, Smartph
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { fileLinkSupported, linkNewFile, openExistingFile, reconnectFileLink, shareBackup, unlinkFile, useFileLink } from "@/lib/data/file-link";
+import { fileLinkSupported, linkNewFile, mergeFromFile, openExistingFile, reconnectFileLink, shareBackup, unlinkFile, useFileLink } from "@/lib/data/file-link";
+import { detectBrowser, type BrowserKind } from "@/lib/browser";
 import { usePlace } from "@/lib/data/hooks";
 import { timeAgo } from "@/lib/time";
 
@@ -27,27 +28,7 @@ export function FileLinkPanel() {
     }
   };
 
-  if (!supported) {
-    return (
-      <div className="flex flex-col gap-3 rounded-lg border border-line p-4">
-        <p className="flex items-center gap-2 text-sm font-semibold"><Smartphone className="size-4" aria-hidden /> Yedeği bir konuma kaydet</p>
-        <p className="text-13 text-ink-muted">
-          Bu tarayıcı (telefonlar, Safari, Firefox) bir sitenin seçilen dosyaya kendi kendine yazmasına izin vermiyor. Bunun yerine tek dokunuşla paylaşım ekranından
-          “Dosyalar’a Kaydet”, Google Drive ya da istediğin konumu seç. Otomatik dosya bağlantısı için bilgisayarda Chrome ya da Edge kullanabilirsin.
-        </p>
-        <Button
-          className="self-start"
-          onClick={async () => {
-            const r = await shareBackup();
-            if (r === "shared") toast.success("Yedek kaydedildi");
-            else if (r === "downloaded") toast.success("Yedek indirildi", { description: "İndirilenler klasöründe." });
-          }}
-        >
-          <Share2 /> Yedeği kaydet
-        </Button>
-      </div>
-    );
-  }
+  if (!supported) return <UnsupportedPanel />;
 
   if (link.status === "linked" || link.status === "needs-permission" || link.status === "error") {
     const needs = link.status !== "linked";
@@ -84,6 +65,68 @@ export function FileLinkPanel() {
       <div className="flex flex-wrap gap-2">
         <Button onClick={() => void run(linkNewFile, "Dosya bağlandı; değişiklikler otomatik kaydedilecek")}><FilePlus2 /> Yeni dosya oluştur</Button>
         {asSource && <Button variant="secondary" onClick={() => void run(openExistingFile, "Veriler dosyadan yüklendi")}><FolderOpen /> Var olan dosyayı aç</Button>}
+      </div>
+    </div>
+  );
+}
+
+const REASON: Record<BrowserKind, { title: string; text: string }> = {
+  brave: {
+    title: "Brave dosya bağlantısını kapalı tutuyor",
+    text: "Açmak için adres çubuğuna brave://flags/#file-system-access-api yaz, “Enabled” seç ve Brave'i yeniden başlat. Sonra buradan diğer tarayıcıdaki aynı dosyayı “Var olan dosyayı aç” ile seç.",
+  },
+  firefox: {
+    title: "Firefox dosyaya otomatik bağlanamıyor",
+    text: "Firefox bir sitenin seçtiğin dosyaya kendi kendine yazmasına izin vermiyor. Diğer tarayıcıdaki ortak dosyayı aşağıdan elle birleştirebilirsin; otomatik eşitleme için Chrome ya da Edge kullan.",
+  },
+  safari: {
+    title: "Safari dosyaya otomatik bağlanamıyor",
+    text: "Safari bir sitenin seçtiğin dosyaya kendi kendine yazmasına izin vermiyor. Diğer tarayıcıdaki ortak dosyayı aşağıdan elle birleştirebilirsin; otomatik eşitleme için Chrome ya da Edge kullan.",
+  },
+  mobile: {
+    title: "Telefonda dosyaya otomatik bağlanılamıyor",
+    text: "Telefon tarayıcıları bir sitenin seçtiğin konuma kendi kendine yazmasına izin vermiyor. Yedeği paylaşım ekranından Dosyalar'a ya da Drive'a kaydedebilir, ortak dosyayı buradan birleştirebilirsin.",
+  },
+  chromium: { title: "Bu tarayıcıda dosya bağlantısı kapalı", text: "Tarayıcı ayarlarında dosya erişimi kapatılmış olabilir. Ortak dosyayı aşağıdan elle birleştirebilirsin." },
+  other: { title: "Bu tarayıcı dosyaya otomatik bağlanamıyor", text: "Ortak dosyayı aşağıdan elle birleştirebilir ya da Chrome / Edge kullanabilirsin." },
+};
+
+/** Dosya bağlantısını desteklemeyen tarayıcılar: nedeni, çözümü ve elle birleştirme */
+function UnsupportedPanel() {
+  const kind = React.useSyncExternalStore(() => () => {}, detectBrowser, () => "other" as BrowserKind);
+  const input = React.useRef<HTMLInputElement>(null);
+  const r = REASON[kind];
+
+  const merge = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const res = await mergeFromFile(file);
+      toast.success(res.changed ? "Ortak dosyadaki değişiklikler eklendi" : "Zaten güncelsin", { description: `${res.rows} kayıt.` });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Dosya okunamadı");
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-line p-4">
+      <p className="flex items-center gap-2 text-sm font-semibold"><Smartphone className="size-4" aria-hidden /> {r.title}</p>
+      <p className="text-13 text-ink-muted">{r.text}</p>
+      <p className="rounded-md bg-sunken/70 px-3 py-2 text-13 text-ink-muted">
+        Farklı tarayıcı ve cihazlarda her şeyin <span className="font-medium text-foreground">otomatik</span> aynı kalması için en sağlam yol <span className="font-medium text-foreground">Bulutta sakla</span>: aşağıdaki “Buluta taşı” ile verilerin hesabına geçer.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => input.current?.click()}><FolderOpen /> Ortak dosyadan güncelle</Button>
+        <input ref={input} type="file" accept="application/json,.json" hidden onChange={(e) => { void merge(e.target.files?.[0]); e.target.value = ""; }} />
+        <Button
+          variant="secondary"
+          onClick={async () => {
+            const res = await shareBackup();
+            if (res === "shared") toast.success("Yedek kaydedildi");
+            else if (res === "downloaded") toast.success("Yedek indirildi", { description: "İndirilenler klasöründe." });
+          }}
+        >
+          <Share2 /> Yedeği kaydet
+        </Button>
       </div>
     </div>
   );

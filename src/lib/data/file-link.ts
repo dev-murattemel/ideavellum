@@ -288,3 +288,21 @@ export async function shareBackup(): Promise<"shared" | "downloaded" | "cancelle
   downloadBackup();
   return "downloaded";
 }
+
+/**
+ * Dosyaya bağlanamayan tarayıcılar için: seçilen veri dosyasını bu tarayıcıdaki verilerle birleştirir
+ * (hiçbir taraf ezilmez; silinenler iki tarafta da silinir).
+ */
+export async function mergeFromFile(file: File) {
+  const parsed = JSON.parse(await file.text()) as FileData;
+  if (parsed.app !== "ideavellum" || !parsed.data) throw new Error("Bu dosya bir ideavellum veri dosyası değil.");
+  TABLE_NAMES.forEach((t) => ((parsed.data as DataSnapshot)[t] ??= {} as never));
+  tombs = mergeTombs(tombs, parsed.deleted);
+  saveTombs(tombs);
+  const local = snapshotNow().data;
+  const merged = mergeSnapshots(local, parsed.data, tombs);
+  const before = signature(local);
+  loadInto(merged, parsed.profile);
+  const { countRows } = await import("./backup");
+  return { changed: signature(merged) !== before, rows: countRows(merged) };
+}

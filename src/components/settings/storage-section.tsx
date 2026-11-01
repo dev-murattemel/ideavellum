@@ -6,16 +6,16 @@ import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { countRows, downloadBackup, lastBackupAt, normalizeProfile, readBackup, snapshotNow, type Backup } from "@/lib/data/backup";
+import { downloadBackup, lastBackupAt } from "@/lib/data/backup";
 import { idbDel } from "@/lib/data/device-db";
 import { usePlace, useProfile } from "@/lib/data/hooks";
 import { DEVICE_KEY, MIGRATE_FLAG, setStorageMode } from "@/lib/data/storage-mode";
 import { emptySnapshot, useData } from "@/lib/data/store";
+import { TABLE_NAMES } from "@/lib/data/types";
 import { timeAgo } from "@/lib/time";
-import { useTimer } from "@/lib/timer/store";
 import { SettingsSection } from "./settings-section";
 import { FileLinkPanel } from "./file-link-panel";
-import { useFileLink } from "@/lib/data/file-link";
+import { mergeFromFile, useFileLink } from "@/lib/data/file-link";
 import { hardNavigate } from "@/lib/nav/hard-navigate";
 
 const PLACE = {
@@ -29,10 +29,9 @@ export function StorageSection() {
   const place = usePlace();
   const profile = useProfile();
   const fileRef = React.useRef<HTMLInputElement>(null);
-  const [pending, setPending] = React.useState<Backup | null>(null);
   const [confirmWipe, setConfirmWipe] = React.useState(false);
   const [last, setLast] = React.useState<number | null>(() => lastBackupAt());
-  const rows = countRows(snapshotNow().data);
+  const rows = useData((s) => TABLE_NAMES.reduce((n, t) => n + Object.keys(s[t]).length, 0));
   const linked = useFileLink((l) => l.status === "linked");
   const P = place === "device" && linked
     ? { ...PLACE.device, text: "Hesap yok; veriler bu cihazda ve seçtiğin dosyada. Her değişiklik dosyaya otomatik kaydediliyor." }
@@ -45,22 +44,15 @@ export function StorageSection() {
     toast.success("Yedek indirildi", { description: `${n} kayıt tek dosyada. Güvenli bir yere (ör. iCloud, Google Drive) kaydet.` });
   };
 
+  // Yedek mevcut verilerin üzerine yazılmaz; kayıt kayıt birleştirilir
   const pick = async (file: File | undefined) => {
     if (!file) return;
     try {
-      setPending(await readBackup(file));
+      const res = await mergeFromFile(file);
+      toast.success(res.changed ? "Yedek birleştirildi" : "Zaten güncelsin", { description: `${res.rows} kayıt.` });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Yedek okunamadı");
     }
-  };
-
-  const restore = () => {
-    if (!pending) return;
-    useTimer.getState().discard();
-    const s = useData.getState();
-    useData.getState().load(pending.data, normalizeProfile(pending.profile, s.profile.id, s.profile.email), s.mode, s.place);
-    toast.success("Yedek yüklendi", { description: `${countRows(pending.data)} kayıt geri geldi.` });
-    setPending(null);
   };
 
   const moveToCloud = () => {
@@ -112,14 +104,6 @@ export function StorageSection() {
         </div>
       </div>
 
-      <ConfirmDialog
-        open={!!pending}
-        onOpenChange={(o) => !o && setPending(null)}
-        title="Yedek yüklensin mi?"
-        description={pending ? `${new Date(pending.exportedAt).toLocaleString("tr-TR")} tarihli yedekteki ${countRows(pending.data)} kayıt, şu anki verilerinin yerine geçer. Önce mevcut verilerin yedeğini indirmeni öneririz.` : ""}
-        confirmLabel="Yedeği yükle"
-        onConfirm={restore}
-      />
       <ConfirmDialog
         open={confirmWipe}
         onOpenChange={setConfirmWipe}
