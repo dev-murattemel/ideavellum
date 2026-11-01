@@ -15,16 +15,16 @@ export const todo = (items: [boolean, string][]) => ({
 export const doc = (...content: unknown[]): TiptapDoc => ({ type: "doc", content });
 
 /** Not önizlemesi için düz metin */
-export function docToText(d: TiptapDoc | null | undefined, max = 160): string {
+export function docToText(d: TiptapDoc | null | undefined, max = 160, blockSep = " "): string {
   const out: string[] = [];
   const walk = (n: unknown) => {
     if (!n || typeof n !== "object") return;
     const node = n as { text?: string; content?: unknown[]; type?: string };
     if (node.text) out.push(node.text);
     node.content?.forEach(walk);
-    if (node.type && /paragraph|heading|listItem|taskItem/.test(node.type)) out.push(" ");
+    if (node.type && /paragraph|heading/.test(node.type)) out.push(blockSep);
   };
   walk(d);
-  const s = out.join("").replace(/\s+/g, " ").trim();
+  const s = (blockSep === " " ? out.join("").replace(/\s+/g, " ") : out.join("").replace(/[ \t]+/g, " ").replace(/\n\s*/g, "\n")).trim();
   return s.length > max ? `${s.slice(0, max - 1)}…` : s;
 }

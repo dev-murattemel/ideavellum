@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/page-header";
+import { AiSection } from "./ai-section";
 import { BellSection } from "./bell-section";
 import { ChannelsSection } from "./channels-section";
 import { DataSection } from "./data-section";
@@ -18,6 +19,7 @@ export function SettingsView() {
         <ChannelsSection />
         <PushSection />
         <EmailSection />
+        <AiSection />
         <DataSection />
       </div>
     </div>

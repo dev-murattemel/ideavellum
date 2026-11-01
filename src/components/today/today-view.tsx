@@ -1,5 +1,6 @@
 "use client";
 
+import { FocusCard } from "@/components/ai/focus-card";
 import { QuickNote } from "@/components/today/quick-note";
 import { SectionCard } from "@/components/today/section-card";
 import { SummaryStrip } from "@/components/today/summary-strip";
@@ -32,6 +33,8 @@ export function TodayView() {
       </div>
 
       <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} />
+
+      <FocusCard t={t} now={now} />
 
       <NowCard t={t} now={now} />
 

@@ -375,3 +375,14 @@ Tüm AI çağrıları sunucu tarafında; kullanıcının verisi sadece istenen i
 ## 13. Kapsam dışı (şimdilik yapma)
 
 Ekip/paylaşım özellikleri, sohbet, avatar ve rol sistemi, ödeme/abonelik, harici takvim senkronizasyonu (Google Calendar), yerel mobil uygulama (PWA yeterli), çoklu dil (sadece Türkçe arayüz).
+
+---
+
+## 14. Uygulama notları (kurulumda alınan kararlar)
+
+- **Veri katmanı:** Ekranlar veriyi tek bir istemci deposundan (`src/lib/data/store.ts`, zustand) okur; her değişiklik iyimser olarak anında görünür, sonra kalıcı katmana yazılır. Supabase bağlıyken yazma tarayıcıdan `supabase-js` ile yapılır ve güvenliği her tablodaki RLS (`user_id = auth.uid()`) sağlar; hata olursa son kayıtlı hâl geri yüklenir ve toast gösterilir. Sunucu tarafı yalnızca cron, bildirim gönderimi, hatırlatma üretimi ve AI içindir (`src/app/api/*`). Bu, §11'deki "yazma Server Actions ile" kuralından bilinçli bir sapmadır: aynı ekranların sunucusuz önizlemede de çalışabilmesi için.
+- **Gezinme:** Bileşenler `next/link` yerine `AppLink` / `useNav` (`src/lib/nav`) kullanır; Next.js'te gerçek yollar, önizlemede `#bugun`, `#ders-<id>` gibi işaretler çalışır.
+- **Önizleme:** `preview/` klasörü aynı ekranları Vite ile tek HTML dosyasına paketler (`pnpm preview:build`). Supabase yokken örnek veriler `src/lib/data/seed*.ts` dosyalarından üretilir.
+- **Zil sesleri:** `/public/sounds` yerine Web Audio ile üretilir (`src/lib/notifications/bell-sounds.ts`); dosya indirmeye gerek kalmaz.
+- **Saat seçimi:** Tarayıcı diline göre AM/PM gösterebilen `type="time"` yerine 24 saatlik `TimeSelect` bileşeni kullanılır.
+- **Ders renkleri ve grafikler:** Ders paleti renk körlüğü testinde bazı komşu çiftlerde zayıf ayrışıyor; bu yüzden grafiklerde ders kimliği her zaman ad etiketiyle birlikte verilir, günlük grafik ve ısı haritası tek renklidir.

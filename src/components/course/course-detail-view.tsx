@@ -10,6 +10,7 @@ import { useRow } from "@/lib/data/hooks";
 import { AppLink } from "@/lib/nav/nav-context";
 import { CourseHeader } from "./course-header";
 import { CourseOverview } from "./course-overview";
+import { OutlineButton } from "@/components/ai/outline-button";
 import { createNote } from "@/components/notes/create-note";
 import { NoteGrid } from "@/components/notes/note-grid";
 import { ResourceList } from "@/components/resources/resource-list";
@@ -56,7 +57,12 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
           </TabsList>
         </div>
         <TabsContent value="genel"><CourseOverview course={course} /></TabsContent>
-        <TabsContent value="konular"><TopicList course={course} /></TabsContent>
+        <TabsContent value="konular">
+          <div className="flex flex-col gap-4">
+            <OutlineButton course={course} />
+            <TopicList course={course} />
+          </div>
+        </TabsContent>
         <TabsContent value="gorevler"><CourseTasksTab course={course} /></TabsContent>
         <TabsContent value="notlar">
           <div className="flex flex-col gap-4">

@@ -7,6 +7,7 @@ import { defaultProfile, LOCAL_USER_ID } from "@/lib/data/defaults";
 import { loadLocal, startLocalPersistence } from "@/lib/data/local-storage";
 import { buildDemoData } from "@/lib/data/seed";
 import { setAdapter, useData } from "@/lib/data/store";
+import { isPreviewBuild } from "@/lib/ai/client";
 import { isSupabaseConfigured } from "@/lib/env";
 
 /** Supabase bağlıysa veriyi oradan, değilse tarayıcıdan (ilk açılışta örnek verilerle) yükler. */
@@ -41,7 +42,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       }
 
       const saved = loadLocal();
-      const profile = saved?.profile ?? { ...defaultProfile(LOCAL_USER_ID), full_name: "Murat" };
+      // Önizlemede AI özellikleri görülebilsin diye açık başlar; asıl uygulamada varsayılan kapalı.
+      const profile = saved?.profile ?? { ...defaultProfile(LOCAL_USER_ID), full_name: "Murat", ai_enabled: isPreviewBuild };
       useData.getState().load(saved?.data ?? buildDemoData(LOCAL_USER_ID), profile, "local");
       stop = startLocalPersistence();
       // İlk açılışta da kaydet ki örnek veriler sabit kalsın

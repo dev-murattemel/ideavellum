@@ -4,11 +4,13 @@ import * as React from "react";
 import { Pin, PinOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { SuggestFromTextButton } from "@/components/ai/suggest-dialog";
 import { CourseSelect, NONE, TopicSelect } from "@/components/board/task-fields";
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { useRow } from "@/lib/data/hooks";
+import { docToText } from "@/lib/data/tiptap";
 import { data } from "@/lib/data/store";
 import { fmt, utcToWall } from "@/lib/time";
 import { useUI } from "@/lib/ui-store";
@@ -50,7 +52,10 @@ export function NotePanel() {
               onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
             />
           </SheetTitle>
-          <p className="mt-1 mb-4 text-xs text-ink-muted">Son düzenleme {fmt(utcToWall(note.updated_at), "d MMMM, HH:mm")} · otomatik kaydedilir</p>
+          <div className="mt-1 mb-4 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-ink-muted">Son düzenleme {fmt(utcToWall(note.updated_at), "d MMMM, HH:mm")} · otomatik kaydedilir</p>
+            <SuggestFromTextButton courseId={note.course_id} title={note.title} text={docToText(note.content, 12000, "\n")} />
+          </div>
           <NoteEditor key={note.id} content={note.content} onChange={(content) => data().notes[note.id] && set({ content })} />
         </div>
       </SheetContent>

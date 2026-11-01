@@ -2,6 +2,7 @@
 
 import { ExternalLink, Minus, Plus } from "lucide-react";
 
+import { SuggestFromTextButton } from "@/components/ai/suggest-dialog";
 import { Progress } from "@/components/ui/progress";
 import { data } from "@/lib/data/store";
 import type { Course, Resource } from "@/lib/data/types";
@@ -47,6 +48,7 @@ export function ResourceRow({ r, course }: { r: Resource; course?: Course }) {
             )}
           </p>
           {r.summary && <p className="mt-1 line-clamp-2 text-13 text-ink-muted">{r.summary}</p>}
+          {r.summary && <div className="mt-2"><SuggestFromTextButton courseId={r.course_id} title={r.title} text={`${r.title}${r.author ? ` (${r.author})` : ""}. ${r.summary}`} /></div>}
         </div>
       </div>
       <div className="flex items-center gap-3 sm:w-[22rem] sm:justify-end">

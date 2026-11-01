@@ -19,6 +19,7 @@ export default defineConfig({
   define: {
     "process.env": "{}",
     __PHASE_LABEL__: JSON.stringify(process.env.PHASE_LABEL ?? "Geliştirme sürümü"),
+    __IVL_PREVIEW__: "true",
   },
   build: {
     outDir: path.resolve(__dirname, "../preview-dist"),

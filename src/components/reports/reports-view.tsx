@@ -4,6 +4,7 @@ import * as React from "react";
 import { addMonths, addWeeks, isSameMonth } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { WeeklyComment } from "@/components/ai/weekly-comment";
 import { PageHeader } from "@/components/layout/page-header";
 import { useNow } from "@/components/schedule/use-now";
 import { SectionCard } from "@/components/today/section-card";
@@ -62,6 +63,8 @@ export function ReportsView() {
           </div>
         ))}
       </dl>
+
+      <WeeklyComment r={r} label={label} />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <SectionCard title={period === "week" ? "Bu hafta: hedef ve gerçekleşen" : "Bu ay: hedef ve gerçekleşen"} meta={r.targetMinutes ? `%${Math.round(targetPct)}` : undefined}>
