@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ideavellum
 
-## Getting Started
+Hayatını bir üniversite dönemi gibi programlamak için kişisel öğrenme işletim sistemi. Ürün ve tasarım rehberi için [CLAUDE.md](CLAUDE.md) dosyasına bak.
 
-First, run the development server:
+## Bilgisayarında çalıştırma
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. [Node.js](https://nodejs.org) (22 veya üstü) kur.
+2. Terminalde proje klasörüne gir ve şunları çalıştır:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   corepack enable
+   pnpm install
+   pnpm dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Tarayıcıda <http://localhost:3000> adresini aç.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Supabase anahtarları girilmeden uygulama **kurulum modunda** açılır: giriş kapalıdır, arayüzü gezebilirsin.
 
-## Learn More
+## Supabase bağlantısı (giriş için gerekli)
 
-To learn more about Next.js, take a look at the following resources:
+1. <https://supabase.com> → **Start your project** → GitHub ile giriş yap.
+2. **New project** → ad: `ideavellum`, bölge: **Central EU (Frankfurt)**, güçlü bir veritabanı şifresi belirle → **Create new project**.
+3. Proje açılınca sol menüden **SQL Editor** → **New query** → `supabase/migrations/20261101000000_profiles.sql` dosyasının içeriğini yapıştır → **Run**.
+4. Sol menü **Project Settings → API Keys** (eski adı **API**):
+   - **Project URL** değerini `NEXT_PUBLIC_SUPABASE_URL` olarak,
+   - **anon / publishable** anahtarını `NEXT_PUBLIC_SUPABASE_ANON_KEY` olarak kopyala.
+5. Sol menü **Authentication → URL Configuration**:
+   - **Site URL**: `http://localhost:3000`
+   - **Redirect URLs** → **Add URL**: `http://localhost:3000/auth/callback`
+6. Proje klasöründe `.env.example` dosyasını kopyalayıp adını `.env.local` yap, iki değeri yapıştır, `pnpm dev`'i yeniden başlat.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> Anahtarlar sadece `.env.local` içinde durur; bu dosya git'e girmez.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Komutlar
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Komut | Ne yapar |
+|---|---|
+| `pnpm dev` | Geliştirme sunucusu (değişiklikler anında görünür) |
+| `pnpm build` | Yayın için derleme |
+| `pnpm lint` | Kod kurallarını kontrol eder |

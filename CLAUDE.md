@@ -1,0 +1,377 @@
+# CLAUDE.md — ideavellum
+
+Bu dosya, ideavellum projesinde çalışan Claude Code için ana rehberdir. Her oturumun başında bunu oku. Tasarım ilhamı görselleri `docs/inspiration/` klasöründedir; arayüz işine başlamadan önce onları da aç ve incele.
+
+---
+
+## 1. Proje nedir?
+
+**ideavellum**, kişinin kendi hayatını bir üniversite dönemi gibi programlamasını sağlayan kişisel bir "öğrenme işletim sistemi"dir. Kullanıcı kendine dersler açar, haftalık ders saatlerini girer, konuları ve görevleri takip eder, derse ait notları ve kaynakları (izlediği video, okuduğu kitap/makale) o dersin altında toplar. Uygulama ders saati gelince zil çalar, telefona bildirim, e-postaya hatırlatma ve özet gönderir. Biten dersler bir "transkript"te arşivlenir, raporlarda ilerleme görünür.
+
+Ürün hissi: Trello'nun sürükle-bırak rahatlığı + Odoo/proje yönetimi araçlarının yapısı, ama **minimal, sakin ve tek kişilik** bir deneyim. Ekip, rol, izin karmaşası yok.
+
+**Kullanıcı:** Tek kişi (proje sahibi Murat). İleride çok kullanıcılı olabilir, bu yüzden veri modeli baştan `user_id` ile kurulur ama ekip özellikleri yapılmaz.
+
+**Başarı ölçütü:** Murat sabah uygulamayı açtığında 3 saniye içinde "şu an hangi dersteyim, sırada ne var, bugün ne yapmam gerekiyor" sorularının cevabını görebilmeli.
+
+---
+
+## 2. Proje sahibiyle çalışma kuralları (çok önemli)
+
+- **Murat kod bilmiyor.** Figma'yı çok iyi bilen bir arayüz tasarımcısı; ürünü yapay zekâ araçlarıyla üretiyor. Teknik kararları sen ver; ona teknik soru sorma ("Prisma mı Drizzle mı?" gibi). Gerekçeyi tek cümleyle açıkla.
+- **Seçenek listesi sunma, tek net öneri yap.** Gerçekten bir ürün kararı gerekiyorsa (ör. "biten görevler 30 gün sonra arşive mi gitsin?") tek soru sor ve önerdiğin cevabı da yaz.
+- **Her zaman Türkçe ve sade dille konuş.** Terim kullanman gerekirse yanında ne işe yaradığını yaz.
+- **Somut örnekle anlat.** Bir şeyi açıklarken "örneğin 'İngilizce B2' dersine Salı 19:00 slotu eklediğinde…" gibi gerçek bir senaryo kullan.
+- **Her adım sonunda test talimatı ver:** Tarayıcıda hangi adrese gideceğini, neye tıklayacağını, ne görmesi gerektiğini madde madde yaz.
+- **Ortam değişkenleri ve hesaplar:** Bir API anahtarı gerekiyorsa (Supabase, Resend, VAPID vb.) nereden alınacağını, hangi menüye tıklanacağını adım adım anlat. Anahtarları asla koda yazma, sadece `.env.local` kullan.
+- **Küçük ve çalışır adımlarla ilerle.** Her alt görev bitince uygulama çalışır durumda olmalı ve anlamlı bir mesajla git commit atılmalı.
+- **Görsel kalite kritik.** Murat piksel hatalarını, tutarsız boşlukları ve hizasız öğeleri fark eder. Arayüz değişikliklerinden sonra ekran görüntüsü alıp kendin kontrol et.
+
+---
+
+## 3. Teknoloji yığını (karar verildi, değiştirme)
+
+| Katman | Seçim | Neden |
+|---|---|---|
+| Framework | **Next.js (App Router) + React + TypeScript (strict)** | Tek kod tabanında hem arayüz hem sunucu tarafı |
+| Stil | **Tailwind CSS v4** | shadcn/ui ile doğal uyum |
+| Bileşenler | **shadcn/ui** (Radix tabanlı) | Murat'ın istediği modern, erişilebilir temel |
+| İkonlar | **lucide-react** | shadcn varsayılanı |
+| Veritabanı + Auth | **Supabase** (Postgres, Auth, Row Level Security) | Hazır giriş sistemi, cron, ücretsiz başlangıç |
+| Veri erişimi | **@supabase/ssr + supabase-js**, tipler `supabase gen types` ile | Ek ORM katmanı yok, daha az hareketli parça |
+| Sürükle-bırak | **@dnd-kit/core + @dnd-kit/sortable** | Kanban ve takvim için en esnek kütüphane |
+| Sıralama | **fractional-indexing** | Kart taşırken tüm listeyi yeniden numaralamamak için |
+| Not editörü | **Tiptap** (StarterKit + TaskList + Link + Placeholder) | Zengin metin, içerik JSON olarak saklanır |
+| Grafikler | **shadcn charts (Recharts)** | Raporlar için |
+| Formlar | **react-hook-form + zod** | Doğrulama tek yerde |
+| Tarih/saat | **date-fns + date-fns-tz**, `tr` locale | Türkçe tarih ve Europe/Istanbul saat dilimi |
+| İstemci durumu | **zustand** (sadece zamanlayıcı ve UI tercihleri için) | Hafif |
+| Bildirim (toast) | **sonner** | shadcn uyumlu |
+| PWA + Push | **Serwist** (service worker) + **web-push** (VAPID) | Telefona bildirim |
+| E-posta | **Resend + React Email** | Şablonlu, güvenilir gönderim |
+| Zamanlanmış işler | **Supabase pg_cron + pg_net** → Next.js `/api/cron/*` | Dakikalık hatırlatma tetikleme |
+| AI (opsiyonel, Faz 6) | **Anthropic API**, model adı `.env`'den | Özellik bayrağıyla kapatılabilir |
+| Paket yöneticisi | **pnpm** | |
+| Yayın | **Vercel** (uygulama) + **Supabase Cloud** (veri) | |
+
+---
+
+## 4. Sözlük (arayüzde kullanılacak Türkçe terimler)
+
+Arayüz metinleri Türkçe; kod, tablo, değişken ve dosya adları İngilizce.
+
+| Arayüz (TR) | Kod (EN) | Anlamı |
+|---|---|---|
+| Dönem | `term` | Belirli tarih aralığındaki ders paketi (ör. "2026 Güz") |
+| Ders | `course` | Öğrenilecek ana alan (ör. "İngilizce B2", "Lacan'a Giriş") |
+| Konu | `topic` | Dersin ünitesi/başlığı, sıralı |
+| Ders saati | `class_session` | Haftalık tekrar eden program slotu (Salı 19:00–20:30) |
+| Yoklama | `attendance` | O günkü ders saatine "katıldım / kaçırdım / erteledim" kaydı |
+| Zil | `bell` | Ders başlangıç/bitiş/teneffüs uyarısı (ses + bildirim) |
+| Görev | `task` | Yapılacak iş; derse/konuya bağlı olabilir ya da bağımsız |
+| Not | `note` | Derse/konuya ait zengin metin not |
+| Kaynak | `resource` | Video, kitap, makale, podcast, kurs vb. |
+| Çalışma oturumu | `study_log` | Harcanan süre kaydı (zamanlayıcı ya da elle) |
+| Transkript | — (görünüm) | Tamamlanmış derslerin arşivi ve değerlendirmesi |
+| Rapor | — (görünüm) | Haftalık/aylık özetler ve grafikler |
+
+Görev durumları: **Yapılacak** (`todo`) → **Devam ediyor** (`in_progress`) → **Gözden geçir** (`review`) → **Bitti** (`done`).
+
+---
+
+## 5. Ekranlar ve özellikler
+
+### 5.1 Uygulama iskeleti
+- Sol kenar çubuğu (daraltılabilir): Bugün, Ders programı, Pano, Dersler, Notlar, Kaynaklar, Raporlar, Transkript; altta Ayarlar.
+- Kenar çubuğunda aktif dönemin dersleri renk noktalarıyla listelenir (bkz. ilham 04).
+- Üst çubuk: arama / komut paleti (`Ctrl/Cmd + K`, shadcn `Command`), **Hızlı ekle** butonu (görev, not, kaynak).
+- Mobilde kenar çubuğu alt sekme çubuğuna dönüşür: Bugün, Program, Pano, Dersler, Daha fazla.
+
+### 5.2 Bugün (ana ekran)
+- **Şu an / sıradaki ders kartı:** dersin rengiyle, canlı geri sayım ("Başlamasına 12 dk" / "Bitmesine 34 dk"), tek tıkla yoklama ve çalışma zamanlayıcısını başlatma.
+- **Bugünün programı:** dikey zaman çizelgesi, şu anki saati gösteren çizgi.
+- **Bugünün görevleri:** son tarihi bugün veya geçmiş olanlar; tik atınca `done` olur.
+- **Hızlı not** alanı: yazılan not seçili derse kaydedilir.
+- Üstte küçük özet şeridi: bugün çalışılan süre, tamamlanan görev, seri (art arda kaç gün çalışıldı).
+
+### 5.3 Ders programı
+- Haftalık takvim görünümü (Pazartesi başlar), 07:00–24:00 aralığı, 15 dakikalık ızgara (bkz. ilham 03).
+- Ders saatleri dersin renginde bloklar; **sürükleyerek taşınır, alt kenardan çekerek uzatılır.**
+- Boş alana tıklayınca "Ders saati ekle" diyaloğu (ders, gün, başlangıç, bitiş, yer, zil ayarları).
+- Gün / Hafta / Ay geçişi. Bugün sütunu vurgulu, şu anki saat çizgisi görünür.
+- Geçmiş bloklarda yoklama durumu ikonla görünür.
+
+### 5.4 Pano (Kanban)
+- Dört sütun: Yapılacak, Devam ediyor, Gözden geçir, Bitti. Sütunlar arası ve sütun içi sürükle-bırak (bkz. ilham 01, 02).
+- Filtreler: ders, konu, öncelik, son tarih. Görünüm değiştirici: Pano / Liste / Takvim.
+- Kart içeriği: ders etiketi (renkli), başlık, varsa kontrol listesi ilerlemesi, son tarih, öncelik bayrağı.
+- Karta tıklayınca sağdan açılan panel (`Sheet`): açıklama, kontrol listesi, bağlı konu, notlar, hatırlatma.
+- "Bitti" sütunu 14 günden eski kartları otomatik gizler (Transkript/rapordan erişilir).
+
+### 5.5 Dersler ve ders detay sayfası
+- Ders listesi: renkli kartlar, ilerleme çubuğu (tamamlanan konu oranı), haftalık süre.
+- **Ders detayı** üstte renkli başlık alanı (bkz. ilham 04): ders adı, dönem, başlangıç, hedef bitiş, toplam çalışma süresi.
+- Sekmeler: **Genel bakış · Konular · Görevler · Notlar · Kaynaklar · Çalışma geçmişi**
+  - Konular: sürükle-bırak sıralanabilir liste, her konuya durum ve tamamlanma tarihi.
+  - Kaynaklar: tür ikonuyla liste, durum (izlenecek/okunacak → devam ediyor → bitti), ilerleme (sayfa/dakika), puan, kısa özet.
+  - Notlar: Tiptap editörü, sabitleme, konuya bağlama.
+- "Dersi tamamla" aksiyonu: kapanış değerlendirmesi (ne öğrendim, kendime not, 1–5 puan) ister ve dersi Transkript'e taşır.
+
+### 5.6 Notlar ve Kaynaklar (genel görünümler)
+- Tüm derslerin notları/kaynakları tek yerde, derse göre filtrelenebilir ve aranabilir.
+
+### 5.7 Raporlar
+- Haftalık ve aylık özet: ders bazında çalışma süresi (çubuk grafik), tamamlanan görev/konu, yoklama oranı, seri takvimi (GitHub tarzı ısı haritası).
+- "Bu hafta" kartında hedef vs. gerçekleşen süre.
+
+### 5.8 Transkript
+- Tamamlanmış dersler: dönem, süre, tamamlanan konu sayısı, kendi verdiği puan, kapanış notu. Ders kartından tüm arşivlenmiş içeriğe erişilir.
+
+### 5.9 Ayarlar
+- Profil, saat dilimi (varsayılan Europe/Istanbul).
+- **Zil ayarları:** ders öncesi uyarı (varsayılan 5 dk), başlangıç zili, bitiş zili, ses seçimi, sessiz saatler.
+- **Bildirim kanalları:** uygulama içi, telefon (push), e-posta — her olay türü için ayrı açıp kapatma.
+- E-posta: sabah özeti saati (varsayılan 07:30), haftalık rapor günü (varsayılan Pazar 20:00).
+- AI asistan aç/kapat (Faz 6).
+
+---
+
+## 6. Veri modeli (Supabase / Postgres)
+
+Tüm tablolarda `id uuid primary key default gen_random_uuid()`, `user_id uuid references auth.users not null`, `created_at`, `updated_at`. **Her tabloda RLS açık ve politika `user_id = auth.uid()`.** Şema değişiklikleri `supabase/migrations/` altında SQL migration olarak yazılır.
+
+```
+profiles            (id = auth.users.id, full_name, timezone, locale, bell_settings jsonb, notification_prefs jsonb)
+terms               (name, start_date, end_date, is_active)
+courses             (term_id, name, code, color, description, goal, status[active|paused|completed|dropped],
+                     target_weekly_minutes, completed_at, final_reflection, final_rating)
+topics              (course_id, title, position, status[not_started|in_progress|done], done_at)
+class_sessions      (course_id, weekday 1-7, start_time, end_time, location, valid_from, valid_until, bell_overrides jsonb)
+attendance          (class_session_id, date, status[attended|missed|postponed], note)   unique(class_session_id, date)
+tasks               (course_id?, topic_id?, title, description, status[todo|in_progress|review|done],
+                     priority[low|medium|high|urgent], due_at, position text, completed_at)
+task_checklist_items(task_id, label, is_done, position)
+notes               (course_id?, topic_id?, title, content jsonb, is_pinned)
+resources           (course_id?, topic_id?, type[video|book|article|podcast|course|other], title, url, author,
+                     status[queued|in_progress|done], progress_current, progress_total, unit[page|minute|chapter],
+                     rating, summary)
+study_logs          (course_id?, topic_id?, started_at, ended_at, duration_minutes, source[timer|manual|session])
+reminders           (kind[bell_before|bell_start|bell_end|task_due|daily_digest|weekly_report|custom],
+                     entity_type, entity_id, fire_at timestamptz, channels text[], status[pending|sent|failed|cancelled], sent_at)
+push_subscriptions  (endpoint, p256dh, auth, user_agent)
+notification_log    (reminder_id, channel, status, error, sent_at)
+```
+
+Kurallar:
+- Saatler veritabanında `timestamptz` (UTC) olarak saklanır; gösterimde kullanıcının saat dilimine çevrilir. `class_sessions` için `time` + kullanıcı saat dilimi kullanılır.
+- `position` alanları fractional index (metin) tutar.
+- Ders renkleri serbest hex değil, tasarım sistemindeki ders paletinin anahtarıdır (`"lavender"`, `"mint"` …).
+
+---
+
+## 7. Bildirim ve zil mimarisi
+
+Üç katman birlikte çalışır:
+
+1. **Uygulama içi zil (uygulama açıkken):** İstemci, yaklaşan zil olaylarını hesaplar; zamanı gelince `/public/sounds/` altındaki sesi çalar ve `sonner` ile bildirim gösterir. Tarayıcı otomatik ses çalmayı engellediği için ilk açılışta "Zil seslerini etkinleştir" butonu gösterilir.
+2. **Telefon bildirimi (Web Push):** Uygulama PWA olarak yüklenir (manifest + Serwist service worker). Kullanıcı izin verince `push_subscriptions` tablosuna kaydedilir. iPhone'da push yalnızca uygulama "Ana Ekrana Ekle" ile yüklendiyse çalışır; Ayarlar ekranında bunu anlatan kısa bir yönerge göster.
+3. **E-posta:** Resend + React Email şablonları: sabah özeti, haftalık rapor, gecikmiş görev uyarısı.
+
+**Zamanlayıcı akışı:**
+- Ders saati eklendiğinde/değiştiğinde önümüzdeki **14 günün** zil hatırlatmaları `reminders` tablosuna üretilir; eski bekleyenler iptal edilir.
+- Görev son tarihi verildiğinde `task_due` hatırlatması üretilir.
+- Supabase `pg_cron` her dakika `pg_net` ile `POST /api/cron/dispatch` çağırır (başlıkta `CRON_SECRET`). Bu uç nokta `fire_at <= now()` ve `status = pending` kayıtları alır, kanallara gönderir, `notification_log`'a yazar.
+- Her gece 03:00'te `/api/cron/extend` 14 günlük pencereyi ileri kaydırır ve günlük/haftalık e-posta hatırlatmalarını üretir.
+- Sessiz saatlerde push/e-posta gönderilmez, uygulama içi kayıt tutulur.
+
+---
+
+## 8. Tasarım yönü
+
+### 8.1 Görsel kimlik
+"Vellum" ince, yarı saydam parşömen kâğıdı demek. Arayüzün kişiliği buradan gelir: **sakin, kâğıt gibi hafif yüzeyler** üzerinde **her derse ait yumuşak pastel bir renk**. Uygulamanın tek cesur öğesi ders renkleridir; geri kalan her şey nötr ve disiplinli kalır. Renk bir süs değil bilgi taşır: kartın, takvim bloğunun, etiketin hangi derse ait olduğunu anlık söyler.
+
+### 8.2 Tokenlar (başlangıç — `app/globals.css` içinde CSS değişkeni olarak)
+
+Nötrler (açık tema):
+- `--surface-page`: `#F6F6F3` (hafif sıcak kâğıt grisi)
+- `--surface-card`: `#FFFFFF`
+- `--surface-sunken`: `#EEEEEA`
+- `--ink`: `#1D1D21` (metin)
+- `--ink-muted`: `#6B6B73`
+- `--line`: `#E4E4DF`
+- `--accent`: `#4F46E5` (birincil buton, odak halkası, aktif menü)
+
+Ders paleti (her biri `bg` / `fg` / `solid` üçlüsü; `bg` kart zemini, `fg` kart metni, `solid` ilerleme çubuğu ve takvim kenarı):
+- `lavender` `#EEEAFE` / `#4C3A9E` / `#7C6CF2`
+- `sky` `#E3F0FD` / `#1F5A94` / `#4A90E2`
+- `mint` `#DFF5EA` / `#1D6B47` / `#34B37A`
+- `peach` `#FFEBDD` / `#9A4A15` / `#F08A3C`
+- `rose` `#FDE4EC` / `#9C2A55` / `#E2588A`
+- `butter` `#FDF4D3` / `#7D6210` / `#E3B524`
+- `sage` `#E8EFE2` / `#47613A` / `#7E9E6B`
+- `slate` `#E9ECF1` / `#3B4558` / `#6B7A93`
+
+Koyu tema her token için ayrıca tanımlanır (ders `bg` renkleri koyu temada %16 opaklıkta `solid` olur).
+
+Tipografi:
+- Arayüz yazı tipi: **Onest** (Google Fonts, Türkçe karakterleri tam destekler). Rakamlarda `font-variant-numeric: tabular-nums` (saatler ve sayaçlar kaymasın).
+- Ölçek: 12 / 13 / 14 (gövde) / 16 / 20 / 24 / 32. Başlıklar 600, gövde 400, etiketler 500.
+- Büyük harfli etiket kullanma; tüm metinler cümle düzeninde.
+
+Biçim:
+- Köşe yarıçapı hiyerarşiye göre: küçük öğe 8px, kart 14px, büyük panel/modal 20px.
+- Gölge minimum: kartlar zemin rengi farkı ve 1px çizgiyle ayrılır; gölge sadece sürüklenen kartta ve açılan panelde.
+- Boşluk ölçüsü 4'ün katları; kart iç boşluğu 16px, sütun arası 16px.
+- Hareket: sadece kullanıcı eylemine cevap olarak (sürükleme, panel açma, tamamlama). Tamamlanan görevde kısa bir tik animasyonu tek "keyif anı" olsun. `prefers-reduced-motion` desteklenir.
+
+### 8.3 Kalite tabanı
+- Mobil uyumlu (360px'e kadar), klavye ile tam kullanılabilir, görünür odak halkası, WCAG AA kontrast.
+- Boş durumlar yönlendirici olmalı: "Henüz ders yok. İlk dersini ekleyerek döneme başla." + buton.
+- Buton metinleri eylemi söyler: "Ders saati ekle", "Görevi tamamla" — "Gönder", "Tamam" değil.
+
+---
+
+## 9. İlham görselleri
+
+Görseller `docs/inspiration/` klasöründe. Birebir kopyalanmaz; aşağıdaki çıkarımlar uygulanır.
+
+### 01 — Renkli kanban
+![Renkli kanban](docs/inspiration/01-renkli-kanban.png)
+
+- **Al:** Her kartın kategorisine göre pastel zemin ve aynı tonda koyu metin → ders paleti mantığı. Kart içinde kontrol listesi ve nokta tarzı ilerleme göstergesi. Sütun başlığında `+` ve menü.
+- **Alma:** Kart başına iki-üç etiket kalabalığı; kişi avatarları (tek kullanıcılı uygulama).
+
+### 02 — Sade dashboard
+![Sade dashboard](docs/inspiration/02-sade-dashboard.png)
+
+- **Al:** Nötr, ferah düzen ve net hiyerarşi. Üstte özet sayı şeridi (Bugün ekranındaki özet). **Pano / Zaman çizelgesi / Tablo / Takvim** görünüm değiştirici. Sütun başlığında durum rozeti + sayaç. Sürüklenen kartın hafif eğilip gölgelenmesi.
+- **Alma:** Kurumsal metrikler (çalışan sayısı vb.), çok sayıda ikon buton.
+
+### 03 — Haftalık takvim
+![Haftalık takvim](docs/inspiration/03-haftalik-takvim.png)
+
+- **Al:** Ders programı ekranının ana referansı. Gün sütunları, saat ızgarası, renkli bloklar, **şu anki saati gösteren yatay çizgi**, vurgulu bugün sütunu, Ay/Gün/Hafta geçişi. Üstteki durum sütunları (Taslak / Devam / Bitti) özet kartları için fikir verir.
+- **Alma:** Çok doygun, gradyanlı blok renkleri; bizim bloklarımız pastel zemin + sol kenarda `solid` şerit olacak.
+
+### 04 — Proje detay
+![Proje detay](docs/inspiration/04-proje-detay.png)
+
+- **Al:** Ders detay sayfasının referansı. Üstte renkli başlık alanı + meta bilgiler (oluşturma, hedef tarih, takip edilen süre). Sekme çubuğu (Genel bakış / Liste / Pano / Takvim). Kenar çubuğunda gruplu, renk noktalı proje listesi → dönem altında dersler. Sağ panelde zaman grafiği → ders bazlı haftalık çalışma süresi.
+- **Alma:** Ekip sohbeti; sağ panel ileride AI asistan alanı olarak düşünülebilir (Faz 6).
+
+---
+
+## 10. Klasör yapısı
+
+```
+ideavellum/
+├─ CLAUDE.md
+├─ docs/
+│  └─ inspiration/            # tasarım ilhamı görselleri
+├─ public/
+│  ├─ sounds/                 # zil sesleri (bell-soft.mp3, bell-classic.mp3, chime.mp3)
+│  └─ icons/                  # PWA ikonları
+├─ supabase/
+│  └─ migrations/             # SQL şema ve RLS
+├─ src/
+│  ├─ app/
+│  │  ├─ (auth)/giris/
+│  │  ├─ (app)/
+│  │  │  ├─ bugun/
+│  │  │  ├─ program/
+│  │  │  ├─ pano/
+│  │  │  ├─ dersler/[courseId]/
+│  │  │  ├─ notlar/
+│  │  │  ├─ kaynaklar/
+│  │  │  ├─ raporlar/
+│  │  │  ├─ transkript/
+│  │  │  └─ ayarlar/
+│  │  ├─ api/cron/{dispatch,extend}/route.ts
+│  │  ├─ manifest.ts
+│  │  └─ sw.ts                # Serwist service worker
+│  ├─ components/
+│  │  ├─ ui/                  # shadcn bileşenleri (elle düzenleme minimum)
+│  │  ├─ layout/              # sidebar, topbar, mobile-nav
+│  │  ├─ board/  schedule/  course/  notes/  resources/  reports/  today/
+│  ├─ lib/
+│  │  ├─ supabase/            # server, client, middleware yardımcıları
+│  │  ├─ reminders/           # hatırlatma üretimi ve gönderimi
+│  │  ├─ notifications/       # push, email, bell
+│  │  ├─ dates.ts             # saat dilimi ve tr locale yardımcıları
+│  │  └─ course-colors.ts     # ders paleti
+│  ├─ emails/                 # React Email şablonları
+│  ├─ server/actions/         # Server Actions (alan bazlı dosyalar)
+│  └─ types/database.ts       # supabase gen types çıktısı
+└─ .env.local                 # git'e girmez
+```
+
+URL'ler Türkçe ve sade (`/bugun`, `/program`, `/pano`, `/dersler/...`).
+
+---
+
+## 11. Kod kuralları
+
+- Veri okuma Server Component'lerde, yazma Server Actions ile. Sürükle-bırak gibi anlık etkileşimlerde **iyimser güncelleme** (`useOptimistic`), hata olursa geri al ve toast göster.
+- Her Server Action girdisini zod ile doğrular ve `user_id`'yi asla istemciden almaz, oturumdan alır.
+- Bileşenler küçük ve tek amaçlı; 200 satırı geçen dosyayı böl.
+- shadcn bileşenlerini `components/ui` içinde özelleştir, uygulama bileşenleri onları sarmalasın.
+- Tarih biçimleri: `d MMMM yyyy, EEEE` → "4 Kasım 2026, Çarşamba"; saat 24 saat biçiminde.
+- Haftanın ilk günü Pazartesi.
+- Erişilebilirlik: sürükle-bırak için dnd-kit klavye sensörü açık; her ikon butonda `aria-label`.
+- Ortam değişkenleri `src/lib/env.ts` içinde zod ile doğrulanır.
+
+Ortam değişkenleri:
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+VAPID_SUBJECT=mailto:
+RESEND_API_KEY=
+EMAIL_FROM=
+CRON_SECRET=
+APP_URL=
+# Faz 6
+AI_ENABLED=false
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=
+```
+
+---
+
+## 12. Yol haritası
+
+Her faz sonunda Murat'a test talimatı ver ve onay almadan sonraki faza geçme.
+
+**Faz 0 — Kurulum ve iskelet**
+Next.js + TypeScript + Tailwind + shadcn kurulumu, Onest yazı tipi, tasarım tokenları, Supabase bağlantısı, e-posta ile giriş (magic link), kenar çubuğu + üst çubuk + mobil alt menü, boş sayfalar.
+
+**Faz 1 — Dönem, dersler, konular, ders programı**
+Dönem ve ders oluşturma (renk seçici ders paletinden), konu listesi (sürükle-bırak sıralama), haftalık ders programı görünümü (blok ekleme, taşıma, uzatma), ders detay sayfası iskeleti.
+
+**Faz 2 — Görevler, Pano ve Bugün ekranı**
+Görev CRUD, kontrol listesi, kanban sürükle-bırak, filtreler, görev detay paneli, Bugün ekranı (şu anki/sıradaki ders, bugünün görevleri, zaman çizelgesi), yoklama.
+
+**Faz 3 — Notlar, kaynaklar, çalışma zamanlayıcısı**
+Tiptap not editörü, kaynak yönetimi (tür, durum, ilerleme, puan), çalışma zamanlayıcısı (başlat/duraklat/bitir → `study_logs`), elle süre ekleme, komut paleti ve hızlı ekle.
+
+**Faz 4 — Zil ve bildirimler**
+Uygulama içi zil ve sesler, PWA manifest + service worker, push izni ve abonelik, `reminders` üretimi, pg_cron → dispatch akışı, Resend ile sabah özeti ve gecikmiş görev e-postası, bildirim ayarları ekranı.
+
+**Faz 5 — Raporlar ve Transkript**
+Haftalık/aylık raporlar, grafikler, seri ısı haritası, haftalık rapor e-postası, dersi tamamlama akışı ve Transkript sayfası.
+
+**Faz 6 — AI asistan (opsiyonel, `AI_ENABLED` bayrağıyla)**
+- Haftalık rapora kısa yorum ve öneri ekleme.
+- Bir nottan veya kaynak özetinden konu/görev önerisi çıkarma (kullanıcı onaylamadan kaydetme).
+- "Bugün neye odaklanmalıyım?" — programa, gecikmiş görevlere ve hedef sürelere göre öneri.
+- Yeni ders açarken hedefi yazınca konu listesi taslağı oluşturma.
+Tüm AI çağrıları sunucu tarafında; kullanıcının verisi sadece istenen işlem için gönderilir.
+
+---
+
+## 13. Kapsam dışı (şimdilik yapma)
+
+Ekip/paylaşım özellikleri, sohbet, avatar ve rol sistemi, ödeme/abonelik, harici takvim senkronizasyonu (Google Calendar), yerel mobil uygulama (PWA yeterli), çoklu dil (sadece Türkçe arayüz).

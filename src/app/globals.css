@@ -1,26 +1,237 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------
+   ideavellum tasarım tokenları
+   Nötrler sakin ve kâğıt gibi; tek cesur öğe ders renkleri.
+------------------------------------------------------------------- */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Nötrler */
+  --surface-page: #f6f6f3;
+  --surface-card: #ffffff;
+  --surface-sunken: #eeeeea;
+  --surface-hover: #f1f1ed;
+  --ink: #1d1d21;
+  --ink-muted: #6b6b73;
+  --ink-subtle: #8e8e95;
+  --line: #e4e4df;
+  --line-strong: #d6d6d0;
+  --accent: #4f46e5;
+  --accent-ink: #ffffff;
+  --accent-soft: #eeedfd;
+  --accent-text: #4338ca;
+  --danger: #c2334d;
+  --success: #1d6b47;
+
+  /* Ders paleti: bg (kart zemini) / fg (kart metni) / solid (çubuk, kenar) */
+  --lavender-bg: #eeeafe;
+  --lavender-fg: #4c3a9e;
+  --lavender-solid: #7c6cf2;
+  --sky-bg: #e3f0fd;
+  --sky-fg: #1f5a94;
+  --sky-solid: #4a90e2;
+  --mint-bg: #dff5ea;
+  --mint-fg: #1d6b47;
+  --mint-solid: #34b37a;
+  --peach-bg: #ffebdd;
+  --peach-fg: #9a4a15;
+  --peach-solid: #f08a3c;
+  --rose-bg: #fde4ec;
+  --rose-fg: #9c2a55;
+  --rose-solid: #e2588a;
+  --butter-bg: #fdf4d3;
+  --butter-fg: #7d6210;
+  --butter-solid: #e3b524;
+  --sage-bg: #e8efe2;
+  --sage-fg: #47613a;
+  --sage-solid: #7e9e6b;
+  --slate-bg: #e9ecf1;
+  --slate-fg: #3b4558;
+  --slate-solid: #6b7a93;
+
+  /* shadcn/ui eşlemesi */
+  --background: var(--surface-page);
+  --foreground: var(--ink);
+  --card: var(--surface-card);
+  --card-foreground: var(--ink);
+  --popover: var(--surface-card);
+  --popover-foreground: var(--ink);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-ink);
+  --secondary: var(--surface-sunken);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-sunken);
+  --muted-foreground: var(--ink-muted);
+  --accent-surface: var(--surface-hover);
+  --destructive: var(--danger);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--accent);
+
+  --shadow-lift: 0 12px 32px -8px rgb(29 29 33 / 0.18), 0 2px 6px -2px rgb(29 29 33 / 0.08);
+  --shadow-panel: 0 24px 64px -16px rgb(29 29 33 / 0.22), 0 4px 12px -4px rgb(29 29 33 / 0.08);
+
+  color-scheme: light;
 }
+
+.dark {
+  --surface-page: #141416;
+  --surface-card: #1c1c1f;
+  --surface-sunken: #111113;
+  --surface-hover: #242428;
+  --ink: #ededef;
+  --ink-muted: #a0a0a8;
+  --ink-subtle: #7a7a82;
+  --line: #2b2b30;
+  --line-strong: #3a3a40;
+  --accent: #5b54ea;
+  --accent-ink: #ffffff;
+  --accent-soft: #24234a;
+  --accent-text: #aba6ff;
+  --danger: #f0748a;
+  --success: #7fd9ab;
+
+  /* Koyu temada ders zeminleri, solid rengin %16 opaklığı */
+  --lavender-bg: color-mix(in srgb, var(--lavender-solid) 16%, transparent);
+  --lavender-fg: #c9c1ff;
+  --sky-bg: color-mix(in srgb, var(--sky-solid) 16%, transparent);
+  --sky-fg: #a9cdf6;
+  --mint-bg: color-mix(in srgb, var(--mint-solid) 16%, transparent);
+  --mint-fg: #94e0b9;
+  --peach-bg: color-mix(in srgb, var(--peach-solid) 16%, transparent);
+  --peach-fg: #fbc39a;
+  --rose-bg: color-mix(in srgb, var(--rose-solid) 16%, transparent);
+  --rose-fg: #f6aac5;
+  --butter-bg: color-mix(in srgb, var(--butter-solid) 16%, transparent);
+  --butter-fg: #f1d77c;
+  --sage-bg: color-mix(in srgb, var(--sage-solid) 16%, transparent);
+  --sage-fg: #bfd6b1;
+  --slate-bg: color-mix(in srgb, var(--slate-solid) 16%, transparent);
+  --slate-fg: #c1cada;
+
+  --shadow-lift: 0 12px 32px -8px rgb(0 0 0 / 0.6), 0 2px 6px -2px rgb(0 0 0 / 0.4);
+  --shadow-panel: 0 24px 64px -16px rgb(0 0 0 / 0.7), 0 4px 12px -4px rgb(0 0 0 / 0.4);
+
+  color-scheme: dark;
+}
+
+/* Ders rengi: bir öğeye data-course="mint" verildiğinde
+   bg-course / text-course-fg / bg-course-solid sınıfları o dersin rengini alır. */
+[data-course="lavender"] { --course-bg: var(--lavender-bg); --course-fg: var(--lavender-fg); --course-solid: var(--lavender-solid); }
+[data-course="sky"]      { --course-bg: var(--sky-bg);      --course-fg: var(--sky-fg);      --course-solid: var(--sky-solid); }
+[data-course="mint"]     { --course-bg: var(--mint-bg);     --course-fg: var(--mint-fg);     --course-solid: var(--mint-solid); }
+[data-course="peach"]    { --course-bg: var(--peach-bg);    --course-fg: var(--peach-fg);    --course-solid: var(--peach-solid); }
+[data-course="rose"]     { --course-bg: var(--rose-bg);     --course-fg: var(--rose-fg);     --course-solid: var(--rose-solid); }
+[data-course="butter"]   { --course-bg: var(--butter-bg);   --course-fg: var(--butter-fg);   --course-solid: var(--butter-solid); }
+[data-course="sage"]     { --course-bg: var(--sage-bg);     --course-fg: var(--sage-fg);     --course-solid: var(--sage-solid); }
+[data-course="slate"]    { --course-bg: var(--slate-bg);    --course-fg: var(--slate-fg);    --course-solid: var(--slate-solid); }
 
 @theme inline {
+  --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+
+  /* Tipografi ölçeği: 12 / 13 / 14 (gövde) / 16 / 20 / 24 / 32 */
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-13: 13px;
+  --text-13--line-height: 18px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 32px;
+  --text-3xl--line-height: 40px;
+
+  /* Köşe yarıçapı: küçük öğe 8, kart 14, panel/modal 20 */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 20px;
+
+  --shadow-lift: var(--shadow-lift);
+  --shadow-panel: var(--shadow-panel);
+
+  --color-page: var(--surface-page);
+  --color-surface: var(--surface-card);
+  --color-sunken: var(--surface-sunken);
+  --color-hover: var(--surface-hover);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-success: var(--success);
+
+  --color-course: var(--course-bg);
+  --color-course-fg: var(--course-fg);
+  --color-course-solid: var(--course-solid);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent-surface);
+  --color-accent-foreground: var(--foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-sm text-foreground antialiased;
+    font-feature-settings: "ss01" off;
+  }
+
+  /* Saatler ve sayaçlar kaymasın */
+  .tabular,
+  time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
