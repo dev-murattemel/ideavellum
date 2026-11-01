@@ -6,6 +6,7 @@ alter table public.profiles add column if not exists ai_enabled boolean not null
 create or replace function public.ivl_secure_table(t regclass)
 returns void
 language plpgsql
+set search_path = ''
 as $$
 begin
   execute format('create trigger set_updated_at before update on %s for each row execute function public.set_updated_at()', t);
