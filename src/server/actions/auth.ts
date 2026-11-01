@@ -4,7 +4,9 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import { isSupabaseConfigured, serverEnv } from "@/lib/env";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+
+import { publicEnv } from "@/lib/env";
 
 export type MagicLinkState =
   | { status: "idle" }
@@ -31,7 +33,11 @@ export async function sendMagicLink(
   }
 
   const origin = serverEnv().APP_URL ?? (await headers()).get("origin") ?? "http://localhost:3000";
-  const supabase = await createClient();
+  // "implicit" akış: bağlantı, istendiği tarayıcıya özel bir anahtara bağlı değildir.
+  // Böylece birden fazla bağlantı istense de en son gelen çalışır ve başka cihazda da açılabilir.
+  const supabase = createClient(publicEnv.NEXT_PUBLIC_SUPABASE_URL!, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    auth: { flowType: "implicit", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data.email,
     options: { emailRedirectTo: `${origin}/auth/callback` },
