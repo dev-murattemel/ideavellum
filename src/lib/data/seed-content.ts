@@ -68,7 +68,7 @@ export function seedContent(add: Add, snap: DataSnapshot, { courses, today, tz }
   );
 
   add("notes", {
-    course_id: courses.lacan.id, topic_id: null, title: "Ayna evresi — ana fikirler", is_pinned: true,
+    course_id: courses.lacan.id, topic_id: null, title: "Ayna evresi — ana fikirler", is_pinned: true, tags: ["psikanaliz", "özet"],
     content: doc(
       p("Çocuk 6–18 ay arasında aynadaki görüntüsünü kendisi olarak tanır; ama bu tanıma bir yanılgıdır."),
       h(3, "Kilit kavramlar"),
@@ -77,19 +77,46 @@ export function seedContent(add: Add, snap: DataSnapshot, { courses, today, tz }
     ),
   });
   add("notes", {
-    course_id: courses.eng.id, topic_id: null, title: "Reported speech — zaman kaydırma tablosu", is_pinned: false,
+    course_id: courses.eng.id, topic_id: null, title: "Reported speech — zaman kaydırma tablosu", is_pinned: false, tags: ["gramer"],
     content: doc(p("Doğrudan anlatımda geçmiş zamana bir adım kaydır:"), ul(["am/is → was", "will → would", "can → could", "have done → had done"])),
   });
   add("notes", {
-    course_id: courses.ux.id, topic_id: null, title: "İyi bir boş durum ne söyler?", is_pinned: true,
+    course_id: courses.ux.id, topic_id: null, title: "İyi bir boş durum ne söyler?", is_pinned: true, tags: ["ilke"],
     content: doc(p("1) Burada ne olacağını, 2) neden boş olduğunu, 3) ilk adımı söyler. Tek bir net eylem butonu yeter.")),
   });
   add("notes", {
-    course_id: courses.piano.id, topic_id: null, title: "Parmak numaraları", is_pinned: false,
+    course_id: courses.piano.id, topic_id: null, title: "Parmak numaraları", is_pinned: false, tags: ["teknik"],
     content: doc(p("Başparmak 1, serçe parmak 5. C majörde başparmak geçişi 3. parmaktan sonra.")),
   });
   add("notes", {
-    course_id: null, topic_id: null, title: "Dönem için kendime not", is_pinned: false,
+    course_id: null, topic_id: null, title: "Dönem için kendime not", is_pinned: false, tags: ["kişisel", "hedef"],
     content: doc(p("Haftada en az 5 gün, en az 30 dakika. Seriyi bozma ama kendini de yorma.")),
   });
+}
+
+const QUOTES: [string, string | null, string | null, string[], boolean][] = [
+  ["Az ama her gün; çok ama arada bir'den iyidir.", null, null, ["alışkanlık"], true],
+  ["Yorgunluk bazen yanlış işi yapmanın değil, doğru işi çok uzun süre ertelemenin sonucudur.", null, "Sabah yürüyüşü", ["erteleme"], false],
+  ["Bir şeyi gerçekten öğrendiğini, onu sade cümlelerle anlatabildiğinde anlarsın.", null, null, ["öğrenme"], false],
+  ["Talih, hazırlıkla fırsatın buluştuğu yerdir.", "Seneca", null, ["hazırlık"], true],
+  ["Dün akıllıydım, dünyayı değiştirmek istedim. Bugün bilgeyim, kendimi değiştiriyorum.", "Mevlânâ", null, ["değişim"], true],
+  ["Ruhum, bir hedefi olmadığında kendini kaybeder.", "Montaigne", "Denemeler", ["hedef"], false],
+  ["Sessizlik de bir cevaptır; çoğu zaman en dürüst olanı.", null, null, ["kişisel"], false],
+  ["Mükemmel, iyinin düşmanıdır.", "Voltaire", null, ["ilke"], false],
+];
+
+const JOURNAL: [number, number, string][] = [
+  [-1, 4, "Sabah koşusu zor başladı ama 5 km'yi tamamladım. Akşam Lacan okurken ilk kez 'Büyük Öteki'yi kendi cümlelerimle anlatabildim."],
+  [-2, 3, "Gün dağınık geçti. Reported speech alıştırmalarını yarıda bıraktım; yarın sabah ilk iş."],
+  [-3, 5, "Piyano'da iki el ilk kez birlikte çalıştı. Küçük ama çok mutlu edici bir an."],
+  [-5, 2, "Yorgunum. Uyku düzenim kaydı; bu hafta 23:30'da ekranı kapatmayı deneyeceğim."],
+  [-6, 4, "Kuran okumasından sonra kısa bir yürüyüş. Güne sakin başlamak her şeyi değiştiriyor."],
+];
+
+/** Önizleme için örnek sözler ve günlük sayfaları */
+export function seedJournalAndQuotes(add: Add, today: Date) {
+  QUOTES.forEach(([text, author, source, tags, is_favorite]) => add("quotes", { text, author, source, tags, is_favorite }));
+  JOURNAL.forEach(([offset, mood, text]) =>
+    add("journal_entries", { date: isoDate(addDays(today, offset)), mood, tags: [], content: doc(p(text)) }),
+  );
 }

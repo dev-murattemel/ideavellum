@@ -9,15 +9,18 @@ import { AppLink } from "@/lib/nav/nav-context";
 import { formatDuration } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { TopicDots } from "./topic-dots";
+import { kindOf } from "@/lib/area-kinds";
 
 export function CourseCard({ course }: { course: Course }) {
   const stats = useCourseStats(course);
   const topics = useCourseTopics(course.id);
   const target = course.target_weekly_minutes;
+  const kind = kindOf(course);
+  const KindIcon = kind.icon;
 
   return (
     <AppLink
-      href={`/dersler/${course.id}`}
+      href={`/alanlar/${course.id}`}
       data-course={course.color}
       className={cn(
         "group flex min-h-52 flex-col gap-4 rounded-xl bg-course p-4 text-course-fg transition-[transform,box-shadow] outline-none hover:-translate-y-0.5 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -25,9 +28,14 @@ export function CourseCard({ course }: { course: Course }) {
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold">{course.name}</h3>
-          {course.code && <p className="text-xs opacity-75">{course.code}</p>}
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface/60" aria-hidden>
+            <KindIcon className="size-[18px] text-course-solid" strokeWidth={2} />
+          </span>
+          <div className="min-w-0">
+            <h3 className="truncate text-base font-semibold">{course.name}</h3>
+            <p className="text-xs opacity-75">{kind.label}{course.code ? ` · ${course.code}` : ""}</p>
+          </div>
         </div>
         {course.status === "paused" && (
           <span className="rounded-md bg-surface/60 px-2 py-0.5 text-xs font-medium">Ara verildi</span>
@@ -37,7 +45,7 @@ export function CourseCard({ course }: { course: Course }) {
 
       <div className="mt-auto flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs font-medium">
-          <span>Konular</span>
+          <span>{kind.topics}</span>
           <span className="tabular">
             {stats.topicsDone}/{stats.topicsTotal} · %{stats.progress}
           </span>

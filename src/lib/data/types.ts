@@ -17,7 +17,11 @@ export type Term = Base & {
 
 export type CourseStatus = "active" | "paused" | "completed" | "dropped";
 
+export type AreaKind = "course" | "fitness" | "cooking" | "watching" | "reading" | "spiritual" | "hobby" | "project" | "other";
+
+/** Alan (eski adıyla ders): ders, spor, mutfak, izleme, okuma… her tür düzenli uğraş */
 export type Course = Base & {
+  kind: AreaKind;
   term_id: string | null;
   name: string;
   code: string | null;
@@ -50,9 +54,14 @@ export type BellOverrides = {
   end_bell?: boolean;
 };
 
+export type SessionRepeat = "weekly" | "biweekly" | "monthly" | "once";
+
 export type ClassSession = Base & {
   course_id: string;
   weekday: number; // 1 = Pazartesi … 7 = Pazar
+  repeat: SessionRepeat;
+  /** 2 haftada bir / aylık / tek seferlik için başlangıç günü (yyyy-MM-dd) */
+  anchor_date: string | null;
   start_time: string; // "HH:mm"
   end_time: string;
   location: string | null;
@@ -100,6 +109,22 @@ export type Note = Base & {
   title: string;
   content: TiptapDoc;
   is_pinned: boolean;
+  tags: string[];
+};
+
+export type JournalEntry = Base & {
+  date: string; // yyyy-MM-dd, günde bir sayfa
+  content: TiptapDoc;
+  mood: number | null; // 1–5
+  tags: string[];
+};
+
+export type Quote = Base & {
+  text: string;
+  author: string | null;
+  source: string | null;
+  tags: string[];
+  is_favorite: boolean;
 };
 
 export type ResourceType = "video" | "book" | "article" | "podcast" | "course" | "other";
@@ -174,6 +199,8 @@ export type Tables = {
   notes: Note;
   resources: Resource;
   study_logs: StudyLog;
+  journal_entries: JournalEntry;
+  quotes: Quote;
 };
 
 export type TableName = keyof Tables;
@@ -189,6 +216,8 @@ export const TABLE_NAMES: TableName[] = [
   "notes",
   "resources",
   "study_logs",
+  "journal_entries",
+  "quotes",
 ];
 
 /** Yeni kayıt: id, user_id ve zaman damgaları depo tarafından doldurulur. */

@@ -4,7 +4,7 @@ import * as React from "react";
 import { isSameDay } from "date-fns";
 
 import { useRows } from "@/lib/data/hooks";
-import { occurrencesOn } from "@/lib/domain/schedule";
+import { moveToWeekday, occurrencesOn } from "@/lib/domain/schedule";
 import { data } from "@/lib/data/store";
 import { fmt, isoDate, isoWeekday, minutesOfDay, minutesToTime, timeToMinutes, WEEKDAY_SHORT } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
@@ -41,7 +41,7 @@ export function WeekGrid({ days }: { days: Date[] }) {
     columnWidth: () => (colsRef.current ? colsRef.current.getBoundingClientRect().width / days.length : 0),
     onCommit: (id, dayIndex, start, end) =>
       data().update("class_sessions", id, {
-        weekday: isoWeekday(days[dayIndex]),
+        ...moveToWeekday(data().class_sessions[id], isoWeekday(days[dayIndex])),
         start_time: minutesToTime(start),
         end_time: minutesToTime(end),
       }),
@@ -158,7 +158,7 @@ export function WeekGrid({ days }: { days: Date[] }) {
                             const s = clampMin(item.start + ds, item.end - item.start);
                             const e2 = Math.max(s + SNAP, Math.min(DAY_END, de === ds ? s + (item.end - item.start) : item.end + de));
                             data().update("class_sessions", item.session.id, {
-                              weekday: ((item.session.weekday - 1 + dd + 7) % 7) + 1,
+                              ...moveToWeekday(item.session, ((item.session.weekday - 1 + dd + 7) % 7) + 1),
                               start_time: minutesToTime(s),
                               end_time: minutesToTime(e2),
                             });

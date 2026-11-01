@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -17,12 +17,15 @@ import { useActiveTerm, useRow, useRows } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
 import { useNav } from "@/lib/nav/nav-context";
 import { formatDuration } from "@/lib/time";
+import { AREA_KIND_KEYS, kindOf } from "@/lib/area-kinds";
 import { ColorPicker } from "./color-picker";
+import { KindPicker } from "./kind-picker";
 import { SlotFields, slotError, type Slot } from "./slot-fields";
 
 const schema = z
   .object({
-    name: z.string().trim().min(2, "Ders adı en az 2 harf olmalı."),
+    kind: z.enum(AREA_KIND_KEYS),
+    name: z.string().trim().min(2, "Ad en az 2 harf olmalı."),
     code: z.string().trim().max(12, "Kod en fazla 12 karakter."),
     color: z.enum(COURSE_COLOR_KEYS),
     term_id: z.string(),
@@ -55,6 +58,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: {
+      kind: course?.kind ?? "course",
       name: course?.name ?? "",
       code: course?.code ?? "",
       color: course?.color ?? freeColor,
@@ -68,12 +72,14 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
     },
   });
   const { errors } = form.formState;
+  const kind = useWatch({ control: form.control, name: "kind" });
 
   const submit = form.handleSubmit((v) => {
     const sErr = course ? null : slotError(slots);
     setSlotErr(sErr);
     if (sErr) return;
     const values = {
+      kind: v.kind,
       name: v.name,
       code: v.code || null,
       color: v.color,
@@ -87,7 +93,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
     };
     if (course) {
       data().update("courses", course.id, values);
-      toast.success("Ders güncellendi");
+      toast.success("Alan güncellendi");
       onClose();
     } else {
       const created = data().insert("courses", {
@@ -97,14 +103,14 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
       slots.forEach((x) =>
         data().insert("class_sessions", {
           course_id: created.id, weekday: x.weekday, start_time: x.start, end_time: x.end, location: null,
-          bell_overrides: {}, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null,
+          bell_overrides: {}, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null, repeat: "weekly", anchor_date: null,
         }),
       );
       toast.success(`“${created.name}” eklendi`, {
         description: slots.length ? `${slots.length} haftalık ders saati programa eklendi.` : "Şimdi konularını ve ders saatlerini ekleyebilirsin.",
       });
       onClose();
-      nav.push(`/dersler/${created.id}`);
+      nav.push(`/alanlar/${created.id}`);
     }
   });
 
@@ -112,13 +118,16 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{course ? "Dersi düzenle" : "Yeni ders"}</DialogTitle>
-          <DialogDescription>{"Örneğin “İngilizce B2” ya da “Lacan'a Giriş”."}</DialogDescription>
+          <DialogTitle>{course ? "Alanı düzenle" : "Yeni alan"}</DialogTitle>
+          <DialogDescription>Ders, spor, mutfak, okuma… düzenli zaman ayırmak istediğin her şey bir alan olabilir.</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
+          <Field label="Tür">
+            <Controller control={form.control} name="kind" render={({ field }) => <KindPicker value={field.value} onChange={field.onChange} />} />
+          </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_140px]">
-            <Field label="Ders adı" htmlFor="c-name" error={errors.name?.message}>
-              <Input id="c-name" autoFocus placeholder="İngilizce B2" aria-invalid={!!errors.name} {...form.register("name")} />
+            <Field label="Ad" htmlFor="c-name" error={errors.name?.message}>
+              <Input id="c-name" autoFocus placeholder={kindOf({ kind: kind }).example} aria-invalid={!!errors.name} {...form.register("name")} />
             </Field>
             <Field label="Kod (isteğe bağlı)" htmlFor="c-code" error={errors.code?.message}>
               <Input id="c-code" placeholder="ENG-B2" {...form.register("code")} />
@@ -127,7 +136,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
           <Field label="Renk">
             <Controller control={form.control} name="color" render={({ field }) => <ColorPicker value={field.value} onChange={field.onChange} />} />
           </Field>
-          <Field label="Hedef" htmlFor="c-goal" hint="Bu dersi bitirdiğinde ne yapabiliyor olacaksın?">
+          <Field label="Hedef" htmlFor="c-goal" hint="Bu alanda neye ulaşmak istiyorsun?">
             <Textarea id="c-goal" rows={2} placeholder="Ocak sonunda B2 sınavına hazır olmak" {...form.register("goal")} />
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -159,7 +168,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
               <Input id="c-end" type="date" aria-invalid={!!errors.target_end_date} {...form.register("target_end_date")} />
             </Field>
           </div>
-          {!course && <SlotFields value={slots} onChange={(v) => { setSlots(v); setSlotErr(null); }} error={slotErr} />}
+          {!course && <SlotFields label={`Haftalık program (${kindOf({ kind }).session.toLocaleLowerCase("tr")})`} value={slots} onChange={(v) => { setSlots(v); setSlotErr(null); }} error={slotErr} />}
           {course && (
             <Field label="Durum">
               <Controller control={form.control} name="status" render={({ field }) => (
@@ -176,7 +185,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
           )}
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={onClose}>Vazgeç</Button>
-            <Button type="submit">{course ? "Değişiklikleri kaydet" : "Dersi ekle"}</Button>
+            <Button type="submit">{course ? "Değişiklikleri kaydet" : "Alanı ekle"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -9,6 +9,7 @@ import { CourseNotesCard } from "./course-notes-card";
 import { CourseStudyCard } from "./course-study-card";
 import { CourseWeekTimeline } from "./course-week-timeline";
 import { WeekBars } from "./week-bars";
+import { kindOf } from "@/lib/area-kinds";
 
 export function CourseOverview({ course }: { course: Course }) {
   const s = useCourseStats(course);
@@ -38,13 +39,13 @@ export function CourseOverview({ course }: { course: Course }) {
         </div>
       </SectionCard>
 
-      <SectionCard title="Konu ilerlemesi" meta={`%${s.progress}`}>
+      <SectionCard title="İlerleme" meta={`%${s.progress}`}>
         <div className="flex flex-col gap-3">
-          <Progress value={s.progress} tone="course" label="Konu ilerlemesi" className="h-2" />
+          <Progress value={s.progress} tone="course" label="İlerleme" className="h-2" />
           <p className="tabular text-13 text-ink-muted">
             {s.topicsTotal
-              ? `${s.topicsDone} konu bitti, ${s.topicsInProgress} devam ediyor, toplam ${s.topicsTotal}.`
-              : "Henüz konu eklenmedi. Konular sekmesinden ekleyebilirsin."}
+              ? `${kindOf(course).topics}: ${s.topicsDone} bitti, ${s.topicsInProgress} devam ediyor, toplam ${s.topicsTotal}.`
+              : `Henüz eklenmedi. ${kindOf(course).topics} sekmesinden ekleyebilirsin.`}
           </p>
         </div>
       </SectionCard>

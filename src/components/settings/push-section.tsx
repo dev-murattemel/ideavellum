@@ -26,7 +26,7 @@ export function PushSection() {
   };
 
   return (
-    <SettingsSection title="Telefon bildirimleri" description="Uygulama kapalıyken de ders zili ve görev hatırlatmaları telefonuna gelsin.">
+    <SettingsSection title="Telefon bildirimleri" description="Uygulama kapalıyken de zil ve görev hatırlatmaları telefonuna gelsin.">
       <div className="flex flex-col gap-4">
         {supported ? (
           <Button className="self-start" onClick={enable} disabled={busy}><BellRing /> Bu cihazda bildirimleri aç</Button>

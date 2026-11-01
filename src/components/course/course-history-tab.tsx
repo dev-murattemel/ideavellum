@@ -12,7 +12,7 @@ import { startStudy } from "@/lib/timer/start-study";
 import { fmt, formatDuration, isoDate, parseDay, utcToWall, weekStart } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 
-const SOURCE = { timer: "Zamanlayıcı", manual: "Elle", session: "Ders saati" } as const;
+const SOURCE = { timer: "Zamanlayıcı", manual: "Elle", session: "Program saati" } as const;
 
 /** Dersin çalışma kayıtları, haftalara göre gruplu */
 export function CourseHistoryTab({ course }: { course: Course }) {

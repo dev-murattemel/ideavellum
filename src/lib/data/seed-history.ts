@@ -73,7 +73,7 @@ export function seedHistory(add: Add, { courses, sessions, today, tz, termStart,
   done.forEach((c, idx) => {
     const completedAt = wallToUtc(prevTerm.end_date, "18:00", tz).toISOString();
     const course = add("courses", {
-      term_id: prevTerm.id, name: c.name, code: c.code, color: c.color, description: null, goal: null,
+      kind: "course", term_id: prevTerm.id, name: c.name, code: c.code, color: c.color, description: null, goal: null,
       status: "completed", target_weekly_minutes: 120, start_date: prevTerm.start_date, target_end_date: prevTerm.end_date,
       completed_at: completedAt, final_reflection: c.reflection, final_note: c.note, final_rating: c.rating,
     });

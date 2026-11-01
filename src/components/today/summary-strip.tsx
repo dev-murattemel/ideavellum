@@ -13,7 +13,7 @@ export function SummaryStrip({
   streakDays: number;
 }) {
   const stats: Stat[] = [
-    { label: "Bugün çalışılan", value: String(studiedMinutes), unit: "dk", icon: Timer },
+    { label: "Bugün ayrılan", value: String(studiedMinutes), unit: "dk", icon: Timer },
     { label: "Tamamlanan görev", value: String(completedTasks), icon: CircleCheck },
     { label: "Seri", value: String(streakDays), unit: "gün", icon: Flame },
   ];

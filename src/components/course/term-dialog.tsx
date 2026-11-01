@@ -54,7 +54,7 @@ export function TermDialog({ termId, onClose }: { termId?: string; onClose: () =
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{term ? "Dönemi düzenle" : "Yeni dönem"}</DialogTitle>
-          <DialogDescription>Belirli bir tarih aralığındaki ders paketi, örneğin “2026 Güz”.</DialogDescription>
+          <DialogDescription>Belirli bir tarih aralığı, örneğin “2026 Güz” ya da “Kış dönemi”.</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
           <Field label="Dönem adı" htmlFor="t-name" error={errors.name?.message}>
@@ -71,7 +71,7 @@ export function TermDialog({ termId, onClose }: { termId?: string; onClose: () =
           <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg bg-sunken px-3 py-3">
             <span className="flex flex-col">
               <span className="text-sm font-medium">Aktif dönem</span>
-              <span className="text-xs text-ink-muted">Kenar çubuğunda ve programda bu dönemin dersleri görünür.</span>
+              <span className="text-xs text-ink-muted">Takvimde ve listelerde bu dönemin alanları öne çıkar.</span>
             </span>
             <Controller control={form.control} name="is_active" render={({ field }) => (
               <Switch checked={field.value} onCheckedChange={field.onChange} aria-label="Aktif dönem" />

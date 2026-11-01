@@ -5,6 +5,7 @@ import { MapPin, Play, Sunrise } from "lucide-react";
 import { QuickAddButton } from "@/components/layout/quick-add-button";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { kindOf } from "@/lib/area-kinds";
 import { startStudy } from "@/lib/timer/start-study";
 import { formatDuration, isoDate, minutesOfDay, minutesToTime, WEEKDAY_NAMES, isoWeekday } from "@/lib/time";
 import { AttendanceButtons } from "./attendance-buttons";
@@ -17,15 +18,15 @@ export function NowCard({ t, now }: { t: T; now: Date }) {
   const occ = t.current ?? t.next;
   if (!occ) {
     return (
-      <section aria-label="Şu an ya da sıradaki ders" className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-line-strong bg-surface p-5 sm:flex-row sm:items-center">
+      <section aria-label="Şu an ya da sıradaki program" className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-line-strong bg-surface p-5 sm:flex-row sm:items-center">
         <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-sunken text-ink-muted">
           <Sunrise className="size-5" strokeWidth={1.7} aria-hidden />
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <h2 className="text-base font-semibold">Sırada bir ders yok</h2>
-          <p className="text-sm text-ink-muted">Bir ders ekleyip haftalık saatini girdiğinde, şu anki ders ve geri sayım burada görünecek.</p>
+          <h2 className="text-base font-semibold">Sırada bir program yok</h2>
+          <p className="text-sm text-ink-muted">Bir alan ekleyip saatini girdiğinde, şu anki program ve geri sayım burada görünecek.</p>
         </div>
-        <QuickAddButton action="course" label="Ders ekle" />
+        <QuickAddButton action="course" label="Alan ekle" />
       </section>
     );
   }
@@ -40,12 +41,12 @@ export function NowCard({ t, now }: { t: T; now: Date }) {
   const date = isoDate(occ.date);
 
   return (
-    <section aria-label={isCurrent ? "Şu anki ders" : "Sıradaki ders"} data-course={occ.course.color} className="flex flex-col gap-5 rounded-2xl bg-course p-5 text-course-fg sm:p-6">
+    <section aria-label={isCurrent ? "Şu an" : "Sıradaki"} data-course={occ.course.color} className="flex flex-col gap-5 rounded-2xl bg-course p-5 text-course-fg sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 flex-col gap-2">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-surface/70 px-2.5 py-1 text-xs font-semibold">
             {isCurrent && <span className="size-2 animate-pulse rounded-full bg-course-solid motion-reduce:animate-none" aria-hidden />}
-            {isCurrent ? "Şu an derstesin" : `Sıradaki ders · ${dayLabel}`}
+            {isCurrent ? "Şu an sürüyor" : `Sıradaki · ${dayLabel}`}
           </span>
           <h2 className="text-2xl font-semibold tracking-[-0.02em]">{occ.course.name}</h2>
           <p className="tabular flex flex-wrap items-center gap-x-3 gap-y-1 text-sm opacity-85">
@@ -62,16 +63,16 @@ export function NowCard({ t, now }: { t: T; now: Date }) {
         </div>
       </div>
 
-      {isCurrent && <Progress value={((nowMin - occ.start) / (occ.end - occ.start)) * 100} tone="course" label="Dersin geçen süresi" className="h-2 bg-surface/50" />}
+      {isCurrent && <Progress value={((nowMin - occ.start) / (occ.end - occ.start)) * 100} tone="course" label="Geçen süre" className="h-2 bg-surface/50" />}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         {offset === 0 ? (
           <AttendanceButtons sessionId={occ.session.id} date={date} value={t.attendanceToday.get(occ.session.id)} />
         ) : (
-          <span className="text-13 opacity-80">Yoklama ders günü açılır.</span>
+          <span className="text-13 opacity-80">Yoklama o gün açılır.</span>
         )}
         <Button className="bg-course-fg text-surface hover:bg-course-fg/90" onClick={() => startStudy(occ.course.id, isCurrent ? "session" : "timer")}>
-          <Play className="fill-current" /> Çalışmayı başlat
+          <Play className="fill-current" /> {kindOf(occ.course).activity} başlat
         </Button>
       </div>
     </section>

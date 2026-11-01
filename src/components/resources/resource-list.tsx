@@ -27,7 +27,7 @@ export function ResourceList({ courseId, type = "all", status = "all", query = "
   if (list.length === 0) {
     return (
       <EmptyState compact icon={Library} title={query || type !== "all" || status !== "all" ? "Eşleşen kaynak yok" : "Henüz kaynak yok"}
-        description="İzlediğin videoları, okuduğun kitap ve makaleleri derslerine bağla; ilerlemeni buradan takip et."
+        description="İzlediğin videoları, okuduğun kitap ve makaleleri alanlarına bağla; ilerlemeni buradan takip et."
         action={<Button onClick={() => ui().open({ type: "resource", preset: { course_id: courseId && courseId !== "none" ? courseId : undefined } })}><Plus /> Kaynak ekle</Button>} />
     );
   }

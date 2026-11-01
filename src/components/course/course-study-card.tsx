@@ -13,6 +13,7 @@ import { startStudy } from "@/lib/timer/start-study";
 import { elapsedMs, formatClock, useTimer } from "@/lib/timer/store";
 import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
+import { kindOf } from "@/lib/area-kinds";
 
 /** Ders sayfasındaki çalışma kartı: büyük sayaç, başlat / duraklat / bitir, elle süre ekleme */
 export function CourseStudyCard({ course }: { course: Course }) {
@@ -36,16 +37,16 @@ export function CourseStudyCard({ course }: { course: Course }) {
   const stop = () => {
     const res = useTimer.getState().stop();
     if (!res) return;
-    if (res.minutes >= 1) toast.success(`${formatDuration(res.minutes)} çalışma kaydedildi`, { description: course.name });
+    if (res.minutes >= 1) toast.success(`${formatDuration(res.minutes)} kaydedildi`, { description: course.name });
     else toast("1 dakikadan kısa sürdüğü için kaydedilmedi");
   };
 
-  const status = mine ? (running ? "Çalışıyorsun" : "Duraklatıldı") : t.courseId ? "Başka bir derste zamanlayıcı açık" : "Zamanlayıcı kapalı";
+  const status = mine ? (running ? "Sürüyor" : "Duraklatıldı") : t.courseId ? "Başka bir alanda zamanlayıcı açık" : "Zamanlayıcı kapalı";
 
   return (
-    <SectionCard title="Çalışma" meta={<span className={cn(running && "font-medium text-course-fg")}>{status}</span>}>
+    <SectionCard title={kindOf(course).activity} meta={<span className={cn(running && "font-medium text-course-fg")}>{status}</span>}>
       <div className="flex flex-col gap-4">
-        <div role="timer" aria-label="Çalışma süresi" className={cn("rounded-lg px-4 py-3 text-center", mine ? "bg-course text-course-fg" : "bg-sunken text-ink-muted")}>
+        <div role="timer" aria-label="Geçen süre" className={cn("rounded-lg px-4 py-3 text-center", mine ? "bg-course text-course-fg" : "bg-sunken text-ink-muted")}>
           <span className="tabular text-[32px] leading-10 font-semibold tracking-[-0.02em]">{formatClock(mine ? elapsedMs(t) : 0)}</span>
         </div>
 
@@ -77,7 +78,7 @@ export function CourseStudyCard({ course }: { course: Course }) {
         )}
 
         <div className="flex flex-col gap-1.5 border-t border-line pt-3">
-          <span className="text-xs text-ink-muted">Son çalışmalar</span>
+          <span className="text-xs text-ink-muted">Son kayıtlar</span>
           {recent.length === 0 ? (
             <p className="text-13 text-ink-muted">Henüz kayıt yok.</p>
           ) : (

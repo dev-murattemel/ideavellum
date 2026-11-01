@@ -13,6 +13,7 @@ import { docToText } from "@/lib/data/tiptap";
 import type { Note } from "@/lib/data/types";
 import { fmt, utcToWall } from "@/lib/time";
 import { NoteEditor, type EditorStats } from "./note-editor";
+import { TagInput } from "@/components/tags/tag-input";
 
 /** Sağ bölme: başlık, özellikler ve tam ekran editör */
 export function NoteWorkspace({ note, onBack, onDeleted }: { note: Note; onBack: () => void; onDeleted: () => void }) {
@@ -57,10 +58,12 @@ export function NoteWorkspace({ note, onBack, onDeleted }: { note: Note; onBack:
             className="field-sizing-content w-full resize-none bg-transparent text-2xl leading-8 font-semibold tracking-[-0.02em] outline-none placeholder:text-ink-subtle sm:text-3xl sm:leading-10"
           />
           <dl className="mt-4 grid grid-cols-[88px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 text-13 sm:grid-cols-[88px_minmax(0,16rem)_88px_minmax(0,16rem)]">
-            <dt className="text-ink-muted">Ders</dt>
+            <dt className="text-ink-muted">Alan</dt>
             <dd><CourseSelect size="sm" value={note.course_id ?? NONE} onChange={(v) => set({ course_id: v === NONE ? null : v, topic_id: null })} /></dd>
             <dt className="text-ink-muted">Konu</dt>
             <dd><TopicSelect size="sm" courseId={note.course_id ?? NONE} value={note.topic_id ?? NONE} onChange={(v) => set({ topic_id: v === NONE ? null : v })} /></dd>
+            <dt className="text-ink-muted">Etiketler</dt>
+            <dd className="sm:col-span-3"><TagInput value={note.tags ?? []} onChange={(tags) => set({ tags })} /></dd>
           </dl>
           <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-subtle">
             <span className="flex items-center gap-1"><CalendarDays className="size-3.5" aria-hidden /> Oluşturuldu {fmt(utcToWall(note.created_at), "d MMMM yyyy")}</span>

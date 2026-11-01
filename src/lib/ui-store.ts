@@ -14,7 +14,8 @@ export type DialogState =
   | { type: "note"; preset?: { course_id?: string } }
   | { type: "resource"; resourceId?: string; preset?: { course_id?: string; type?: ResourceType } }
   | { type: "study-log"; preset?: { course_id?: string } }
-  | { type: "complete-course"; courseId: string };
+  | { type: "complete-course"; courseId: string }
+  | { type: "quote"; quoteId?: string };
 
 type UIState = {
   dialog: DialogState | null;

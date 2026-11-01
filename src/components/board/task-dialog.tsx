@@ -58,7 +58,7 @@ export function TaskDialog({ preset, onClose }: { preset?: Preset; onClose: () =
             <Input id="t-title" autoFocus value={title} onChange={(e) => { setTitle(e.target.value); setError(null); }} placeholder="Ne yapılacak?" aria-invalid={!!error} />
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Ders"><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setTopicId(NONE); }} /></Field>
+            <Field label="Alan"><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setTopicId(NONE); }} /></Field>
             <Field label="Konu"><TopicSelect courseId={courseId} value={topicId} onChange={setTopicId} /></Field>
             <Field label="Öncelik"><PrioritySelect value={priority} onChange={setPriority} /></Field>
             <Field label="Durum"><StatusSelect value={status} onChange={setStatus} /></Field>

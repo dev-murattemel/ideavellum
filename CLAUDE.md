@@ -386,3 +386,8 @@ Ekip/paylaşım özellikleri, sohbet, avatar ve rol sistemi, ödeme/abonelik, ha
 - **Zil sesleri:** `/public/sounds` yerine Web Audio ile üretilir (`src/lib/notifications/bell-sounds.ts`); dosya indirmeye gerek kalmaz.
 - **Saat seçimi:** Tarayıcı diline göre AM/PM gösterebilen `type="time"` yerine 24 saatlik `TimeSelect` bileşeni kullanılır.
 - **Ders renkleri ve grafikler:** Ders paleti renk körlüğü testinde bazı komşu çiftlerde zayıf ayrışıyor; bu yüzden grafiklerde ders kimliği her zaman ad etiketiyle birlikte verilir, günlük grafik ve ısı haritası tek renklidir.
+- **Alanlar (genelleştirme):** Murat'ın isteğiyle "Ders" kavramı **"Alan"** olarak genelleştirildi; tablo adı `courses` kaldı, `kind` sütunu türü tutar (`course`, `fitness`, `cooking`, `watching`, `reading`, `spiritual`, `hobby`, `project`, `other`). Arayüz kelimeleri türe göre `src/lib/area-kinds.ts` içinden gelir (ör. spor → "Antrenman", "Hareketler"). Adresler: `/alanlar`, `/takvim`, `/arsiv` (eski `/dersler`, `/program`, `/transkript` yönlendirilir).
+- **Tekrar kuralları:** `class_sessions.repeat` (`weekly`, `biweekly`, `monthly`, `once`) + `anchor_date`; hesap `src/lib/domain/schedule.ts` → `sessionValidOn`.
+- **Yeni bölümler:** Günlük (`journal_entries`, günde bir sayfa, ruh hali 1–5), Aforizmalar (`quotes`, söyleyen boşsa kullanıcının sözü). Notlar, günlük ve sözlerde ortak etiketler (`tags text[]`, renk adından türetilir: `src/lib/tags.ts`).
+- **Öneriler:** Bugün ekranındaki öneriler kurallara dayanır (`src/lib/domain/insights.ts`), yapay zekâ gerektirmez.
+- **Not görselleri:** Supabase Storage `note-images` (herkese açık okuma, yalnızca kendi klasörüne yükleme); yükleme başarısız olursa görsel notun içine gömülür.

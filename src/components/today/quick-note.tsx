@@ -24,7 +24,7 @@ export function QuickNote({ defaultCourseId }: { defaultCourseId?: string }) {
       topic_id: null,
       title: lines[0].slice(0, 80),
       content: doc(...lines.slice(lines[0].length > 80 ? 0 : 1).map(p)),
-      is_pinned: false,
+      is_pinned: false, tags: [],
     });
     setText("");
     toast.success("Not kaydedildi", { description: note.title, action: { label: "Aç", onClick: () => ui().openNote(note.id) } });

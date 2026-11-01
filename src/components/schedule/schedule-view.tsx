@@ -43,12 +43,12 @@ export function ScheduleView() {
   if (courses.length === 0) {
     return (
       <div className="flex flex-col gap-6">
-        <PageHeader title="Ders programı" description="Haftalık ders saatlerin; hafta Pazartesi başlar." />
+        <PageHeader title="Takvim" description="Tüm alanlarının tekrar eden saatleri; hafta Pazartesi başlar." />
         <EmptyState
           icon={CalendarDays}
-          title="Henüz ders yok"
-          description="Önce bir ders ekle, sonra haftalık saatlerini programa yerleştir. Örneğin “İngilizce B2” için Salı 19:00–20:30."
-          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Ders ekle</Button>}
+          title="Henüz alan yok"
+          description="Önce bir alan ekle (ders, spor, okuma…), sonra saatlerini takvime yerleştir. Örneğin “Koşu” için her Salı 07:00–07:45."
+          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Alan ekle</Button>}
         />
       </div>
     );
@@ -57,9 +57,9 @@ export function ScheduleView() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
-        title="Ders programı"
-        description={sessions.length ? "Boş bir alana tıklayarak ders saati ekle; blokları sürükleyerek taşı." : "Takvimde boş bir alana tıklayarak ilk ders saatini ekle."}
-        actions={<Button onClick={() => ui().open({ type: "session" })}><Plus />Ders saati ekle</Button>}
+        title="Takvim"
+        description={sessions.length ? "Boş bir yere tıklayarak saat ekle; blokları sürükleyerek taşı, alt kenardan uzat." : "Takvimde boş bir yere tıklayarak ilk saatini ekle."}
+        actions={<Button onClick={() => ui().open({ type: "session" })}><Plus />Saat ekle</Button>}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">

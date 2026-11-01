@@ -33,9 +33,9 @@ export function CompleteCourseDialog({ courseId, onClose }: { courseId: string; 
       status: "completed", completed_at: new Date().toISOString(),
       final_reflection: reflection.trim(), final_note: note.trim() || null, final_rating: rating,
     });
-    toast.success(`“${course.name}” tamamlandı`, { description: "Transkript'e eklendi. Tebrikler!" });
+    toast.success(`“${course.name}” tamamlandı`, { description: "Arşive eklendi. Tebrikler!" });
     onClose();
-    nav.push("/transkript");
+    nav.push("/arsiv");
   };
 
   return (
@@ -45,13 +45,13 @@ export function CompleteCourseDialog({ courseId, onClose }: { courseId: string; 
           <span data-course={course.color} className="mb-2 flex size-11 items-center justify-center rounded-xl bg-course text-course-fg">
             <GraduationCap className="size-6" strokeWidth={1.7} aria-hidden />
           </span>
-          <DialogTitle>“{course.name}” dersini tamamla</DialogTitle>
-          <DialogDescription>Kapanış değerlendirmen Transkript&apos;te dersin yanında saklanır.</DialogDescription>
+          <DialogTitle>“{course.name}” tamamla ve arşivle</DialogTitle>
+          <DialogDescription>Kapanış değerlendirmen Arşiv&apos;de bu alanın yanında saklanır.</DialogDescription>
         </DialogHeader>
         <CourseSummary courseId={course.id} />
         <form onSubmit={save} className="flex flex-col gap-4" noValidate>
           <Field label="Ne öğrendim?" htmlFor="cc-ref">
-            <Textarea id="cc-ref" rows={3} autoFocus value={reflection} onChange={(e) => { setReflection(e.target.value); setError(null); }} placeholder="Bu dersten aklımda kalan en önemli şeyler…" />
+            <Textarea id="cc-ref" rows={3} autoFocus value={reflection} onChange={(e) => { setReflection(e.target.value); setError(null); }} placeholder="Bu süreçten aklımda kalan en önemli şeyler…" />
           </Field>
           <Field label="Kendime not (isteğe bağlı)" htmlFor="cc-note">
             <Textarea id="cc-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Bir dahaki sefere farklı yapacağım şey…" />
@@ -62,7 +62,7 @@ export function CompleteCourseDialog({ courseId, onClose }: { courseId: string; 
           {error && <p role="alert" className="text-13 text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={onClose}>Vazgeç</Button>
-            <Button type="submit">Dersi tamamla</Button>
+            <Button type="submit">Tamamla ve arşivle</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -77,7 +77,7 @@ function CourseSummary({ courseId }: { courseId: string }) {
     <p className="rounded-lg bg-sunken px-3 py-2.5 text-13 text-ink-muted">
       Toplam <span className="font-medium text-foreground">{formatDuration(s.totalMinutes)}</span> çalıştın,{" "}
       <span className="font-medium text-foreground">{s.topicsDone}/{s.topicsTotal}</span> konuyu bitirdin.
-      {s.openTasks > 0 && ` ${s.openTasks} açık görev dersle birlikte arşivlenecek.`}
+      {s.openTasks > 0 && ` ${s.openTasks} açık görev de arşivlenecek.`}
     </p>
   );
 }

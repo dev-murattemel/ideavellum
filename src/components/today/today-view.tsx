@@ -11,6 +11,10 @@ import { NowCard } from "./now-card";
 import { TodayTasks, useTodayTasks } from "./today-tasks";
 import { TodayTimeline } from "./today-timeline";
 import { useToday } from "./use-today";
+import { DayCard } from "./day-card";
+import { InsightsCard } from "./insights-card";
+import { WeekGoalsCard } from "./week-goals-card";
+import { isoDate } from "@/lib/time";
 
 export function TodayView() {
   const now = useNow(15_000);
@@ -34,12 +38,20 @@ export function TodayView() {
 
       <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} />
 
-      <FocusCard t={t} now={now} />
-
-      <NowCard t={t} now={now} />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="flex min-w-0 flex-col gap-4">
+          <FocusCard t={t} now={now} />
+          <NowCard t={t} now={now} />
+          <InsightsCard now={now} streak={t.streak} studiedToday={t.studiedToday} />
+        </div>
+        <div className="flex flex-col gap-4">
+          <DayCard today={isoDate(now)} />
+          <WeekGoalsCard now={now} />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <SectionCard title="Bugünün programı" meta={`${t.occurrences.length} ders saati`}>
+        <SectionCard title="Bugünün programı" meta={`${t.occurrences.length} program`}>
           <TodayTimeline t={t} now={now} />
         </SectionCard>
         <div className="flex flex-col gap-4">

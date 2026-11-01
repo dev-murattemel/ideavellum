@@ -21,6 +21,7 @@ import { AppLink, useNav } from "@/lib/nav/nav-context";
 import { fmt, formatDuration, parseDay } from "@/lib/time";
 import { startStudy } from "@/lib/timer/start-study";
 import { ui } from "@/lib/ui-store";
+import { kindOf } from "@/lib/area-kinds";
 
 /** Ders detayının renkli başlık alanı (ilham 04) */
 export function CourseHeader({ course }: { course: Course }) {
@@ -28,13 +29,14 @@ export function CourseHeader({ course }: { course: Course }) {
   const stats = useCourseStats(course);
   const nav = useNav();
   const [confirm, setConfirm] = React.useState(false);
+  const KindIcon = kindOf(course).icon;
   const day = (s: string | null) => (s ? fmt(parseDay(s), "d MMM yyyy") : "—");
 
   const meta = [
     { label: "Dönem", value: term?.name ?? "Dönemsiz" },
     { label: "Başlangıç", value: day(course.start_date) },
     { label: course.status === "completed" ? "Tamamlandı" : "Hedef bitiş", value: course.completed_at ? fmt(new Date(course.completed_at), "d MMM yyyy") : day(course.target_end_date) },
-    { label: "Toplam çalışma", value: formatDuration(stats.totalMinutes) },
+    { label: "Toplam süre", value: formatDuration(stats.totalMinutes) },
   ];
 
   return (
@@ -45,13 +47,13 @@ export function CourseHeader({ course }: { course: Course }) {
       </svg>
 
       <div className="relative flex items-start justify-between gap-3">
-        <AppLink href="/dersler" className="-ml-1 inline-flex items-center gap-1.5 rounded-md px-1 text-13 font-medium opacity-80 hover:opacity-100">
-          <ArrowLeft className="size-4" aria-hidden /> Dersler
+        <AppLink href="/alanlar" className="-ml-1 inline-flex items-center gap-1.5 rounded-md px-1 text-13 font-medium opacity-80 hover:opacity-100">
+          <ArrowLeft className="size-4" aria-hidden /> Alanlar
         </AppLink>
         <div className="flex items-center gap-2">
           {course.status === "active" && (
             <Button size="sm" className="bg-course-fg text-surface hover:bg-course-fg/90" onClick={() => startStudy(course.id)}>
-              <Play className="fill-current" /> <span className="max-sm:hidden">Çalışmayı başlat</span>
+              <Play className="fill-current" /> <span className="max-sm:hidden">{kindOf(course).activity} başlat</span>
             </Button>
           )}
           {course.status !== "completed" && (
@@ -68,17 +70,17 @@ export function CourseHeader({ course }: { course: Course }) {
             <DropdownMenuContent align="end">
               {course.status !== "completed" && (
                 <DropdownMenuItem onSelect={() => ui().open({ type: "complete-course", courseId: course.id })}>
-                  <CircleCheckBig /> Dersi tamamla
+                  <CircleCheckBig /> Tamamla ve arşivle
                 </DropdownMenuItem>
               )}
               {course.status === "completed" && (
-                <DropdownMenuItem onSelect={() => { data().update("courses", course.id, { status: "active", completed_at: null }); toast("Ders yeniden açıldı"); }}>
-                  <RotateCcw /> Dersi yeniden aç
+                <DropdownMenuItem onSelect={() => { data().update("courses", course.id, { status: "active", completed_at: null }); toast("Alan yeniden açıldı"); }}>
+                  <RotateCcw /> Yeniden aç
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onSelect={() => setConfirm(true)}>
-                <Trash2 /> Dersi sil
+                <Trash2 /> Alanı sil
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -86,7 +88,9 @@ export function CourseHeader({ course }: { course: Course }) {
       </div>
 
       <div className="relative mt-6 flex flex-col gap-2">
-        {course.code && <span className="text-13 font-medium opacity-75">{course.code}</span>}
+        <span className="flex items-center gap-1.5 text-13 font-medium opacity-75">
+          <KindIcon className="size-4" aria-hidden /> {kindOf(course).label}{course.code ? ` · ${course.code}` : ""}
+        </span>
         <h1 className="text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">{course.name}</h1>
         {course.goal && <p className="max-w-2xl text-sm opacity-85">{course.goal}</p>}
       </div>
@@ -104,12 +108,12 @@ export function CourseHeader({ course }: { course: Course }) {
         open={confirm}
         onOpenChange={setConfirm}
         title={`“${course.name}” silinsin mi?`}
-        description="Dersin konuları, ders saatleri, görevleri, notları, kaynakları ve çalışma geçmişi de silinir. Bu işlem geri alınamaz."
-        confirmLabel="Dersi sil"
+        description="Alanın konuları, takvim saatleri, görevleri, notları, kaynakları ve süre kayıtları da silinir. Bu işlem geri alınamaz."
+        confirmLabel="Alanı sil"
         onConfirm={() => {
           data().remove("courses", course.id);
           toast(`“${course.name}” silindi`);
-          nav.push("/dersler");
+          nav.push("/alanlar");
         }}
       />
     </header>

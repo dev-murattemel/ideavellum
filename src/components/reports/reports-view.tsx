@@ -33,7 +33,7 @@ export function ReportsView() {
     { label: "Çalışma", value: formatDuration(r.totalMinutes), sub: `${r.activeDays} gün çalışıldı` },
     { label: "Tamamlanan görev", value: String(r.completedTasks), sub: "Bitti sütununa geçen" },
     { label: "Biten konu", value: String(r.completedTopics), sub: "Konular sekmesinden" },
-    { label: "Yoklama", value: r.attendanceRate === null ? "—" : `%${r.attendanceRate}`, sub: "Katıldığın ders saatleri" },
+    { label: "Yoklama", value: r.attendanceRate === null ? "—" : `%${r.attendanceRate}`, sub: "Katıldığın program saatleri" },
   ];
 
   return (
@@ -76,7 +76,7 @@ export function ReportsView() {
               </div>
             )}
             <CourseBars rows={r.perCourse} />
-            <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi dersin hedef süresini gösterir.</p>
+            <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi alanın haftalık hedefini gösterir.</p>
           </div>
         </SectionCard>
         <SectionCard title="Günlük çalışma" meta={`Günde ort. ${formatDuration(Math.round(r.totalMinutes / Math.max(1, r.days.length)))}`}>

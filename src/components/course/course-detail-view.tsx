@@ -18,14 +18,15 @@ import { ui } from "@/lib/ui-store";
 import { CourseHistoryTab } from "./course-history-tab";
 import { CourseTasksTab } from "./course-tasks-tab";
 import { TopicList } from "./topic-list";
+import { kindOf } from "@/lib/area-kinds";
 
-const TABS = [
+const tabsFor = (topics: string) => [
   { value: "genel", label: "Genel bakış" },
-  { value: "konular", label: "Konular" },
+  { value: "konular", label: topics },
   { value: "gorevler", label: "Görevler" },
   { value: "notlar", label: "Notlar" },
   { value: "kaynaklar", label: "Kaynaklar" },
-  { value: "gecmis", label: "Çalışma geçmişi" },
+  { value: "gecmis", label: "Süre geçmişi" },
 ];
 
 export function CourseDetailView({ courseId }: { courseId: string }) {
@@ -36,11 +37,11 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
     return (
       <EmptyState
         icon={BookOpen}
-        title="Ders bulunamadı"
-        description="Bu ders silinmiş ya da henüz oluşturulmamış olabilir."
+        title="Alan bulunamadı"
+        description="Bu alan silinmiş ya da henüz oluşturulmamış olabilir."
         action={
           <Button asChild variant="secondary">
-            <AppLink href="/dersler"><ArrowLeft />Derslere dön</AppLink>
+            <AppLink href="/alanlar"><ArrowLeft />Alanlara dön</AppLink>
           </Button>
         }
       />
@@ -52,8 +53,8 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
       <CourseHeader course={course} />
       <Tabs value={tab} onValueChange={setTab} className="flex flex-col gap-5">
         <div className="relative -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
-          <TabsList aria-label="Ders bölümleri">
-            {TABS.map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
+          <TabsList aria-label="Alan bölümleri">
+            {tabsFor(kindOf(course).topics).map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
           </TabsList>
         </div>
         <TabsContent value="genel"><CourseOverview course={course} /></TabsContent>
@@ -66,13 +67,13 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
         <TabsContent value="gorevler"><CourseTasksTab course={course} /></TabsContent>
         <TabsContent value="notlar">
           <div className="flex flex-col gap-4">
-            <Button className="self-start" onClick={() => createNote(course.id)}><Plus /> Bu derse not ekle</Button>
+            <Button className="self-start" onClick={() => createNote(course.id)}><Plus /> Not ekle</Button>
             <NoteGrid courseId={course.id} newCourseId={course.id} />
           </div>
         </TabsContent>
         <TabsContent value="kaynaklar">
           <div className="flex flex-col gap-4">
-            <Button className="self-start" onClick={() => ui().open({ type: "resource", preset: { course_id: course.id } })}><Plus /> Bu derse kaynak ekle</Button>
+            <Button className="self-start" onClick={() => ui().open({ type: "resource", preset: { course_id: course.id } })}><Plus /> Kaynak ekle</Button>
             <ResourceList courseId={course.id} />
           </div>
         </TabsContent>

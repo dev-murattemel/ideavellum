@@ -31,7 +31,7 @@ export function CourseNotesCard({ course }: { course: Course }) {
       </header>
       {list.length === 0 ? (
         <div className="flex flex-1 flex-col items-start gap-1 p-4">
-          <p className="text-sm font-medium">Bu derse henüz not eklenmedi.</p>
+          <p className="text-sm font-medium">Henüz not eklenmedi.</p>
           <p className="text-13 text-ink-muted">Notlarına metin, bağlantı, görsel ve yapılacaklar listesi ekleyebilirsin.</p>
         </div>
       ) : (

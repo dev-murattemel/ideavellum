@@ -17,11 +17,11 @@ export function BellSection() {
   const set = (patch: Partial<BellSettings>) => data().updateProfile({ bell_settings: { ...s, ...patch } });
 
   return (
-    <SettingsSection title="Zil" description="Ders başlamadan önce uyarı, başlangıç ve bitiş zili. Ders saatine özel ayar ders saatinin penceresinden yapılır.">
+    <SettingsSection title="Zil" description="Başlamadan önce uyarı, başlangıç ve bitiş zili. Bir saate özel ayar o saatin penceresinden yapılır.">
       <div className="flex flex-col divide-y divide-line">
-        <SettingsRow label="Ders öncesi uyarı">
+        <SettingsRow label="Başlamadan önce uyarı">
           <Select value={String(s.before_minutes)} onValueChange={(v) => set({ before_minutes: Number(v) })}>
-            <SelectTrigger size="sm" className="w-40" aria-label="Ders öncesi uyarı"><SelectValue /></SelectTrigger>
+            <SelectTrigger size="sm" className="w-40" aria-label="Başlamadan önce uyarı"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="0">Kapalı</SelectItem>
               {[5, 10, 15, 30].map((m) => <SelectItem key={m} value={String(m)}>{m} dk önce</SelectItem>)}

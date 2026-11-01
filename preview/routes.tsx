@@ -1,7 +1,9 @@
 import { BoardView } from "@/components/board/board-view";
 import { CourseDetailView } from "@/components/course/course-detail-view";
 import { CoursesView } from "@/components/course/courses-view";
+import { JournalView } from "@/components/journal/journal-view";
 import { NotesView } from "@/components/notes/notes-view";
+import { QuotesView } from "@/components/quotes/quotes-view";
 import { ReportsView } from "@/components/reports/reports-view";
 import { TranscriptView } from "@/components/reports/transcript-view";
 import { ResourcesView } from "@/components/resources/resources-view";
@@ -11,39 +13,45 @@ import { TodayView } from "@/components/today/today-view";
 
 const TITLES: Record<string, string> = {
   "/bugun": "Bugün",
-  "/program": "Ders programı",
+  "/takvim": "Takvim",
   "/pano": "Pano",
-  "/dersler": "Dersler",
+  "/alanlar": "Alanlar",
   "/notlar": "Notlar",
   "/kaynaklar": "Kaynaklar",
+  "/gunluk": "Günlük",
+  "/aforizmalar": "Aforizmalar",
   "/raporlar": "Raporlar",
-  "/transkript": "Transkript",
+  "/arsiv": "Arşiv",
   "/ayarlar": "Ayarlar",
 };
 
 export function titleFor(pathname: string) {
-  return pathname.startsWith("/dersler/") ? "Ders" : (TITLES[pathname] ?? "Bugün");
+  return pathname.startsWith("/alanlar/") ? "Alan" : (TITLES[pathname] ?? "Bugün");
 }
 
 export function resolveView(pathname: string) {
-  if (pathname.startsWith("/dersler/")) {
-    const id = pathname.slice("/dersler/".length);
+  if (pathname.startsWith("/alanlar/")) {
+    const id = pathname.slice("/alanlar/".length);
     return <CourseDetailView key={id} courseId={id} />;
   }
   switch (pathname) {
-    case "/program":
+    case "/takvim":
       return <ScheduleView />;
     case "/pano":
       return <BoardView />;
-    case "/dersler":
+    case "/alanlar":
       return <CoursesView />;
     case "/notlar":
       return <NotesView />;
+    case "/gunluk":
+      return <JournalView />;
+    case "/aforizmalar":
+      return <QuotesView />;
     case "/kaynaklar":
       return <ResourcesView />;
     case "/raporlar":
       return <ReportsView />;
-    case "/transkript":
+    case "/arsiv":
       return <TranscriptView />;
     case "/ayarlar":
       return <SettingsView />;

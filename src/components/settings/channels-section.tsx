@@ -7,7 +7,7 @@ import type { NotificationChannel, NotificationEvent } from "@/lib/data/types";
 import { SettingsSection } from "./settings-section";
 
 const EVENTS: { id: NotificationEvent; label: string; hint: string }[] = [
-  { id: "bell", label: "Ders zili", hint: "Ders öncesi, başlangıç, bitiş" },
+  { id: "bell", label: "Zil", hint: "Başlamadan önce, başlangıç, bitiş" },
   { id: "task_due", label: "Görev son tarihi", hint: "Saatliyse 1 saat önce, değilse o sabah" },
   { id: "overdue", label: "Geciken görevler", hint: "Günde bir kez" },
   { id: "daily_digest", label: "Sabah özeti", hint: "Günün programı ve görevleri" },

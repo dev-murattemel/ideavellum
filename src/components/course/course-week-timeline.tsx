@@ -13,6 +13,7 @@ import { occurrencesOn } from "@/lib/domain/schedule";
 import { fmt, formatDuration, isoWeekday, minutesOfDay, minutesToTime, weekDays, WEEKDAY_NAMES, WEEKDAY_SHORT } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
+import { kindOf } from "@/lib/area-kinds";
 
 const HOUR_PX = 44;
 const PX = HOUR_PX / 60;
@@ -64,13 +65,13 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
     <section aria-labelledby="course-week" className="flex flex-col rounded-xl border border-line bg-surface">
       <header className="flex min-h-12 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-line px-4 py-2">
         <div className="flex items-baseline gap-3">
-          <h2 id="course-week" className="text-sm font-semibold">Haftalık program</h2>
+          <h2 id="course-week" className="text-sm font-semibold">Bu hafta takvimde</h2>
           <span className="tabular text-13 text-ink-muted">
-            {weeklyMinutes ? `${formatDuration(weeklyMinutes)} / hafta` : "Henüz ders saati yok"}
+            {weeklyMinutes ? `${formatDuration(weeklyMinutes)} / hafta` : "Henüz takvim saati yok"}
           </span>
         </div>
         <Button variant="secondary" size="sm" onClick={() => add(isoWeekday(now), 19 * 60)}>
-          <CalendarPlus /> Ders saati ekle
+          <CalendarPlus /> {kindOf(course).session} ekle
         </Button>
       </header>
 
@@ -134,13 +135,13 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
                       >
                         <button
                           type="button"
-                          aria-label={own ? `${label}, düzenle` : `${label} (başka ders)`}
+                          aria-label={own ? `${label}, düzenle` : `${label} (başka alan)`}
                           onClick={() => ui().open({ type: "session", sessionId: o.session.id })}
                           className={cn(
                             "flex size-full cursor-pointer flex-col overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left transition-[filter] outline-none focus-visible:ring-2 focus-visible:ring-ring",
                             own
                               ? "border-course-solid bg-course text-course-fg hover:brightness-[0.97]"
-                              : "border-line-strong bg-sunken/70 text-ink-subtle hover:text-ink-muted",
+                              : "border border-l border-dashed border-line-strong bg-transparent text-ink-subtle hover:bg-sunken/60 hover:text-ink-muted",
                           )}
                         >
                           <span className="tabular text-xs font-semibold leading-tight">
@@ -169,7 +170,7 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
         {!hasOwn && (
           <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4">
             <p className="rounded-lg border border-line bg-surface px-3 py-2 text-13 text-ink-muted shadow-sm">
-              Bir güne ve saate tıklayarak bu dersin haftalık saatini ekle.
+              Bir güne ve saate tıklayarak takvime saat ekle.
             </p>
           </div>
         )}

@@ -29,6 +29,7 @@ export function NoteEditor({
   onStats,
   toolbarClassName,
   contentClassName,
+  placeholder,
 }: {
   content: TiptapDoc;
   onChange: (doc: TiptapDoc) => void;
@@ -36,6 +37,7 @@ export function NoteEditor({
   onStats?: (s: EditorStats) => void;
   toolbarClassName?: string;
   contentClassName?: string;
+  placeholder?: string;
 }) {
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
   const statsRef = React.useRef(onStats);
@@ -56,7 +58,7 @@ export function NoteEditor({
       Typography,
       CharacterCount,
       Placeholder.configure({
-        placeholder: ({ node }) => (node.type.name === "heading" ? "Başlık" : "Yazmaya başla… “# ” başlık, “- ” liste, “[] ” yapılacak"),
+        placeholder: ({ node }) => (node.type.name === "heading" ? "Başlık" : (placeholder ?? "Yazmaya başla… “# ” başlık, “- ” liste, “[] ” yapılacak")),
       }),
     ],
     content: content as JSONContent,

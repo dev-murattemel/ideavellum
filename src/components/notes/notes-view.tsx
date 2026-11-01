@@ -22,6 +22,7 @@ export function NotesView() {
   const openNote = useUI((s) => s.openNote);
   const [filter, setFilter] = React.useState("all");
   const [query, setQuery] = React.useState("");
+  const [tag, setTag] = React.useState<string | null>(null);
 
   // Sayfadan çıkınca seçim temizlensin (yoksa başka sayfada not paneli açılır)
   React.useEffect(() => () => openNote(null), [openNote]);
@@ -30,14 +31,15 @@ export function NotesView() {
     const q = query.trim().toLocaleLowerCase("tr");
     return notes
       .filter((n) => filter === "all" || (filter === PERSONAL ? !n.course_id : n.course_id === filter))
-      .filter((n) => !q || `${n.title} ${docToText(n.content, 20000)}`.toLocaleLowerCase("tr").includes(q))
+      .filter((n) => !tag || (n.tags ?? []).includes(tag))
+      .filter((n) => !q || `${n.title} ${(n.tags ?? []).join(" ")} ${docToText(n.content, 20000)}`.toLocaleLowerCase("tr").includes(q))
       .sort((a, b) => Number(b.is_pinned) - Number(a.is_pinned) || b.updated_at.localeCompare(a.updated_at));
-  }, [notes, filter, query]);
+  }, [notes, filter, query, tag]);
 
   // Masaüstünde seçim yoksa ilk not gösterilir
   const shownId = explicitId && notes.some((n) => n.id === explicitId) ? explicitId : (list[0]?.id ?? null);
   const shown = notes.find((n) => n.id === shownId) ?? null;
-  const create = () => createNote(filter !== "all" && filter !== PERSONAL ? filter : null);
+  const create = () => createNote(filter !== "all" && filter !== PERSONAL ? filter : null, null, tag ? [tag] : []);
 
   return (
     <div className="-mx-4 -mt-2 flex h-[calc(100dvh-11rem)] min-h-[520px] overflow-hidden border-y border-line bg-surface md:mx-0 md:h-[calc(100dvh-9rem)] md:rounded-xl md:border">
@@ -55,6 +57,9 @@ export function NotesView() {
           onFilter={setFilter}
           query={query}
           onQuery={setQuery}
+          allNotes={notes}
+          tag={tag}
+          onTag={setTag}
         />
       </aside>
       <section aria-label="Not" className={cn("min-w-0 flex-1 lg:flex", explicitId ? "flex" : "hidden")}>
@@ -66,7 +71,7 @@ export function NotesView() {
           <div className="flex w-full flex-col items-center justify-center gap-3 p-8 text-center">
             <span className="flex size-12 items-center justify-center rounded-xl bg-sunken text-ink-muted"><NotebookPen className="size-6" strokeWidth={1.7} aria-hidden /></span>
             <p className="text-base font-semibold">Henüz not yok</p>
-            <p className="max-w-xs text-sm text-ink-muted">Kişisel düşüncelerini ya da ders notlarını burada yaz; derse ve konuya bağlayabilirsin.</p>
+            <p className="max-w-xs text-sm text-ink-muted">Düşüncelerini, tariflerini, ders notlarını burada yaz; bir alana bağlayıp etiketleyebilirsin.</p>
             <Button onClick={create}><Plus /> İlk notunu yaz</Button>
           </div>
         )}

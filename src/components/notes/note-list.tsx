@@ -10,6 +10,8 @@ import { docToText } from "@/lib/data/tiptap";
 import type { Note } from "@/lib/data/types";
 import { timeAgo } from "@/lib/time";
 import { cn } from "@/lib/utils";
+import { TagChip } from "@/components/tags/tag-chip";
+import { tagCounts } from "@/lib/tags";
 
 export const PERSONAL = "personal";
 
@@ -24,6 +26,9 @@ export function NoteList({
   onFilter,
   query,
   onQuery,
+  allNotes,
+  tag,
+  onTag,
 }: {
   notes: Note[];
   selectedId: string | null;
@@ -35,10 +40,15 @@ export function NoteList({
   onFilter: (v: string) => void;
   query: string;
   onQuery: (v: string) => void;
+  /** Etiket süzgeci (tüm notlardaki etiketler) */
+  allNotes: Note[];
+  tag: string | null;
+  onTag: (v: string | null) => void;
 }) {
   const courses = useActiveCourses();
   const pinned = notes.filter((n) => n.is_pinned);
   const rest = notes.filter((n) => !n.is_pinned);
+  const tags = React.useMemo(() => tagCounts(allNotes).slice(0, 12), [allNotes]);
 
   return (
     <div className="flex h-full min-h-0 w-full min-w-0 flex-col">
@@ -62,7 +72,7 @@ export function NoteList({
           <SelectTrigger size="sm" aria-label="Süzgeç"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tüm notlar</SelectItem>
-            <SelectItem value={PERSONAL}>Kişisel notlar</SelectItem>
+            <SelectItem value={PERSONAL}>Alansız notlar</SelectItem>
             <SelectSeparator />
             {courses.map((c) => (
               <SelectItem key={c.id} value={c.id}>
@@ -72,11 +82,20 @@ export function NoteList({
             ))}
           </SelectContent>
         </Select>
+        {tags.length > 0 && (
+          <div role="group" aria-label="Etikete göre süz" className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none]">
+            {tags.map(([t, n]) => (
+              <span key={t} title={`${n} not`} className="shrink-0">
+                <TagChip tag={t} active={tag === t} onClick={() => onTag(tag === t ? null : t)} className={tag && tag !== t ? "opacity-50" : ""} />
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-2">
         {notes.length === 0 && (
-          <p className="px-3 py-8 text-center text-13 text-ink-muted">{query ? "Eşleşen not yok." : "Henüz not yok. Sağ üstteki + ile ilk notunu yaz."}</p>
+          <p className="px-3 py-8 text-center text-13 text-ink-muted">{query || tag ? "Eşleşen not yok." : "Henüz not yok. Sağ üstteki + ile ilk notunu yaz."}</p>
         )}
         {pinned.length > 0 && <Group label="Sabitlenenler" notes={pinned} selectedId={selectedId} explicit={explicit} onSelect={onSelect} />}
         {rest.length > 0 && <Group label={pinned.length ? "Diğer notlar" : null} notes={rest} selectedId={selectedId} explicit={explicit} onSelect={onSelect} />}
@@ -113,10 +132,11 @@ function Group({ label, notes, selectedId, explicit, onSelect }: { label: string
                   {n.is_pinned && <Pin className="size-3 shrink-0 fill-current text-ink-subtle" aria-label="Sabitlendi" />}
                 </span>
                 <span className="line-clamp-2 pl-4 text-13 leading-[18px] text-ink-muted">{preview || "Boş not"}</span>
-                <span className="flex items-center gap-1.5 pl-4 text-xs text-ink-subtle">
-                  <span className="truncate">{course?.name ?? "Kişisel"}</span>
+                <span className="flex min-w-0 items-center gap-1.5 pl-4 text-xs text-ink-subtle">
+                  <span className="truncate">{course?.name ?? "Genel"}</span>
                   <span aria-hidden>·</span>
                   <span className="shrink-0">{timeAgo(n.updated_at)}</span>
+                  {(n.tags ?? []).slice(0, 2).map((t) => <TagChip key={t} tag={t} className="h-5 px-1.5 text-[11px]" />)}
                 </span>
               </button>
             </li>

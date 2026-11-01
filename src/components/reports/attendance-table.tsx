@@ -12,7 +12,7 @@ export function AttendanceTable({ rows }: { rows: Rows }) {
       <table className="w-full min-w-[420px] text-13">
         <thead>
           <tr className="text-xs text-ink-muted">
-            <th className="pb-2 text-left font-medium">Ders</th>
+            <th className="pb-2 text-left font-medium">Alan</th>
             <th className="pb-2 text-right font-medium">Katıldı</th>
             <th className="pb-2 text-right font-medium">Kaçırdı</th>
             <th className="pb-2 text-right font-medium">Ertelendi</th>

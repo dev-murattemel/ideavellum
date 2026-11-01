@@ -18,12 +18,12 @@ export function BellFields({ value, onChange, defaults }: { value: BellValue; on
         <Bell className="size-4 text-ink-muted" aria-hidden /> Zil
       </div>
       <div className="flex items-center justify-between gap-4">
-        <span className="text-13 text-ink-muted">Ders öncesi uyarı</span>
+        <span className="text-13 text-ink-muted">Başlamadan önce uyarı</span>
         <Select
           value={before}
           onValueChange={(v) => onChange({ ...value, before_minutes: v === "default" ? undefined : v === "off" ? null : Number(v) })}
         >
-          <SelectTrigger size="sm" className="w-40" aria-label="Ders öncesi uyarı"><SelectValue /></SelectTrigger>
+          <SelectTrigger size="sm" className="w-40" aria-label="Başlamadan önce uyarı"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="default">Varsayılan ({defaults.before_minutes} dk)</SelectItem>
             <SelectItem value="off">Kapalı</SelectItem>

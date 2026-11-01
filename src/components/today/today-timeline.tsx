@@ -15,7 +15,7 @@ type T = ReturnType<typeof useToday>;
 export function TodayTimeline({ t, now }: { t: T; now: Date }) {
   const nowMin = minutesOfDay(now);
   if (t.occurrences.length === 0) {
-    return <InlineEmpty icon={CalendarClock} title="Bugün ders saati yok" description="Ders programına eklediğin saatler burada zaman çizelgesi olarak sıralanır." />;
+    return <InlineEmpty icon={CalendarClock} title="Bugün programda bir şey yok" description="Takvime eklediğin saatler burada zaman çizelgesi olarak sıralanır." />;
   }
   const nowIndex = t.occurrences.findIndex((o) => o.start > nowMin);
   const insertAt = nowIndex === -1 ? t.occurrences.length : nowIndex;

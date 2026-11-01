@@ -27,7 +27,7 @@ export function DataSection() {
   };
 
   return (
-    <SettingsSection title="Önizleme verileri" description="Bu önizlemedeki veriler sadece bu tarayıcıda durur. İstersen boş başlayıp kendi derslerini girebilirsin.">
+    <SettingsSection title="Önizleme verileri" description="Bu önizlemedeki veriler sadece bu tarayıcıda durur. İstersen boş başlayıp kendi alanlarını girebilirsin.">
       <div className="flex flex-wrap gap-2">
         <Button variant="secondary" onClick={() => setConfirm("reset")}><RotateCcw /> Örnek verileri geri yükle</Button>
         <Button variant="secondary" className="text-destructive" onClick={() => setConfirm("clear")}><Trash2 /> Boş başla</Button>

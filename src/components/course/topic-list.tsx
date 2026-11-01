@@ -48,7 +48,7 @@ export function TopicList({ course }: { course: Course }) {
   return (
     <div data-course={course.color} className="flex flex-col overflow-hidden rounded-xl border border-line bg-surface">
       {topics.length === 0 ? (
-        <InlineEmpty icon={ListTree} title="Henüz konu yok" description="Dersin ünitelerini sırayla ekle; sürükleyerek yeniden sıralayabilirsin." />
+        <InlineEmpty icon={ListTree} title="Henüz konu yok" description="Adımları sırayla ekle; sürükleyerek yeniden sıralayabilirsin." />
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}
           accessibility={{

@@ -4,6 +4,7 @@ import { TaskDialog } from "@/components/board/task-dialog";
 import { CompleteCourseDialog } from "@/components/course/complete-course-dialog";
 import { CourseDialog } from "@/components/course/course-dialog";
 import { TermDialog } from "@/components/course/term-dialog";
+import { QuoteDialog } from "@/components/quotes/quote-dialog";
 import { ResourceDialog } from "@/components/resources/resource-dialog";
 import { SessionDialog } from "@/components/schedule/session-dialog";
 import { StudyLogDialog } from "@/components/study/study-log-dialog";
@@ -30,6 +31,8 @@ export function DialogHost() {
       return <StudyLogDialog preset={dialog.preset} onClose={close} />;
     case "complete-course":
       return <CompleteCourseDialog courseId={dialog.courseId} onClose={close} />;
+    case "quote":
+      return <QuoteDialog key={dialog.quoteId ?? "new"} quoteId={dialog.quoteId} onClose={close} />;
     default:
       return null;
   }

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 /** Ders paletinden renk seçici (serbest renk yok; renk bilgi taşır). */
 export function ColorPicker({ value, onChange }: { value: CourseColor; onChange: (c: CourseColor) => void }) {
   return (
-    <div role="radiogroup" aria-label="Ders rengi" className="flex flex-wrap gap-2">
+    <div role="radiogroup" aria-label="Renk" className="flex flex-wrap gap-2">
       {COURSE_COLORS.map((c) => {
         const checked = value === c.key;
         return (

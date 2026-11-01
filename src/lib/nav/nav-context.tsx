@@ -16,9 +16,17 @@ const NavContext = React.createContext<NavApi | null>(null);
  * Gezinme soyutlaması: ekranlar Next.js'e doğrudan bağlı değil.
  * Asıl uygulamada next/link, önizlemede adres çubuğundaki #işaret kullanılır.
  */
+let current: NavApi | null = null;
+
 export function NavProvider({ value, children }: { value: NavApi; children: React.ReactNode }) {
+  React.useEffect(() => {
+    current = value;
+  }, [value]);
   return <NavContext value={value}>{children}</NavContext>;
 }
+
+/** Bileşen dışından (hızlı ekle eylemleri gibi) sayfa değiştirmek için */
+export const goTo = (href: string) => current?.push(href);
 
 export function useNav() {
   const ctx = React.use(NavContext);

@@ -14,14 +14,14 @@ export const SAMPLES: { [F in AiFeature]: (input: AiInput<F>) => AiOutput<F> } =
       comment: `${i.range} döneminde toplam ${formatDuration(i.totalMinutes)} çalıştın${pct !== null ? `; bu hedefinin %${pct}'i` : ""}. ${top ? `En çok zamanı “${top.name}” aldı (${formatDuration(top.minutes)}).` : ""} ${i.completedTasks} görev bitirdin ve ${i.streak} günlük serin sürüyor.`.trim(),
       suggestions: [
         ...behind.slice(0, 2).map((c) => `“${c.name}” için hedefin ${formatDuration(c.target - c.minutes)} gerisindesin; hafta başına 30 dakikalık iki kısa oturum koy.`),
-        i.attendanceRate !== null && i.attendanceRate < 80 ? `Yoklama oranın %${i.attendanceRate}; kaçırdığın ders saatlerinden birini hafta sonuna ertele.` : "Seriyi korumak için her gün en az 15 dakikalık küçük bir oturum yeterli.",
+        i.attendanceRate !== null && i.attendanceRate < 80 ? `Yoklama oranın %${i.attendanceRate}; kaçırdığın program saatlerinden birini hafta sonuna ertele.` : "Seriyi korumak için her gün en az 15 dakikalık küçük bir oturum yeterli.",
       ].slice(0, 3),
     };
   },
   focus: (i) => {
     const items = [
       ...i.overdue.slice(0, 2).map((t) => ({ title: t.title, reason: `${t.due} tarihinden beri bekliyor${t.course ? ` (${t.course})` : ""}; önce bunu kapat ya da yeni tarih ver.` })),
-      ...i.sessionsToday.filter((s) => !s.done).slice(0, 1).map((s) => ({ title: `${s.time} ${s.course} dersi`, reason: "Bugünün programında sıradaki ders; 5 dakika önce hazırlan." })),
+      ...i.sessionsToday.filter((s) => !s.done).slice(0, 1).map((s) => ({ title: `${s.time} ${s.course}`, reason: "Bugünün programında sıradaki iş; 5 dakika önce hazırlan." })),
       ...i.dueToday.slice(0, 2).map((t) => ({ title: t.title, reason: `Son tarihi bugün (${t.due}).` })),
     ].slice(0, 3);
     const lagging = i.courses.find((c) => c.target && c.weekMinutes < c.target / 2);

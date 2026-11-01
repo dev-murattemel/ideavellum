@@ -17,7 +17,7 @@ export function TaskLinkedNotes({ task }: { task: Task }) {
   if (!task.course_id) return null;
   return (
     <div className="mt-6 flex flex-col gap-2">
-      <h3 className="text-13 font-semibold">{task.topic_id ? "Konunun notları" : "Dersin notları"}</h3>
+      <h3 className="text-13 font-semibold">{task.topic_id ? "Konunun notları" : "Alanın notları"}</h3>
       {notes.length === 0 && <p className="text-13 text-ink-muted">Henüz not yok.</p>}
       <ul className="flex flex-col gap-1">
         {notes.map((n) => (

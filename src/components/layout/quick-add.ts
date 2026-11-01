@@ -1,6 +1,7 @@
-import { BookPlus, Library, ListTodo, NotebookPen, Timer, type LucideIcon } from "lucide-react";
+import { BookMarked, LayoutGrid, Library, ListTodo, NotebookPen, Quote, Timer, type LucideIcon } from "lucide-react";
 
 import { createNote } from "@/components/notes/create-note";
+import { goTo } from "@/lib/nav/nav-context";
 import { ui } from "@/lib/ui-store";
 
 export type QuickAddAction = {
@@ -14,13 +15,15 @@ export type QuickAddAction = {
 export const QUICK_ADD_ACTIONS: QuickAddAction[] = [
   { id: "task", label: "Görev ekle", icon: ListTodo, run: () => ui().open({ type: "task" }) },
   { id: "note", label: "Not ekle", icon: NotebookPen, run: () => createNote() },
+  { id: "journal", label: "Günlüğe yaz", icon: BookMarked, run: () => goTo("/gunluk") },
+  { id: "quote", label: "Söz ekle", icon: Quote, run: () => ui().open({ type: "quote" }) },
   { id: "resource", label: "Kaynak ekle", icon: Library, run: () => ui().open({ type: "resource" }) },
-  { id: "study", label: "Çalışma süresi ekle", icon: Timer, run: () => ui().open({ type: "study-log" }) },
+  { id: "study", label: "Süre ekle", icon: Timer, run: () => ui().open({ type: "study-log" }) },
 ];
 
 export const ADD_COURSE_ACTION: QuickAddAction = {
   id: "course",
-  label: "Ders ekle",
-  icon: BookPlus,
+  label: "Alan ekle",
+  icon: LayoutGrid,
   run: () => ui().open({ type: "course" }),
 };

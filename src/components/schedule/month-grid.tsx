@@ -37,7 +37,7 @@ export function MonthGrid({ anchor, onPickDay }: { anchor: Date; onPickDay: (d: 
               key={d.toISOString()}
               type="button"
               onClick={() => onPickDay(d)}
-              aria-label={`${fmt(d, "d MMMM EEEE")}, ${occ.length} ders saati`}
+              aria-label={`${fmt(d, "d MMMM EEEE")}, ${occ.length} program`}
               className={cn(
                 "flex min-h-24 cursor-pointer flex-col gap-1 border-t border-l border-line p-1.5 text-left transition-colors outline-none hover:bg-hover focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:min-h-28 sm:p-2 [&:nth-child(7n+1)]:border-l-0 [&:nth-child(-n+7)]:border-t-0",
                 !inMonth && "bg-sunken/40",
