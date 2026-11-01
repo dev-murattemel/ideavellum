@@ -1,6 +1,7 @@
 import { BoardView } from "@/components/board/board-view";
 import { CourseDetailView } from "@/components/course/course-detail-view";
 import { CoursesView } from "@/components/course/courses-view";
+import { HabitsView } from "@/components/habits/habits-view";
 import { JournalView } from "@/components/journal/journal-view";
 import { NotesView } from "@/components/notes/notes-view";
 import { QuotesView } from "@/components/quotes/quotes-view";
@@ -19,6 +20,7 @@ const TITLES: Record<string, string> = {
   "/notlar": "Notlar",
   "/kaynaklar": "Kaynaklar",
   "/gunluk": "Günlük",
+  "/aliskanliklar": "Alışkanlıklar",
   "/aforizmalar": "Aforizmalar",
   "/raporlar": "Raporlar",
   "/arsiv": "Arşiv",
@@ -43,6 +45,8 @@ export function resolveView(pathname: string) {
       return <CoursesView />;
     case "/notlar":
       return <NotesView />;
+    case "/aliskanliklar":
+      return <HabitsView />;
     case "/gunluk":
       return <JournalView />;
     case "/aforizmalar":

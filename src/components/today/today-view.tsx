@@ -13,6 +13,7 @@ import { TodayTasks, useTodayTasks } from "./today-tasks";
 import { TodayTimeline } from "./today-timeline";
 import { useToday } from "./use-today";
 import { DayCard } from "./day-card";
+import { HabitsCard } from "./habits-card";
 import { InsightsCard } from "./insights-card";
 import { WeekGoalsCard } from "./week-goals-card";
 import { isoDate } from "@/lib/time";
@@ -49,6 +50,7 @@ export function TodayView() {
         </div>
         <div className="flex flex-col gap-4">
           <DayCard today={isoDate(now)} />
+          <HabitsCard now={now} />
           <WeekGoalsCard now={now} />
         </div>
       </div>

@@ -120,3 +120,21 @@ export function seedJournalAndQuotes(add: Add, today: Date) {
     add("journal_entries", { date: isoDate(addDays(today, offset)), mood, tags: [], content: doc(p(text)) }),
   );
 }
+
+/** Önizleme için örnek alışkanlıklar ve son 70 günün işaretleri */
+export function seedHabits(add: Add, today: Date) {
+  const habits: [string, "sky" | "sage" | "peach" | "lavender", number, number][] = [
+    ["2 litre su iç", "sky", 7, 0.85],
+    ["10 sayfa kitap oku", "lavender", 5, 0.7],
+    ["Kuran oku", "sage", 7, 0.9],
+    ["Şekersiz gün", "peach", 4, 0.5],
+  ];
+  habits.forEach(([name, color, target, rate], hi) => {
+    const h = add("habits", { name, color, target_per_week: target, position: null, archived: false });
+    for (let i = 0; i < 70; i++) {
+      // Sabit ama doğal görünen bir dağılım; son günlerde seri olsun
+      const v = Math.abs(Math.sin((i + 1) * (hi + 3) * 12.9898)) % 1;
+      if (i < 5 - hi || v < rate) add("habit_checks", { habit_id: h.id, date: isoDate(addDays(today, -i)) });
+    }
+  });
+}

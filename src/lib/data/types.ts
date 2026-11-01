@@ -121,6 +121,19 @@ export type JournalEntry = Base & {
   tags: string[];
 };
 
+export type Habit = Base & {
+  name: string;
+  color: CourseColor;
+  target_per_week: number; // 1–7
+  position: string | null;
+  archived: boolean;
+};
+
+export type HabitCheck = Base & {
+  habit_id: string;
+  date: string; // yyyy-MM-dd
+};
+
 export type Quote = Base & {
   text: string;
   author: string | null;
@@ -203,6 +216,8 @@ export type Tables = {
   study_logs: StudyLog;
   journal_entries: JournalEntry;
   quotes: Quote;
+  habits: Habit;
+  habit_checks: HabitCheck;
 };
 
 export type TableName = keyof Tables;
@@ -220,6 +235,8 @@ export const TABLE_NAMES: TableName[] = [
   "study_logs",
   "journal_entries",
   "quotes",
+  "habits",
+  "habit_checks",
 ];
 
 /** Yeni kayıt: id, user_id ve zaman damgaları depo tarafından doldurulur. */

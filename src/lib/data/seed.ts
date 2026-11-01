@@ -4,7 +4,7 @@ import { DEFAULT_TIMEZONE } from "@/lib/dates";
 import { isoDate, isoWeekday, wallToUtc, zonedNow } from "@/lib/time";
 import { positionAtEnd } from "./position";
 import { createBuilder } from "./seed-builder";
-import { seedContent, seedJournalAndQuotes } from "./seed-content";
+import { seedContent, seedHabits, seedJournalAndQuotes } from "./seed-content";
 import { seedHistory } from "./seed-history";
 import type { ClassSession, Course, DataSnapshot, NewRow, TopicStatus } from "./types";
 
@@ -133,6 +133,7 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
 
   seedContent(add, snap, { courses, today, tz });
   seedJournalAndQuotes(add, today);
+  seedHabits(add, today);
   seedHistory(add, { courses, sessions, today, tz, termStart, prevTerm });
   return snap;
 }
