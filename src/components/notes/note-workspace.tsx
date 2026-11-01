@@ -14,6 +14,7 @@ import type { Note } from "@/lib/data/types";
 import { fmt, utcToWall } from "@/lib/time";
 import { NoteEditor, type EditorStats } from "./note-editor";
 import { TagInput } from "@/components/tags/tag-input";
+import { discardIfEmpty } from "@/lib/notes/empty";
 
 /** Sağ bölme: başlık, özellikler ve tam ekran editör */
 export function NoteWorkspace({ note, onBack, onDeleted }: { note: Note; onBack: () => void; onDeleted: () => void }) {
@@ -21,6 +22,14 @@ export function NoteWorkspace({ note, onBack, onDeleted }: { note: Note; onBack:
   const [confirm, setConfirm] = React.useState(false);
   const set = (patch: Partial<Note>) => data().update("notes", note.id, patch);
   const isNew = !note.title && !note.content.content?.length;
+
+  // Boş bırakılıp başka nota geçilirse not silinir (StrictMode'un anlık takıp-sökmesini saymaz)
+  React.useEffect(() => {
+    const mountedAt = Date.now();
+    return () => {
+      if (Date.now() - mountedAt > 800) discardIfEmpty(note.id);
+    };
+  }, [note.id]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">

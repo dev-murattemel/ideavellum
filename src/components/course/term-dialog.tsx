@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Switch } from "@/components/ui/switch";
 import { useRow, useRows } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
@@ -62,10 +63,10 @@ export function TermDialog({ termId, onClose }: { termId?: string; onClose: () =
           </Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Başlangıç" htmlFor="t-start" error={errors.start_date?.message}>
-              <Input id="t-start" type="date" {...form.register("start_date")} />
+              <Controller control={form.control} name="start_date" render={({ field }) => <DatePicker id="t-start" value={field.value} onChange={field.onChange} clearable={false} />} />
             </Field>
             <Field label="Bitiş" htmlFor="t-end" error={errors.end_date?.message}>
-              <Input id="t-end" type="date" {...form.register("end_date")} />
+              <Controller control={form.control} name="end_date" render={({ field }) => <DatePicker id="t-end" value={field.value} onChange={field.onChange} clearable={false} />} />
             </Field>
           </div>
           <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg bg-sunken px-3 py-3">

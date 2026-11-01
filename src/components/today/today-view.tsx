@@ -5,7 +5,8 @@ import { QuickNote } from "@/components/today/quick-note";
 import { SectionCard } from "@/components/today/section-card";
 import { SummaryStrip } from "@/components/today/summary-strip";
 import { useNow } from "@/components/schedule/use-now";
-import { useProfile } from "@/lib/data/hooks";
+import { useProfile, useRows } from "@/lib/data/hooks";
+import { areaWeeks } from "@/lib/domain/insights";
 import { formatLongDate, greeting } from "@/lib/dates";
 import { NowCard } from "./now-card";
 import { TodayTasks, useTodayTasks } from "./today-tasks";
@@ -21,6 +22,8 @@ export function TodayView() {
   const profile = useProfile();
   const t = useToday(now);
   const tasks = useTodayTasks(now);
+  const weeks = areaWeeks(useRows("courses"), useRows("study_logs"), now, profile.timezone);
+  const week = { minutes: weeks.reduce((a, w) => a + w.minutes, 0), target: weeks.reduce((a, w) => a + w.target, 0) };
   const firstName = profile.full_name?.split(" ")[0];
   const real = new Date();
 
@@ -36,9 +39,9 @@ export function TodayView() {
         </h1>
       </div>
 
-      <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} />
+      <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} weekMinutes={week.minutes} weekTarget={week.target} />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex min-w-0 flex-col gap-4">
           <FocusCard t={t} now={now} />
           <NowCard t={t} now={now} />

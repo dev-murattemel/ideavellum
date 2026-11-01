@@ -10,6 +10,8 @@ import { docToText } from "@/lib/data/tiptap";
 import type { Course } from "@/lib/data/types";
 import { timeAgo } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
+import { RowActions } from "@/components/ui/row-actions";
+import { noteActions } from "@/lib/notes/actions";
 
 /** Genel bakışta dersin son notları ve tek tıkla not ekleme */
 export function CourseNotesCard({ course }: { course: Course }) {
@@ -37,7 +39,7 @@ export function CourseNotesCard({ course }: { course: Course }) {
       ) : (
         <ul className="divide-y divide-line">
           {list.map((n) => (
-            <li key={n.id}>
+            <li key={n.id} className="group relative">
               <button
                 type="button"
                 onClick={() => ui().openNote(n.id)}
@@ -53,6 +55,7 @@ export function CourseNotesCard({ course }: { course: Course }) {
                   <span className="text-xs text-ink-subtle">{timeAgo(n.updated_at)}</span>
                 </span>
               </button>
+              <RowActions actions={noteActions(n)} className="absolute top-3 right-3" />
             </li>
           ))}
         </ul>

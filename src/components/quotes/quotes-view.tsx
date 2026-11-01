@@ -99,7 +99,7 @@ export function QuotesView() {
       {list.length === 0 ? (
         <p className="py-10 text-center text-sm text-ink-muted">Bu süzgeçle eşleşen söz yok.</p>
       ) : (
-        <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
+        <div className="stagger columns-1 gap-4 sm:columns-2 lg:columns-3 2xl:columns-4">
           {list.map((x) => <QuoteCard key={x.id} quote={x} onTag={setTag} />)}
         </div>
       )}

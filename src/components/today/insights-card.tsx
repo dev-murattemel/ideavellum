@@ -38,7 +38,7 @@ export function InsightsCard({ now, streak, studiedToday }: { now: Date; streak:
       {items.length === 0 ? (
         <p className="text-13 text-ink-muted">Her şey yolunda görünüyor. Programına devam et.</p>
       ) : (
-        <ul className="-my-1 flex flex-col divide-y divide-line">
+        <ul className="stagger -my-1 flex flex-col divide-y divide-line">
           {items.map((i) => {
             const t = TONE[i.tone];
             const Icon = t.icon;

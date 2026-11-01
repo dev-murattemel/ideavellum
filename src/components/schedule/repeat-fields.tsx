@@ -3,7 +3,7 @@
 import { parseISO } from "date-fns";
 
 import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { SessionRepeat } from "@/lib/data/types";
 import { repeatLabel } from "@/lib/domain/schedule";
@@ -44,12 +44,11 @@ export function RepeatFields({
           htmlFor="s-anchor"
           hint={anchor ? repeatLabel({ repeat, anchor_date: anchor, weekday }, WEEKDAY_NAMES) : undefined}
         >
-          <Input
+          <DatePicker
             id="s-anchor"
-            type="date"
             value={anchor}
-            required
-            onChange={(e) => e.target.value && onChange({ repeat, anchor: e.target.value, weekday: isoWeekday(parseISO(e.target.value)) })}
+            clearable={false}
+            onChange={(v) => v && onChange({ repeat, anchor: v, weekday: isoWeekday(parseISO(v)) })}
           />
         </Field>
       )}

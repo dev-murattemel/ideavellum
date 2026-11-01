@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Quote as QuoteIcon } from "lucide-react";
+import { ArrowRight, Plus, Quote as QuoteIcon } from "lucide-react";
 
 import { MoodPicker } from "@/components/journal/mood-picker";
 import { promptFor } from "@/components/journal/moods";
@@ -38,7 +38,9 @@ export function DayCard({ today }: { today: string }) {
         ) : (
           <div className="mt-2 flex flex-col items-start gap-3">
             <p className="text-sm text-white/80 dark:text-ink-muted">Kendi aforizmalarını ya da sevdiğin alıntıları kaydet; her gün biri burada görünsün.</p>
-            <Button size="sm" variant="secondary" onClick={() => ui().open({ type: "quote" })}>İlk sözünü ekle</Button>
+            <Button size="sm" onClick={() => ui().open({ type: "quote" })} className="bg-white text-[#1D1D21] shadow-none hover:bg-white/90 hover:shadow-none dark:bg-primary dark:text-primary-foreground">
+              <Plus /> İlk sözünü ekle
+            </Button>
           </div>
         )}
       </section>

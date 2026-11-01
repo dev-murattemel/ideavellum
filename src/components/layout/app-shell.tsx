@@ -7,6 +7,7 @@ import { DataProvider } from "@/components/providers/data-provider";
 import { ReminderSync } from "@/components/providers/reminder-sync";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useData } from "@/lib/data/store";
+import { useNav } from "@/lib/nav/nav-context";
 import { AppSidebar } from "./app-sidebar";
 import { CommandMenu } from "./command-menu";
 import { CommandMenuProvider } from "./command-menu-context";
@@ -36,7 +37,7 @@ export function AppShell({
                 <Topbar />
                 <main
                   id="icerik"
-                  className="mx-auto w-full max-w-[1200px] flex-1 px-4 pt-6 pb-28 md:px-8 md:pt-8 md:pb-12"
+                  className="mx-auto w-full max-w-[1600px] flex-1 px-4 pt-6 pb-28 md:px-8 md:pt-8 md:pb-12 2xl:px-12"
                 >
                   {banner}
                   <ReadyGate>{children}</ReadyGate>
@@ -72,5 +73,15 @@ function ReadyGate({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  return <>{children}</>;
+  return <PageTransition>{children}</PageTransition>;
+}
+
+/** Sayfa değişince içerik yumuşakça belirir */
+function PageTransition({ children }: { children: React.ReactNode }) {
+  const { pathname } = useNav();
+  return (
+    <div key={pathname} className="page-in">
+      {children}
+    </div>
+  );
 }

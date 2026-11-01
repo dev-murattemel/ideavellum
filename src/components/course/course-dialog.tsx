@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { COURSE_COLOR_KEYS } from "@/lib/course-colors";
@@ -162,10 +163,10 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
               )} />
             </Field>
             <Field label="Başlangıç" htmlFor="c-start">
-              <Input id="c-start" type="date" {...form.register("start_date")} />
+              <Controller control={form.control} name="start_date" render={({ field }) => <DatePicker id="c-start" value={field.value} onChange={field.onChange} placeholder="Başlangıç yok" />} />
             </Field>
             <Field label="Hedef bitiş" htmlFor="c-end" error={errors.target_end_date?.message}>
-              <Input id="c-end" type="date" aria-invalid={!!errors.target_end_date} {...form.register("target_end_date")} />
+              <Controller control={form.control} name="target_end_date" render={({ field }) => <DatePicker id="c-end" value={field.value} onChange={field.onChange} invalid={!!errors.target_end_date} placeholder="Hedef tarih yok" />} />
             </Field>
           </div>
           {!course && <SlotFields label={`Haftalık program (${kindOf({ kind }).session.toLocaleLowerCase("tr")})`} value={slots} onChange={(v) => { setSlots(v); setSlotErr(null); }} error={slotErr} />}

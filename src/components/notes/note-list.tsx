@@ -12,6 +12,8 @@ import { timeAgo } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { TagChip } from "@/components/tags/tag-chip";
 import { tagCounts } from "@/lib/tags";
+import { RowActions } from "@/components/ui/row-actions";
+import { noteActions } from "@/lib/notes/actions";
 
 export const PERSONAL = "personal";
 
@@ -109,13 +111,13 @@ function Group({ label, notes, selectedId, explicit, onSelect }: { label: string
   return (
     <section className="mb-2">
       {label && <h2 className="px-3 pt-2 pb-1.5 text-xs font-medium text-ink-subtle">{label}</h2>}
-      <ul role="listbox" aria-label={label ?? "Notlar"} className="flex flex-col gap-0.5">
+      <ul role="listbox" aria-label={label ?? "Notlar"} className="stagger flex flex-col gap-0.5">
         {notes.map((n) => {
           const course = n.course_id ? courses[n.course_id] : undefined;
           const active = n.id === selectedId;
           const preview = docToText(n.content, 110);
           return (
-            <li key={n.id} role="option" aria-selected={active}>
+            <li key={n.id} role="option" aria-selected={active} className="group relative">
               <button
                 type="button"
                 onClick={() => onSelect(n.id)}
@@ -129,7 +131,7 @@ function Group({ label, notes, selectedId, explicit, onSelect }: { label: string
                 <span className="flex items-center gap-2">
                   <span data-course={course?.color} className={cn("size-2 shrink-0 rounded-full", course ? "bg-course-solid" : "border border-line-strong")} aria-hidden />
                   <span className={cn("min-w-0 flex-1 truncate text-sm font-semibold", !n.title && "text-ink-muted")}>{n.title || "Başlıksız not"}</span>
-                  {n.is_pinned && <Pin className="size-3 shrink-0 fill-current text-ink-subtle" aria-label="Sabitlendi" />}
+                  {n.is_pinned && <Pin className="size-3 shrink-0 fill-current text-ink-subtle transition-opacity group-hover:opacity-0" aria-label="Sabitlendi" />}
                 </span>
                 <span className="line-clamp-2 pl-4 text-13 leading-[18px] text-ink-muted">{preview || "Boş not"}</span>
                 <span className="flex min-w-0 items-center gap-1.5 pl-4 text-xs text-ink-subtle">
@@ -139,6 +141,7 @@ function Group({ label, notes, selectedId, explicit, onSelect }: { label: string
                   {(n.tags ?? []).slice(0, 2).map((t) => <TagChip key={t} tag={t} className="h-5 px-1.5 text-[11px]" />)}
                 </span>
               </button>
+              <RowActions actions={noteActions(n)} className="absolute top-2 right-2" />
             </li>
           );
         })}

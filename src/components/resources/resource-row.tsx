@@ -1,12 +1,14 @@
 "use client";
 
-import { ExternalLink, Minus, Plus } from "lucide-react";
+import { ExternalLink, Minus, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { SuggestFromTextButton } from "@/components/ai/suggest-dialog";
 import { Progress } from "@/components/ui/progress";
 import { data } from "@/lib/data/store";
 import type { Course, Resource } from "@/lib/data/types";
 import { ui } from "@/lib/ui-store";
+import { RowActions } from "@/components/ui/row-actions";
+import { removeWithUndo } from "@/lib/data/undo";
 import { cn } from "@/lib/utils";
 import { Rating } from "./rating";
 import { statusLabel, TYPE_META, UNIT_SHORT } from "./resource-meta";
@@ -28,7 +30,15 @@ export function ResourceRow({ r, course }: { r: Resource; course?: Course }) {
   const pct = r.progress_total ? ((r.progress_current ?? 0) / r.progress_total) * 100 : r.status === "done" ? 100 : 0;
 
   return (
-    <li data-course={course?.color ?? "slate"} className="flex flex-col gap-3 border-b border-line p-4 last:border-b-0 sm:flex-row sm:items-center">
+    <li data-course={course?.color ?? "slate"} className="group relative flex flex-col gap-3 border-b border-line p-4 transition-colors last:border-b-0 hover:bg-hover/40 sm:flex-row sm:items-center">
+      <RowActions
+        className="absolute top-3 right-3 z-10"
+        actions={[
+          { label: "Düzenle", icon: Pencil, onClick: () => ui().open({ type: "resource", resourceId: r.id }) },
+          ...(r.url ? [{ label: "Bağlantıyı aç", icon: ExternalLink, onClick: () => window.open(r.url!, "_blank", "noopener") }] : []),
+          { label: "Sil", icon: Trash2, danger: true, onClick: () => removeWithUndo("resources", r, `“${r.title}” silindi`) },
+        ]}
+      />
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-course text-course-fg" title={meta.label}>
           <Icon className="size-5" strokeWidth={1.8} aria-hidden />

@@ -17,7 +17,7 @@ export function Topbar() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-page/85 backdrop-blur-md supports-[backdrop-filter]:bg-page/75">
-      <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-3 px-4 md:px-8">
+      <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center gap-3 px-4 md:px-8 2xl:px-12">
         <AppLink href="/bugun" aria-label="ideavellum ana sayfa" className="rounded-md md:hidden">
           <BrandMark className="size-7" />
         </AppLink>

@@ -13,6 +13,8 @@ import { PRIORITY_RANK, setTaskDone } from "@/lib/domain/tasks";
 import { isoDate, utcToWall } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
+import { RowActions } from "@/components/ui/row-actions";
+import { taskActions } from "@/lib/domain/task-actions";
 
 /** Son tarihi bugün olan ya da geciken görevler + bugün tamamlananlar */
 export function useTodayTasks(now: Date) {
@@ -46,7 +48,7 @@ export function TodayTasks({ now }: { now: Date }) {
           const course = task.course_id ? courses[task.course_id] : undefined;
           const done = task.status === "done";
           return (
-            <li key={task.id} className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-hover/60">
+            <li key={task.id} className="group relative flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-hover/60">
               <Checkbox
                 checked={done}
                 onCheckedChange={(c) => setTaskDone(task, c === true, all)}
@@ -63,6 +65,7 @@ export function TodayTasks({ now }: { now: Date }) {
               </button>
               {!done && <DueChip task={task} now={now} className="bg-sunken" />}
               <PriorityFlag priority={task.priority} />
+              <RowActions actions={taskActions(task).filter((a) => a.label !== "Tamamla" && a.label !== "Geri al")} className="absolute top-1/2 right-1 -translate-y-1/2" />
             </li>
           );
         })}

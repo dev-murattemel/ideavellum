@@ -10,6 +10,8 @@ import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 import { DueChip } from "./due-chip";
 import { PriorityFlag } from "./priority-flag";
+import { RowActions } from "@/components/ui/row-actions";
+import { taskActions } from "@/lib/domain/task-actions";
 
 export type CardData = { task: Task; course?: Course; checklist: ChecklistItem[] };
 
@@ -68,7 +70,7 @@ export function SortableTaskCard(props: CardData & { now: Date }) {
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={cn("list-none", isDragging && "opacity-40")}
+      className={cn("group relative list-none", isDragging && "opacity-40")}
     >
       <button
         type="button"
@@ -80,6 +82,7 @@ export function SortableTaskCard(props: CardData & { now: Date }) {
       >
         <TaskCardBody {...props} />
       </button>
+      {!isDragging && <RowActions actions={taskActions(props.task)} className="absolute top-2 right-2" />}
     </li>
   );
 }

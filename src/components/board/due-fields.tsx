@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmt, isoDate, minutesToTime, utcToWall, wallToUtc } from "@/lib/time";
 
@@ -25,7 +25,7 @@ export function DueFields({ date, time, onChange, idPrefix = "due" }: { date: st
   const times = TIMES.includes(time) || time === NO_TIME ? TIMES : [...TIMES, time].sort();
   return (
     <div className="flex items-center gap-2">
-      <Input id={`${idPrefix}-date`} type="date" value={date} onChange={(e) => onChange(e.target.value, time)} aria-label="Son tarih" className="min-w-0 flex-1" />
+      <DatePicker id={`${idPrefix}-date`} value={date} onChange={(d) => onChange(d, d ? time : NO_TIME)} aria-label="Son tarih" placeholder="Son tarih yok" clearable={false} className="min-w-0 flex-1" />
       <Select value={time} onValueChange={(t) => onChange(date || isoDate(new Date()), t)} disabled={!date}>
         <SelectTrigger className="tabular w-32" aria-label="Saat"><SelectValue /></SelectTrigger>
         <SelectContent className="max-h-64">

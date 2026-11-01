@@ -16,6 +16,8 @@ import { fmt, utcToWall } from "@/lib/time";
 import { useNav } from "@/lib/nav/nav-context";
 import { useUI } from "@/lib/ui-store";
 import { NoteEditor } from "./note-editor";
+import { TagInput } from "@/components/tags/tag-input";
+import { discardIfEmpty } from "@/lib/notes/empty";
 
 /** Not açıldığında sağdan gelen geniş panel */
 export function NotePanel() {
@@ -30,7 +32,7 @@ export function NotePanel() {
   const isNew = !note.title && !note.content.content?.length;
 
   return (
-    <Sheet open onOpenChange={(o) => !o && openNote(null)}>
+    <Sheet open onOpenChange={(o) => { if (!o) { discardIfEmpty(note.id); openNote(null); } }}>
       <SheetContent className="gap-0 overflow-hidden p-0 sm:max-w-2xl" onOpenAutoFocus={(e) => !isNew && e.preventDefault()}>
         <SheetDescription className="sr-only">Not düzenleyici</SheetDescription>
         <div className="flex items-center gap-2 border-b border-line px-5 py-3 pr-14">
@@ -55,6 +57,7 @@ export function NotePanel() {
               onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
             />
           </SheetTitle>
+          <TagInput value={note.tags ?? []} onChange={(tags) => set({ tags })} className="mt-2" />
           <div className="mt-1 mb-4 flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-ink-muted">Son düzenleme {fmt(utcToWall(note.updated_at), "d MMMM, HH:mm")} · otomatik kaydedilir</p>
             <SuggestFromTextButton courseId={note.course_id} title={note.title} text={docToText(note.content, 12000, "\n")} />

@@ -5,12 +5,12 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out outline-none active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        secondary: "border border-line bg-surface text-foreground hover:bg-hover",
+        default: "bg-primary text-primary-foreground shadow-[0_1px_2px_rgb(79_70_229/0.25)] hover:bg-primary/92 hover:shadow-[0_4px_12px_-4px_rgb(79_70_229/0.55)] disabled:bg-sunken disabled:text-ink-subtle disabled:shadow-none disabled:opacity-100",
+        secondary: "border border-line bg-surface text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.03)] hover:border-line-strong hover:bg-hover",
         ghost: "text-ink-muted hover:bg-hover hover:text-foreground",
         soft: "bg-accent-soft text-accent-text hover:bg-accent-soft/70",
         destructive: "bg-destructive text-white hover:bg-destructive/90",

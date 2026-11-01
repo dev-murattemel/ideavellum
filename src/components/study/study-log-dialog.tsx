@@ -7,7 +7,7 @@ import { CourseSelect, NONE } from "@/components/board/task-fields";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TimeSelect } from "@/components/ui/time-select";
 import { data } from "@/lib/data/store";
@@ -47,7 +47,7 @@ export function StudyLogDialog({ preset, onClose }: { preset?: { course_id?: str
         <form onSubmit={save} className="flex flex-col gap-4" noValidate>
           <Field label="Alan" error={error ?? undefined}><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setError(null); }} /></Field>
           <div className="grid grid-cols-[1.4fr_1fr] gap-3">
-            <Field label="Tarih" htmlFor="sl-date"><Input id="sl-date" type="date" value={date} max={isoDate(now)} onChange={(e) => setDate(e.target.value)} /></Field>
+            <Field label="Tarih" htmlFor="sl-date"><DatePicker id="sl-date" value={date} max={isoDate(now)} clearable={false} onChange={(v) => v && setDate(v)} /></Field>
             <Field label="Başlangıç"><TimeSelect label="Başlangıç" value={start} onChange={setStart} to={23 * 60 + 45} /></Field>
           </div>
           <Field label="Süre">

@@ -19,7 +19,7 @@ export function WeekGoalsCard({ now }: { now: Date }) {
       {rows.length === 0 ? (
         <p className="text-13 text-ink-muted">Aktif alan yok.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="stagger flex flex-col gap-3">
           {rows.map(({ course, minutes, target: t, pct }) => {
             const Icon = kindOf(course).icon;
             return (
