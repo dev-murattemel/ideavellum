@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Ellipsis } from "lucide-react";
 
 import {
@@ -19,13 +17,14 @@ import {
   isActivePath,
   type NavItem,
 } from "@/lib/navigation";
+import { AppLink, useNav } from "@/lib/nav/nav-context";
 import { cn } from "@/lib/utils";
 
 const primary = MAIN_NAV.filter((i) => MOBILE_PRIMARY.includes(i.href));
 const more = [...MAIN_NAV.filter((i) => !MOBILE_PRIMARY.includes(i.href)), SETTINGS_NAV];
 
 export function MobileNav() {
-  const pathname = usePathname();
+  const { pathname } = useNav();
   const [open, setOpen] = React.useState(false);
   const moreActive = more.some((i) => isActivePath(pathname, i.href));
 
@@ -73,7 +72,7 @@ export function MobileNav() {
               const active = isActivePath(pathname, item.href);
               return (
                 <li key={item.href}>
-                  <Link
+                  <AppLink
                     href={item.href}
                     onClick={() => setOpen(false)}
                     aria-current={active ? "page" : undefined}
@@ -87,7 +86,7 @@ export function MobileNav() {
                       <span className="text-sm font-medium">{item.label}</span>
                       <span className="text-xs text-ink-muted">{item.description}</span>
                     </span>
-                  </Link>
+                  </AppLink>
                 </li>
               );
             })}
@@ -101,7 +100,7 @@ export function MobileNav() {
 function TabLink({ item, active }: { item: NavItem; active: boolean }) {
   const Icon = item.icon;
   return (
-    <Link
+    <AppLink
       href={item.href}
       aria-current={active ? "page" : undefined}
       className={cn(
@@ -113,7 +112,7 @@ function TabLink({ item, active }: { item: NavItem; active: boolean }) {
         <Icon className="size-5" strokeWidth={active ? 2.1 : 1.8} aria-hidden />
       </TabIcon>
       {item.shortLabel ?? item.label}
-    </Link>
+    </AppLink>
   );
 }
 

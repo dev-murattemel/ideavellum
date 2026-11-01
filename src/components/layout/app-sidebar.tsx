@@ -1,19 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MAIN_NAV, SETTINGS_NAV } from "@/lib/navigation";
+import { AppLink } from "@/lib/nav/nav-context";
 import { cn } from "@/lib/utils";
 import { BrandMark, BrandWordmark } from "./brand";
 import { SidebarNavLink } from "./nav-link";
 import { useSidebar } from "./sidebar-context";
 import { TermCourses } from "./term-courses";
-import { UserMenu, type SidebarUser } from "./user-menu";
+import { UserMenu } from "./user-menu";
 
-export function AppSidebar({ user }: { user: SidebarUser }) {
+export function AppSidebar() {
   const { collapsed, toggle } = useSidebar();
 
   return (
@@ -25,10 +25,10 @@ export function AppSidebar({ user }: { user: SidebarUser }) {
       )}
     >
       <div className={cn("flex h-14 shrink-0 items-center gap-2.5 px-4", collapsed && "justify-center px-0")}>
-        <Link href="/bugun" aria-label="ideavellum ana sayfa" className="flex items-center gap-2.5 rounded-md">
+        <AppLink href="/bugun" aria-label="ideavellum ana sayfa" className="flex items-center gap-2.5 rounded-md">
           <BrandMark className="size-7" />
           {!collapsed && <BrandWordmark />}
-        </Link>
+        </AppLink>
         {!collapsed && (
           <Button
             variant="ghost"
@@ -68,7 +68,7 @@ export function AppSidebar({ user }: { user: SidebarUser }) {
         )}
         <SidebarNavLink item={SETTINGS_NAV} collapsed={collapsed} />
         <div className="my-2 h-px bg-line" />
-        <UserMenu user={user} collapsed={collapsed} />
+        <UserMenu collapsed={collapsed} />
       </div>
     </aside>
   );

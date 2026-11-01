@@ -11,15 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDataMode, useProfile } from "@/lib/data/hooks";
+import { signOutClient } from "@/lib/supabase/sign-out";
 import { applyTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
-import { signOut } from "@/server/actions/auth";
 
-export type SidebarUser = { name: string; email: string } | null;
-
-export function UserMenu({ user, collapsed }: { user: SidebarUser; collapsed: boolean }) {
-  const name = user?.name ?? "Kurulum modu";
-  const sub = user?.email ?? "Supabase henüz bağlı değil";
+export function UserMenu({ collapsed }: { collapsed: boolean }) {
+  const profile = useProfile();
+  const mode = useDataMode();
+  const name = profile.full_name ?? profile.email?.split("@")[0] ?? "Murat";
+  const sub = mode === "remote" ? (profile.email ?? "") : "Önizleme · veriler bu tarayıcıda";
 
   return (
     <DropdownMenu>
@@ -56,10 +57,10 @@ export function UserMenu({ user, collapsed }: { user: SidebarUser; collapsed: bo
             <Monitor /> Sistemle aynı
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        {user && (
+        {mode === "remote" && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => void signOut()}>
+            <DropdownMenuItem onSelect={() => void signOutClient()}>
               <LogOut /> Çıkış yap
             </DropdownMenuItem>
           </>

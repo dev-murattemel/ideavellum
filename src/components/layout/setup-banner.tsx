@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 
 /** Supabase anahtarları girilmeden çalışırken içeriğin üstünde görünen ince uyarı. */
-export function SetupBanner() {
+export function SetupBanner({ text }: { text?: string }) {
   return (
     <div
       role="status"
@@ -10,8 +10,12 @@ export function SetupBanner() {
     >
       <Info className="mt-px size-4 shrink-0 md:mt-0" aria-hidden />
       <p className="min-w-0">
-        <span className="font-medium">Kurulum modu:</span> Supabase henüz bağlı değil; giriş kapalı ve
-        hiçbir şey kaydedilmez.
+        {text ?? (
+          <>
+            <span className="font-medium">Önizleme modu:</span> Supabase henüz bağlı değil; örnek verilerle
+            çalışıyorsun ve değişiklikler sadece bu tarayıcıda saklanıyor.
+          </>
+        )}
       </p>
     </div>
   );

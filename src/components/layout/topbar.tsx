@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { Search } from "lucide-react";
 
 import { Kbd } from "@/components/ui/kbd";
+import { AppLink } from "@/lib/nav/nav-context";
 import { BrandMark } from "./brand";
 import { useCommandMenu } from "./command-menu-context";
 import { QuickAddMenu } from "./quick-add-menu";
@@ -16,9 +16,9 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-page/85 backdrop-blur-md supports-[backdrop-filter]:bg-page/75">
       <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-3 px-4 md:px-8">
-        <Link href="/bugun" aria-label="ideavellum ana sayfa" className="rounded-md md:hidden">
+        <AppLink href="/bugun" aria-label="ideavellum ana sayfa" className="rounded-md md:hidden">
           <BrandMark className="size-7" />
-        </Link>
+        </AppLink>
 
         <button
           type="button"

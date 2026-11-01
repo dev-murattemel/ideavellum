@@ -1,0 +1,95 @@
+import { addDays } from "date-fns";
+
+import { isoDate, wallToUtc } from "@/lib/time";
+import { positionAtEnd } from "./position";
+import type { createBuilder } from "./seed-builder";
+import { doc, h, p, todo, ul } from "./tiptap";
+import type { Course, DataSnapshot, ResourceStatus, ResourceType, ResourceUnit, TaskPriority, TaskStatus } from "./types";
+
+type Add = ReturnType<typeof createBuilder>["add"];
+type Ctx = { courses: Record<string, Course>; today: Date; tz: string };
+
+type TaskSeed = [string, string | null, TaskStatus, TaskPriority, number | null, string | null, [boolean, string][]?];
+
+// [başlık, ders, durum, öncelik, bugünden gün farkı (son tarih), saat, kontrol listesi]
+const TASKS: TaskSeed[] = [
+  ["Reported speech alıştırmaları (Unit 7)", "eng", "todo", "high", 0, "18:00", [[true, "A bölümü"], [false, "B bölümü"], [false, "Yanlışları deftere yaz"]]],
+  ["Ayna evresi metnini ikinci kez oku", "lacan", "in_progress", "medium", 0, "21:00", [[true, "İlk 6 sayfa"], [true, "Kavram haritası"], [false, "Kalan sayfalar"], [false, "3 soru yaz"]]],
+  ["Hata mesajı örneklerini topla", "ux", "todo", "medium", -1, "17:00", [[false, "5 uygulamadan ekran görüntüsü"], [false, "İyi / kötü diye ayır"]]],
+  ["C majör gamı metronomla 80 bpm", "piano", "in_progress", "low", 1, null, [[true, "Sağ el"], [true, "Sol el"], [false, "İki el"]]],
+  ["Renk körlüğü simülasyonuyla 3 grafiği test et", "dataviz", "todo", "medium", 2, null],
+  ["Essay taslağı: uzaktan çalışma", "eng", "todo", "urgent", 3, "23:00", [[false, "Giriş paragrafı"], [false, "İki argüman"], [false, "Karşı görüş"], [false, "Sonuç"]]],
+  ["Simgesel düzen üzerine 1 sayfalık özet", "lacan", "todo", "high", 4, null],
+  ["Buton metinleri kontrol listesi", "ux", "review", "medium", 1, null, [[true, "Eylemi söylüyor mu?"], [true, "Fiil ile başlıyor mu?"], [true, "İki kelimeyi geçiyor mu?"]]],
+  ["Konuşma kulübü için 3 dakikalık konu hazırla", "eng", "review", "medium", 4, "16:00"],
+  ["Akor geçişleri videosunu izle", "piano", "todo", "low", 6, null],
+  ["Gösterge panosu taslağı (Figma)", "dataviz", "in_progress", "high", 5, null, [[true, "Izgara"], [false, "Grafik kartları"], [false, "Renk paleti"]]],
+  ["Haftalık kelime listesi: 30 kelime", "eng", "done", "medium", -2, null],
+  ["Freud'a dönüş: okuma notları", "lacan", "done", "medium", -6, null],
+  ["Ses ve ton rehberi v1", "ux", "done", "high", -4, null, [[true, "3 ilke"], [true, "Örnek cümleler"]]],
+  ["Nota okuma testi", "piano", "done", "low", -9, null],
+  ["Dönem hedeflerini gözden geçir", null, "todo", "low", 7, null],
+  ["Kütüphane kartını yenile", null, "done", "low", -1, null],
+];
+
+const RESOURCES: [string, ResourceType, string, string | null, ResourceStatus, number | null, number | null, ResourceUnit | null, number | null, string | null][] = [
+  ["English Grammar in Use", "book", "eng", "Raymond Murphy", "in_progress", 142, 380, "page", null, null],
+  ["BBC 6 Minute English", "podcast", "eng", "BBC Learning English", "in_progress", 24, 60, "minute", 4, "Kısa, günlük konular; telaffuz için çok iyi."],
+  ["Écrits — Ayna Evresi", "book", "lacan", "Jacques Lacan", "in_progress", 6, 9, "page", null, null],
+  ["Lacan: A Very Short Introduction", "book", "lacan", "Lionel Bailly", "done", 168, 168, "page", 5, "Kavramları sade dille anlatıyor; başlangıç için ideal."],
+  ["Žižek — Lacan ve sinema (konuşma)", "video", "lacan", "Slavoj Žižek", "queued", 0, 52, "minute", null, null],
+  ["Microcopy: The Complete Guide", "book", "ux", "Kinneret Yifrah", "in_progress", 3, 11, "chapter", null, null],
+  ["Writing is Designing", "book", "ux", "Metts & Welfle", "queued", 0, 200, "page", null, null],
+  ["Gymnopédie No.1 — yavaş eğitim videosu", "video", "piano", "Pianote", "in_progress", 12, 34, "minute", null, null],
+  ["Fundamentals of Data Visualization", "book", "dataviz", "Claus O. Wilke", "in_progress", 9, 29, "chapter", 4, null],
+  ["Datawrapper blog: renk rehberi", "article", "dataviz", "Lisa C. Rost", "done", null, null, null, 5, "Renk paletleri için en iyi pratik kaynak."],
+];
+
+export function seedContent(add: Add, snap: DataSnapshot, { courses, today, tz }: Ctx) {
+  TASKS.forEach(([title, key, status, priority, dueOffset, time, checklist]) => {
+    const inColumn = Object.values(snap.tasks).filter((t) => t.status === status);
+    const due = dueOffset === null ? null : wallToUtc(isoDate(addDays(today, dueOffset)), time ?? "23:59", tz);
+    const task = add("tasks", {
+      course_id: key ? courses[key].id : null, topic_id: null, title, description: null, status, priority,
+      due_at: due?.toISOString() ?? null, position: positionAtEnd(inColumn),
+      completed_at: status === "done" ? (due ?? new Date()).toISOString() : null,
+    });
+    checklist?.forEach(([is_done, label]) => {
+      const items = Object.values(snap.task_checklist_items).filter((i) => i.task_id === task.id);
+      add("task_checklist_items", { task_id: task.id, label, is_done, position: positionAtEnd(items) });
+    });
+  });
+
+  RESOURCES.forEach(([title, type, key, author, status, cur, total, unit, rating, summary]) =>
+    add("resources", {
+      course_id: courses[key].id, topic_id: null, type, title, url: null, author, status,
+      progress_current: cur, progress_total: total, unit, rating, summary,
+    }),
+  );
+
+  add("notes", {
+    course_id: courses.lacan.id, topic_id: null, title: "Ayna evresi — ana fikirler", is_pinned: true,
+    content: doc(
+      p("Çocuk 6–18 ay arasında aynadaki görüntüsünü kendisi olarak tanır; ama bu tanıma bir yanılgıdır."),
+      h(3, "Kilit kavramlar"),
+      ul(["Ego bir yanılsama olarak kurulur", "Bütünlük hissi dışarıdan gelir", "Hayali düzenin başlangıcı"]),
+      todo([[true, "Écrits'teki metni oku"], [false, "Kendi örneğimi yaz"]]),
+    ),
+  });
+  add("notes", {
+    course_id: courses.eng.id, topic_id: null, title: "Reported speech — zaman kaydırma tablosu", is_pinned: false,
+    content: doc(p("Doğrudan anlatımda geçmiş zamana bir adım kaydır:"), ul(["am/is → was", "will → would", "can → could", "have done → had done"])),
+  });
+  add("notes", {
+    course_id: courses.ux.id, topic_id: null, title: "İyi bir boş durum ne söyler?", is_pinned: true,
+    content: doc(p("1) Burada ne olacağını, 2) neden boş olduğunu, 3) ilk adımı söyler. Tek bir net eylem butonu yeter.")),
+  });
+  add("notes", {
+    course_id: courses.piano.id, topic_id: null, title: "Parmak numaraları", is_pinned: false,
+    content: doc(p("Başparmak 1, serçe parmak 5. C majörde başparmak geçişi 3. parmaktan sonra.")),
+  });
+  add("notes", {
+    course_id: null, topic_id: null, title: "Dönem için kendime not", is_pinned: false,
+    content: doc(p("Haftada en az 5 gün, en az 30 dakika. Seriyi bozma ama kendini de yorma.")),
+  });
+}

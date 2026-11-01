@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Monitor, Moon, Sun } from "lucide-react";
 
 import {
@@ -13,6 +12,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { MAIN_NAV, SETTINGS_NAV } from "@/lib/navigation";
+import { useNav } from "@/lib/nav/nav-context";
 import { applyTheme } from "@/lib/theme";
 import { useCommandMenu } from "./command-menu-context";
 import { ADD_COURSE_ACTION, QUICK_ADD_ACTIONS } from "./quick-add";
@@ -25,7 +25,7 @@ const THEMES = [
 
 export function CommandMenu() {
   const { open, setOpen } = useCommandMenu();
-  const router = useRouter();
+  const nav = useNav();
 
   const run = (fn: () => void) => {
     setOpen(false);
@@ -44,7 +44,7 @@ export function CommandMenu() {
               <CommandItem
                 key={item.href}
                 value={`${item.label} ${item.description}`}
-                onSelect={() => run(() => router.push(item.href))}
+                onSelect={() => run(() => nav.push(item.href))}
               >
                 <Icon />
                 <span>{item.label}</span>

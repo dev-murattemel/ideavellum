@@ -1,7 +1,6 @@
 "use server";
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { isSupabaseConfigured, serverEnv } from "@/lib/env";
@@ -47,12 +46,4 @@ export async function sendMagicLink(
   }
 
   return { status: "sent", email: parsed.data.email };
-}
-
-export async function signOut() {
-  if (isSupabaseConfigured) {
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-  }
-  redirect("/giris");
 }

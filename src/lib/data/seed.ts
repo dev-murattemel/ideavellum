@@ -1,0 +1,117 @@
+import { addDays, addWeeks, subDays } from "date-fns";
+
+import { DEFAULT_TIMEZONE } from "@/lib/dates";
+import { isoDate, isoWeekday, wallToUtc, zonedNow } from "@/lib/time";
+import { positionAtEnd } from "./position";
+import { createBuilder } from "./seed-builder";
+import { seedContent } from "./seed-content";
+import { seedHistory } from "./seed-history";
+import type { ClassSession, Course, DataSnapshot, NewRow, TopicStatus } from "./types";
+
+type CourseSeed = Omit<NewRow<"courses">, "term_id" | "completed_at" | "final_reflection" | "final_note" | "final_rating" | "status"> & {
+  key: string;
+  topics: [string, TopicStatus][];
+};
+
+const COURSES: CourseSeed[] = [
+  {
+    key: "eng", name: "İngilizce B2", code: "ENG-B2", color: "sky",
+    description: "Konuşma ve yazma ağırlıklı orta-üst seviye İngilizce.",
+    goal: "Ocak sonunda B2 sınavına hazır olmak ve 20 dakikalık bir sunumu rahatça yapabilmek.",
+    target_weekly_minutes: 240, start_date: null, target_end_date: null,
+    topics: [["Present perfect continuous", "done"], ["Conditionals (2. ve 3. tip)", "done"], ["Reported speech", "in_progress"], ["Passive voice", "not_started"], ["Essay yazımı: görüş yazısı", "not_started"], ["Sunum dili ve geçiş ifadeleri", "not_started"]],
+  },
+  {
+    key: "lacan", name: "Lacan'a Giriş", code: "PSY-101", color: "lavender",
+    description: "Ayna evresinden üç düzene: Lacan psikanalizinin temel kavramları.",
+    goal: "Temel kavramları kendi cümlelerimle anlatabilmek ve Écrits'ten iki metni okumak.",
+    target_weekly_minutes: 180, start_date: null, target_end_date: null,
+    topics: [["Freud'a dönüş", "done"], ["Ayna evresi", "done"], ["Hayali, Simgesel, Gerçek", "in_progress"], ["Büyük Öteki", "not_started"], ["Arzu ve eksiklik", "not_started"], ["Dört söylem", "not_started"]],
+  },
+  {
+    key: "ux", name: "UX Yazarlığı", code: "UXW-201", color: "peach",
+    description: "Arayüz metinleri, ses tonu ve mikro metin yazımı.",
+    goal: "Kendi ürünüm için ses tonu rehberi ve 30 ekranlık metin seti hazırlamak.",
+    target_weekly_minutes: 150, start_date: null, target_end_date: null,
+    topics: [["Ses ve ton", "done"], ["Buton ve eylem metinleri", "in_progress"], ["Hata mesajları", "not_started"], ["Boş durumlar", "not_started"], ["Erişilebilir metin", "not_started"]],
+  },
+  {
+    key: "piano", name: "Piyano Temelleri", code: "MUS-110", color: "mint",
+    description: "Nota okuma, temel akorlar ve iki elle çalma.",
+    goal: "Satie – Gymnopédie No.1'i baştan sona çalabilmek.",
+    target_weekly_minutes: 120, start_date: null, target_end_date: null,
+    topics: [["Nota okuma (sol ve fa anahtarı)", "done"], ["Majör gamlar", "in_progress"], ["Temel akorlar", "in_progress"], ["İki elle bağımsız çalma", "not_started"], ["Gymnopédie No.1", "not_started"]],
+  },
+  {
+    key: "dataviz", name: "Veri Görselleştirme", code: "DAT-210", color: "rose",
+    description: "Doğru grafik seçimi, renk ve hikâye anlatımı.",
+    goal: "Kendi çalışma verimle aylık bir rapor tasarlamak.",
+    target_weekly_minutes: 120, start_date: null, target_end_date: null,
+    topics: [["Grafik türleri ve seçim", "done"], ["Renk ve erişilebilirlik", "in_progress"], ["Gösterge panosu düzeni", "not_started"], ["Veriyle hikâye anlatımı", "not_started"]],
+  },
+];
+
+/** Bugünün haftanın hangi günü olduğuna göre dağıtılmış haftalık program (bugünden itibaren gün farkı). */
+const SCHEDULE: [number, string, string, string, string | null][] = [
+  [0, "eng", "09:00", "10:30", "Çalışma odası"],
+  [0, "dataviz", "13:30", "14:30", null],
+  [0, "lacan", "19:00", "20:30", "Kütüphane"],
+  [1, "ux", "10:00", "11:30", null],
+  [1, "piano", "18:00", "19:00", "Salon"],
+  [2, "eng", "09:00", "10:30", "Çalışma odası"],
+  [2, "lacan", "20:00", "21:00", null],
+  [3, "dataviz", "11:00", "12:30", null],
+  [3, "piano", "18:00", "19:00", "Salon"],
+  [4, "ux", "10:00", "12:00", null],
+  [4, "eng", "17:00", "18:00", "Online konuşma kulübü"],
+  [5, "piano", "11:00", "12:00", "Salon"],
+];
+
+function seasonName(d: Date) {
+  const m = d.getMonth() + 1;
+  if (m >= 9) return `${d.getFullYear()} Güz`;
+  if (m <= 1) return `${d.getFullYear() - 1} Güz`;
+  if (m <= 6) return `${d.getFullYear()} Bahar`;
+  return `${d.getFullYear()} Yaz`;
+}
+
+export function buildDemoData(userId: string, now: Date = new Date()): DataSnapshot {
+  const tz = DEFAULT_TIMEZONE;
+  const today = zonedNow(tz, now);
+  const { snap, add } = createBuilder(userId, now);
+
+  const termStart = subDays(today, 49);
+  const term = add("terms", {
+    name: seasonName(today), start_date: isoDate(termStart), end_date: isoDate(addWeeks(today, 12)), is_active: true,
+  });
+  const prevTerm = add("terms", {
+    name: "Önceki dönem", start_date: isoDate(subDays(termStart, 150)), end_date: isoDate(subDays(termStart, 14)), is_active: false,
+  });
+
+  const courses: Record<string, Course> = {};
+  COURSES.forEach(({ key, topics, ...c }) => {
+    const course = add("courses", {
+      ...c, term_id: term.id, status: "active", start_date: isoDate(termStart),
+      target_end_date: term.end_date, completed_at: null, final_reflection: null, final_note: null, final_rating: null,
+    });
+    courses[key] = course;
+    topics.forEach(([title, status], i) => {
+      const existing = Object.values(snap.topics).filter((t) => t.course_id === course.id);
+      add("topics", {
+        course_id: course.id, title, status, position: positionAtEnd(existing),
+        done_at: status === "done" ? wallToUtc(isoDate(subDays(today, 40 - i * 9)), "20:00", tz).toISOString() : null,
+      });
+    });
+  });
+
+  const sessions: ClassSession[] = SCHEDULE.map(([offset, key, start, end, location]) =>
+    add("class_sessions", {
+      course_id: courses[key].id, weekday: isoWeekday(addDays(today, offset)), start_time: start, end_time: end,
+      location, valid_from: term.start_date, valid_until: term.end_date, bell_overrides: {},
+    }),
+  );
+
+  seedContent(add, snap, { courses, today, tz });
+  seedHistory(add, { courses, sessions, today, tz, termStart, prevTerm });
+  return snap;
+}
