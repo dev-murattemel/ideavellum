@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { countRows, downloadBackup, lastBackupAt, readBackup, snapshotNow, type Backup } from "@/lib/data/backup";
+import { countRows, downloadBackup, lastBackupAt, normalizeProfile, readBackup, snapshotNow, type Backup } from "@/lib/data/backup";
 import { idbDel } from "@/lib/data/device-db";
 import { usePlace, useProfile } from "@/lib/data/hooks";
 import { DEVICE_KEY, MIGRATE_FLAG, setStorageMode } from "@/lib/data/storage-mode";
@@ -58,7 +58,7 @@ export function StorageSection() {
     if (!pending) return;
     useTimer.getState().discard();
     const s = useData.getState();
-    useData.getState().load(pending.data, { ...pending.profile, id: s.profile.id }, s.mode, s.place);
+    useData.getState().load(pending.data, normalizeProfile(pending.profile, s.profile.id, s.profile.email), s.mode, s.place);
     toast.success("Yedek yüklendi", { description: `${countRows(pending.data)} kayıt geri geldi.` });
     setPending(null);
   };

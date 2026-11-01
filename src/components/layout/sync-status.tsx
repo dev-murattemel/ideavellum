@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Check, CloudOff, FileCheck2, HardDrive, LoaderCircle } from "lucide-react";
+import { Check, CloudOff, FileCheck2, FileWarning, HardDrive, LoaderCircle } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useDataMode, usePlace } from "@/lib/data/hooks";
 import { retryQueued, useSync } from "@/lib/data/store";
-import { useFileLink } from "@/lib/data/file-link";
+import { reconnectFileLink, useFileLink } from "@/lib/data/file-link";
 import { cn } from "@/lib/utils";
 
 function useOnline() {
@@ -31,6 +31,26 @@ export function SyncStatus() {
   const online = useOnline();
   const place = usePlace();
   const file = useFileLink();
+  if (file.status === "needs-permission" && file.fileName) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={async () => {
+              const ok = await reconnectFileLink();
+              const { toast } = await import("sonner");
+              if (ok) toast.success("Dosyaya bağlanıldı", { description: "Aradaki değişiklikler dosyayla birleştirildi." });
+            }}
+            className="flex h-9 cursor-pointer items-center gap-1.5 rounded-md bg-[#FDF4D3] px-2.5 text-xs font-medium text-[#7D6210] dark:bg-[#E3B524]/16 dark:text-[#F1D37A]"
+          >
+            <FileWarning className="size-3.5" aria-hidden /> Dosyaya bağlan
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>{file.fileName} için izin gerekiyor; değişiklikler şimdilik bu tarayıcıda bekliyor</TooltipContent>
+      </Tooltip>
+    );
+  }
   if (place === "device") {
     const linked = file.status === "linked";
     return (

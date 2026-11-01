@@ -2,9 +2,10 @@
 
 import { create } from "zustand";
 
-import { snapshotNow, type Backup } from "./backup";
+import { normalizeProfile, snapshotNow, type Backup } from "./backup";
 import { idbDel, idbGet, idbSet } from "./device-db";
-import { useData } from "./store";
+import { mergeSnapshots, mergeTombs, signature, type Tombstones } from "./merge";
+import { onRowsRemoved, useData } from "./store";
 import { TABLE_NAMES, type DataSnapshot } from "./types";
 
 /**
@@ -51,80 +52,154 @@ async function permitted(h: Handle, ask: boolean) {
   return (await h.requestPermission?.(opts)) === "granted";
 }
 
-function toBackup(): Backup {
-  const { data, profile } = snapshotNow();
-  return { app: "ideavellum", version: 1, exportedAt: new Date().toISOString(), data, profile };
-}
-
-async function writeNow() {
-  if (!handle) return;
+// --- Silinen kayıtlar (cihazda saklanır, dosyaya da yazılır) ---
+const TOMBS_KEY = "ivl-tombstones";
+function loadTombs(): Tombstones {
   try {
-    const w = await handle.createWritable();
-    await w.write(JSON.stringify(toBackup()));
-    await w.close();
-    const f = await handle.getFile();
-    useFileLink.setState({ status: "linked", lastWrite: Date.now(), lastModified: f.lastModified });
+    return JSON.parse(localStorage.getItem(TOMBS_KEY) ?? "{}") as Tombstones;
   } catch {
-    useFileLink.setState({ status: (await permitted(handle, false)) ? "error" : "needs-permission" });
+    return {};
   }
 }
+function saveTombs(t: Tombstones) {
+  try {
+    localStorage.setItem(TOMBS_KEY, JSON.stringify(t));
+  } catch {}
+}
+let tombs: Tombstones = typeof window !== "undefined" ? loadTombs() : {};
+onRowsRemoved((ids) => {
+  const at = new Date().toISOString();
+  ids.forEach((id) => (tombs[id] = at));
+  saveTombs(tombs);
+});
 
-async function readFile(): Promise<{ backup: Backup; modified: number } | null> {
+type FileData = Backup & { deleted?: Tombstones };
+
+function toBackup(data: DataSnapshot = snapshotNow().data): FileData {
+  return { app: "ideavellum", version: 1, exportedAt: new Date().toISOString(), data, profile: snapshotNow().profile, deleted: tombs };
+}
+
+async function writeData(content: FileData) {
+  if (!handle) return;
+  const w = await handle.createWritable();
+  await w.write(JSON.stringify(content));
+  await w.close();
+  const f = await handle.getFile();
+  useFileLink.setState({ status: "linked", lastWrite: Date.now(), lastModified: f.lastModified });
+}
+
+async function readFile(): Promise<{ backup: FileData; modified: number } | null> {
   if (!handle) return null;
   const f = await handle.getFile();
   if (!f.size) return null;
-  const parsed = JSON.parse(await f.text()) as Backup;
+  const parsed = JSON.parse(await f.text()) as FileData;
   if (parsed.app !== "ideavellum" || !parsed.data) throw new Error("Seçilen dosya bir ideavellum veri dosyası değil.");
   TABLE_NAMES.forEach((t) => ((parsed.data as DataSnapshot)[t] ??= {} as never));
   return { backup: parsed, modified: f.lastModified };
 }
 
-function loadInto(b: Backup) {
+let applying = false; // dosyadan gelen birleştirmeyi yüklerken yeniden eşitleme tetiklenmesin
+
+function loadInto(data: DataSnapshot, fileProfile?: Backup["profile"]) {
   const s = useData.getState();
-  // Saklama yeri ve kimlik aynı kalır; veriler dosyadakiyle değişir
-  useData.getState().load(b.data, { ...b.profile, id: s.profile.id, email: s.profile.email }, s.mode, s.place);
+  const local = snapshotNow();
+  // Bu tarayıcıda hiç veri yoksa (yeni tarayıcı) profil de dosyadan gelir
+  const empty = !signature(local.data).replace(/\|/g, "");
+  const profile = empty && fileProfile ? normalizeProfile(fileProfile, s.profile.id, s.profile.email) : s.profile;
+  applying = true;
+  useData.getState().load(data, profile, s.mode, s.place);
+  applying = false;
 }
 
-/** Bağlantı kurulduktan sonra: değişiklikleri yaz, dışarıdan değişikliği izle */
+let syncing: Promise<void> | null = null;
+let again = false;
+
+/**
+ * Dosya ile bu tarayıcıyı birleştirir: her kaydın en yeni hâli kalır, silinenler iki tarafta da silinir.
+ * Hiçbir taraf diğerini körlemesine ezmez; böylece iki tarayıcı aynı dosyayı güvenle kullanır.
+ */
+async function syncNow(): Promise<void> {
+  if (!handle) return;
+  if (syncing) {
+    again = true;
+    return syncing;
+  }
+  syncing = (async () => {
+    try {
+      if (!readsAsSource) {
+        // Bulut modunda dosya yalnızca güncel yedektir
+        await writeData(toBackup());
+        return;
+      }
+      let file: { backup: FileData; modified: number } | null = null;
+      try {
+        file = await readFile();
+      } catch (e) {
+        if (e instanceof SyntaxError) file = null; // yarım yazılmış dosya: üzerine güncel hâli yaz
+        else throw e;
+      }
+      const local = snapshotNow().data;
+      tombs = mergeTombs(tombs, file?.backup.deleted);
+      saveTombs(tombs);
+      const merged = file ? mergeSnapshots(local, file.backup.data, tombs) : mergeSnapshots(local, local, tombs);
+      const mergedSig = signature(merged);
+      if (mergedSig !== signature(local)) loadInto(merged, file?.backup.profile);
+      const fileSig = file ? signature(file.backup.data) : "";
+      const tombsChanged = JSON.stringify(file?.backup.deleted ?? {}) !== JSON.stringify(tombs);
+      if (!file || mergedSig !== fileSig || tombsChanged) await writeData(toBackup(merged));
+      else useFileLink.setState({ status: "linked", lastModified: file.modified });
+    } catch (e) {
+      if ((e as Error)?.message?.includes("ideavellum veri dosyası")) throw e;
+      useFileLink.setState({ status: handle && (await permitted(handle, false)) ? "error" : "needs-permission" });
+    } finally {
+      syncing = null;
+      if (again) {
+        again = false;
+        void syncNow();
+      }
+    }
+  })();
+  return syncing;
+}
+
+/** Bağlantı kurulduktan sonra: değişiklikleri birleştirerek yaz, dışarıdan değişikliği izle */
 function startSync() {
   unsub?.();
   if (poll) clearInterval(poll);
   let timer: ReturnType<typeof setTimeout> | undefined;
-  let skip = false; // dosyadan yükleme sonrası oluşan tetiklemeyi geri yazma
   unsub = useData.subscribe(() => {
-    if (skip) {
-      skip = false;
-      return;
-    }
+    if (applying) return;
     clearTimeout(timer);
-    timer = setTimeout(() => void writeNow(), 1500);
+    timer = setTimeout(() => void syncNow(), 1500);
   });
-  if (readsAsSource) {
-    poll = setInterval(async () => {
-      if (!handle || document.hidden) return;
-      try {
-        const f = await handle.getFile();
-        const { lastModified } = useFileLink.getState();
-        if (lastModified && f.lastModified > lastModified + 1000) {
-          const r = await readFile();
-          if (r) {
-            skip = true;
-            loadInto(r.backup);
-            useFileLink.setState({ lastModified: r.modified });
-            const { toast } = await import("sonner");
-            toast("Veri dosyası güncellendi", { description: "Başka bir cihazdaki değişiklikler yüklendi." });
-          }
+  poll = setInterval(async () => {
+    if (!handle || document.hidden || !readsAsSource) return;
+    try {
+      const f = await handle.getFile();
+      const { lastModified } = useFileLink.getState();
+      if (!lastModified || f.lastModified > lastModified + 500) {
+        const before = signature(snapshotNow().data);
+        await syncNow();
+        if (signature(snapshotNow().data) !== before) {
+          const { toast } = await import("sonner");
+          toast("Veri dosyası güncellendi", { description: "Başka bir tarayıcı ya da cihazdaki değişiklikler eklendi." });
         }
-      } catch {
-        /* izin ya da dosya geçici olarak yok */
       }
-    }, 15_000);
-  }
+    } catch {
+      /* izin ya da dosya geçici olarak yok */
+    }
+  }, 10_000);
+  // Sekmeye dönünce hemen kontrol et
+  document.addEventListener("visibilitychange", onVisible);
+}
+
+function onVisible() {
+  if (!document.hidden && handle && readsAsSource) void syncNow();
 }
 
 /**
- * Açılışta çağrılır. Daha önce dosya seçildiyse ve izin hâlâ geçerliyse
- * (cihaz modunda) verileri dosyadan okur ve eşitlemeyi başlatır.
+ * Açılışta çağrılır. Daha önce dosya seçildiyse ve izin hâlâ geçerliyse eşitlemeyi başlatır.
+ * İzin gerekiyorsa değişiklikler bu tarayıcıda birikir; izin verilince dosyayla birleştirilir.
  */
 export async function resumeFileLink(opts: { asSource: boolean }) {
   readsAsSource = opts.asSource;
@@ -137,63 +212,54 @@ export async function resumeFileLink(opts: { asSource: boolean }) {
     useFileLink.setState({ status: "needs-permission" });
     return;
   }
-  await connect(false);
+  await connect();
 }
 
 /** İzin istenip dosyaya yeniden bağlanır (bir tıklamayla çağrılmalı) */
 export async function reconnectFileLink() {
   if (!handle || !(await permitted(handle, true))) return false;
-  await connect(false);
+  await connect();
   return true;
 }
 
-async function connect(preferLocal: boolean) {
-  if (readsAsSource && !preferLocal) {
-    try {
-      const r = await readFile();
-      if (r) {
-        loadInto(r.backup);
-        useFileLink.setState({ lastModified: r.modified });
-      } else await writeNow();
-    } catch {
-      await writeNow();
-    }
-  } else {
-    await writeNow();
-  }
-  useFileLink.setState({ status: "linked" });
+async function connect() {
+  await syncNow();
+  if (useFileLink.getState().status !== "needs-permission") useFileLink.setState({ status: "linked" });
   startSync();
 }
 
-/** Yeni bir dosya oluştur / seç: mevcut veriler oraya yazılır */
+/** Dosya seç ya da yeni oluştur: içi doluysa bu tarayıcıdaki verilerle birleştirilir (ezilmez) */
 export async function linkNewFile() {
   const w = window as FsWindow;
   const h = await w.showSaveFilePicker!({ suggestedName: "ideavellum-veriler.json", types: TYPES });
   handle = h;
   await idbSet(HANDLE_KEY, h);
   useFileLink.setState({ fileName: h.name });
-  await connect(true);
+  await connect();
 }
 
-/** Var olan bir veri dosyasını aç: veriler dosyadan yüklenir (cihaz modu) */
+/** Var olan bir veri dosyasını aç: dosyadaki veriler bu tarayıcıdakilerle birleştirilir */
 export async function openExistingFile() {
   const w = window as FsWindow;
   const [h] = await w.showOpenFilePicker!({ types: TYPES, multiple: false });
   if (!(await permitted(h, true))) throw new Error("Dosyaya yazma izni verilmedi.");
+  const prev = handle;
   handle = h;
-  const r = await readFile();
+  try {
+    await readFile(); // geçerli bir ideavellum dosyası mı?
+  } catch (e) {
+    handle = prev;
+    throw e;
+  }
   await idbSet(HANDLE_KEY, h);
   useFileLink.setState({ fileName: h.name });
-  if (r) {
-    loadInto(r.backup);
-    useFileLink.setState({ lastModified: r.modified });
-  }
-  await connect(true);
+  await connect();
 }
 
 export async function unlinkFile() {
   unsub?.();
   if (poll) clearInterval(poll);
+  document.removeEventListener("visibilitychange", onVisible);
   handle = null;
   await idbDel(HANDLE_KEY).catch(() => {});
   useFileLink.setState({ status: "none", fileName: null, lastWrite: null, lastModified: null });

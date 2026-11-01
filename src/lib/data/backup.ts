@@ -1,5 +1,6 @@
 "use client";
 
+import { defaultProfile } from "./defaults";
 import { data } from "./store";
 import { TABLE_NAMES, type DataSnapshot, type Profile } from "./types";
 
@@ -45,4 +46,21 @@ export function lastBackupAt(): number | null {
   } catch {
     return null;
   }
+}
+
+/** Dosyadan ya da yedekten gelen profili eksik alanlara karşı varsayılanlarla tamamlar */
+export function normalizeProfile(p: Partial<Profile> | undefined, id: string, email: string | null): Profile {
+  const base = defaultProfile(id, email);
+  return {
+    ...base,
+    ...(p ?? {}),
+    id,
+    email,
+    bell_settings: { ...base.bell_settings, ...(p?.bell_settings ?? {}), quiet_hours: { ...base.bell_settings.quiet_hours, ...(p?.bell_settings?.quiet_hours ?? {}) } },
+    notification_prefs: {
+      ...base.notification_prefs,
+      ...(p?.notification_prefs ?? {}),
+      channels: { ...base.notification_prefs.channels, ...(p?.notification_prefs?.channels ?? {}) },
+    },
+  };
 }

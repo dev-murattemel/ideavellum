@@ -63,7 +63,7 @@ export function FileLinkPanel() {
           {needs
             ? "Tarayıcı güvenlik için dosyaya erişim iznini yeniden soruyor. Bir tıkla izin ver; veriler kaldığı yerden eşitlenir."
             : `${asSource ? "Veriler bu dosyadan okunuyor ve" : "Her değişiklik"} birkaç saniye içinde bu dosyaya yazılıyor${link.lastWrite ? ` · son kayıt ${timeAgo(new Date(link.lastWrite).toISOString())}` : ""}.`}
-          {asSource && !needs && " Dosyayı iCloud Drive, Google Drive ya da Dropbox klasöründe tutarsan başka bilgisayarda da aynı dosyayı açabilirsin."}
+          {asSource && !needs && " Başka bir tarayıcıda ya da bilgisayarda (dosya iCloud Drive, Google Drive veya Dropbox klasöründeyse) “Var olan dosyayı aç” ile aynı dosyayı seç; iki taraftaki değişiklikler birleşir."}
         </p>
         <div className="flex flex-wrap gap-2">
           {needs && <Button onClick={() => void run(async () => { if (!(await reconnectFileLink())) throw new Error("İzin verilmedi"); }, "Dosyaya yeniden bağlanıldı")}><RefreshCw /> İzin ver ve bağlan</Button>}

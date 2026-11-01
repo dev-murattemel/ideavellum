@@ -41,6 +41,11 @@ export const emptySnapshot = (): DataSnapshot =>
   Object.fromEntries(TABLE_NAMES.map((t) => [t, {}])) as unknown as DataSnapshot;
 
 let adapter: RemoteAdapter | null = null;
+/** Silinen kayıtların kimlikleri (dosya eşitlemesinde silmeyi diğer tarafa taşımak için) */
+let removeListener: ((ids: string[]) => void) | null = null;
+export const onRowsRemoved = (fn: ((ids: string[]) => void) | null) => {
+  removeListener = fn;
+};
 let onSyncError: ((error: unknown) => void) | null = null;
 
 export function setAdapter(next: RemoteAdapter | null, onError?: (error: unknown) => void) {
@@ -138,8 +143,10 @@ export const useData = create<DataState>()((set, get) => ({
     const tableOf = <K extends TableName>(t: K) =>
       (next[t] ??= { ...state[t] } as DataSnapshot[K]) as Record<string, Record<string, unknown>>;
 
+    const removedIds: string[] = [];
     const removeRec = (t: TableName, rowId: string) => {
       delete tableOf(t)[rowId];
+      removedIds.push(rowId);
       CASCADE[t]?.forEach(({ table: child, fk }) => {
         Object.values(tableOf(child))
           .filter((r) => r[fk] === rowId)
@@ -157,6 +164,7 @@ export const useData = create<DataState>()((set, get) => ({
     };
 
     removeRec(table, id);
+    removeListener?.(removedIds);
     set(next as Partial<DataState>);
     // Veritabanı alt kayıtları kendisi siler / boşaltır; sadece kökü göndermek yeterli.
     flush({ upserts, removed: [{ table, id }] });

@@ -61,7 +61,7 @@ export function BackupReminder() {
   // İzin bekleyen bağlı dosya: her iki modda da tek tıkla yeniden bağlan
   if (supported && link.status === "needs-permission") {
     return (
-      <Card icon={RefreshCw} title={`${link.fileName} dosyasına yeniden bağlan`} text="Tarayıcı güvenlik için izni yeniden soruyor; bir tıkla eşitleme kaldığı yerden sürer.">
+      <Card icon={RefreshCw} title={`${link.fileName} dosyasına yeniden bağlan`} text="Tarayıcı güvenlik için izni yeniden soruyor. Bu arada yaptığın değişiklikler kaybolmaz; bağlanınca dosyayla birleştirilir.">
         <Button size="sm" onClick={() => void act(async () => { if (!(await reconnectFileLink())) throw new Error("İzin verilmedi"); }, "Dosyaya bağlanıldı")}><RefreshCw /> Bağlan</Button>
       </Card>
     );
@@ -71,7 +71,7 @@ export function BackupReminder() {
 
   if (supported && link.status === "none") {
     return (
-      <Card icon={HardDrive} title="Verilerini bilgisayarında bir dosyada tut" text="Bir kez dosya seç; her değişiklik oraya otomatik yazılır, açılışta oradan okunur." onClose={snooze}>
+      <Card icon={HardDrive} title="Verilerini bilgisayarında bir dosyada tut" text="Başka bir tarayıcıda zaten dosya seçtiysen “Var olanı aç” ile aynı dosyayı seç; veriler birleşir." onClose={snooze}>
         <Button size="sm" onClick={() => void act(linkNewFile, "Dosya bağlandı; değişiklikler otomatik kaydedilecek")}><FilePlus2 /> Dosya seç</Button>
         <Button size="sm" variant="secondary" onClick={() => void act(openExistingFile, "Veriler dosyadan yüklendi")}><FolderOpen /> Var olanı aç</Button>
       </Card>
