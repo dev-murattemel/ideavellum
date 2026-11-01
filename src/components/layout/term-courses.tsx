@@ -7,6 +7,9 @@ import { useActiveCourses } from "@/lib/data/hooks";
 import { AppLink, useNav } from "@/lib/nav/nav-context";
 import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
+import { SortableAreas } from "@/components/course/sortable-areas";
+import { verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 /** Aktif alanlar: tür ikonu alanın renginde (ilham 04'teki renk noktalı liste). */
 export function TermCourses() {
@@ -25,12 +28,15 @@ export function TermCourses() {
         </button>
       ) : (
         <ul className="flex flex-col gap-px">
-          {courses.map((c) => {
+          <SortableAreas
+            items={courses}
+            strategy={verticalListSortingStrategy}
+            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+            renderItem={(c) => {
             const href = `/alanlar/${c.id}`;
             const active = pathname === href;
             const Icon = kindOf(c).icon;
             return (
-              <li key={c.id}>
                 <AppLink
                   href={href}
                   aria-current={active ? "page" : undefined}
@@ -43,9 +49,21 @@ export function TermCourses() {
                   <Icon className={cn("size-3.5 shrink-0 text-course-solid", c.status === "paused" && "opacity-40")} strokeWidth={2.2} aria-hidden />
                   <span className="truncate">{c.name}</span>
                 </AppLink>
-              </li>
             );
-          })}
+          }}
+            itemAs="li"
+            renderOverlay={(c) => {
+              const Icon = kindOf(c).icon;
+              return (
+                <div data-course={c.color} className="flex h-8 items-center gap-2.5 rounded-md bg-surface pr-2.5 pl-[30px] text-13 font-medium shadow-lift ring-1 ring-line">
+                  <Icon className="size-3.5 shrink-0 text-course-solid" strokeWidth={2.2} aria-hidden />
+                  <span className="truncate">{c.name}</span>
+                </div>
+              );
+            }}
+          >
+            {(nodes) => nodes}
+          </SortableAreas>
           <li>
             <button
               type="button"

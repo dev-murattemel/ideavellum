@@ -22,6 +22,8 @@ export type AreaKind = "course" | "fitness" | "cooking" | "watching" | "reading"
 /** Alan (eski adıyla ders): ders, spor, mutfak, izleme, okuma… her tür düzenli uğraş */
 export type Course = Base & {
   kind: AreaKind;
+  /** Sürükle-bırak sırası (fractional index); boşsa oluşturulma sırası */
+  position: string | null;
   term_id: string | null;
   name: string;
   code: string | null;

@@ -18,6 +18,8 @@ import { AppLink } from "@/lib/nav/nav-context";
 import { fmt, parseDay } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 import { CourseCard } from "./course-card";
+import { SortableAreas } from "./sortable-areas";
+import { rectSortingStrategy } from "@dnd-kit/sortable";
 import { AREA_KINDS, kindOf } from "@/lib/area-kinds";
 import type { AreaKind } from "@/lib/data/types";
 import { cn } from "@/lib/utils";
@@ -105,8 +107,15 @@ export function CoursesView() {
               })}
             </div>
           )}
+          <SortableAreas
+            items={active}
+            strategy={rectSortingStrategy}
+            renderItem={(c) => <CourseCard course={c} />}
+            renderOverlay={(c) => <div className="rotate-[1.5deg] rounded-xl shadow-lift"><CourseCard course={c} /></div>}
+          >
+            {(nodes) => (
           <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {active.map((c) => <CourseCard key={c.id} course={c} />)}
+            {nodes}
             <button
               type="button"
               onClick={() => ui().open({ type: "course" })}
@@ -116,6 +125,8 @@ export function CoursesView() {
               Alan ekle
             </button>
           </div>
+            )}
+          </SortableAreas>
           {paused.length > 0 && (
             <section className="flex flex-col gap-3">
               <h2 className="text-sm font-semibold text-ink-muted">Ara verilenler</h2>

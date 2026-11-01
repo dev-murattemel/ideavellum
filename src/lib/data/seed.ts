@@ -8,7 +8,7 @@ import { seedContent, seedJournalAndQuotes } from "./seed-content";
 import { seedHistory } from "./seed-history";
 import type { ClassSession, Course, DataSnapshot, NewRow, TopicStatus } from "./types";
 
-type CourseSeed = Omit<NewRow<"courses">, "term_id" | "completed_at" | "final_reflection" | "final_note" | "final_rating" | "status"> & {
+type CourseSeed = Omit<NewRow<"courses">, "term_id" | "completed_at" | "final_reflection" | "final_note" | "final_rating" | "status" | "position"> & {
   key: string;
   topics: [string, TopicStatus][];
 };
@@ -111,7 +111,7 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
   const courses: Record<string, Course> = {};
   COURSES.forEach(({ key, topics, ...c }) => {
     const course = add("courses", {
-      ...c, term_id: term.id, status: "active", start_date: isoDate(termStart),
+      ...c, position: null, term_id: term.id, status: "active", start_date: isoDate(termStart),
       target_end_date: term.end_date, completed_at: null, final_reflection: null, final_note: null, final_rating: null,
     });
     courses[key] = course;

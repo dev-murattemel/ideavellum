@@ -98,7 +98,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
       onClose();
     } else {
       const created = data().insert("courses", {
-        ...values, completed_at: null, final_reflection: null, final_note: null, final_rating: null,
+        ...values, position: null, completed_at: null, final_reflection: null, final_note: null, final_rating: null,
       });
       const term = terms.find((t) => t.id === values.term_id);
       slots.forEach((x) =>

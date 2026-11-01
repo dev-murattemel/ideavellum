@@ -22,6 +22,10 @@ export function useActiveTerm() {
 
 const byCreated = (a: { created_at: string }, b: { created_at: string }) => a.created_at.localeCompare(b.created_at);
 
+/** Alanlar: önce elle verilen sıra, sırası olmayanlar oluşturulma sırasıyla sonda */
+export const byAreaOrder = (a: Course, b: Course) =>
+  a.position && b.position ? (a.position < b.position ? -1 : a.position > b.position ? 1 : 0) : a.position ? -1 : b.position ? 1 : byCreated(a, b);
+
 /** Aktif dönemin devam eden (tamamlanmamış) dersleri */
 export function useActiveCourses(): Course[] {
   const courses = useRows("courses");
@@ -30,7 +34,7 @@ export function useActiveCourses(): Course[] {
     () =>
       courses
         .filter((c) => (c.status === "active" || c.status === "paused") && (!term || c.term_id === term.id || !c.term_id))
-        .sort(byCreated),
+        .sort(byAreaOrder),
     [courses, term],
   );
 }
