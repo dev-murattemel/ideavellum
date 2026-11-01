@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, CircleCheckBig, Ellipsis, Pencil, Play, Trash2 } from "lucide-react";
+import { ArrowLeft, CircleCheckBig, Ellipsis, Pencil, Play, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
@@ -69,6 +69,11 @@ export function CourseHeader({ course }: { course: Course }) {
               {course.status !== "completed" && (
                 <DropdownMenuItem onSelect={() => ui().open({ type: "complete-course", courseId: course.id })}>
                   <CircleCheckBig /> Dersi tamamla
+                </DropdownMenuItem>
+              )}
+              {course.status === "completed" && (
+                <DropdownMenuItem onSelect={() => { data().update("courses", course.id, { status: "active", completed_at: null }); toast("Ders yeniden açıldı"); }}>
+                  <RotateCcw /> Dersi yeniden aç
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />

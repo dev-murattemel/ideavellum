@@ -85,7 +85,7 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
     name: seasonName(today), start_date: isoDate(termStart), end_date: isoDate(addWeeks(today, 12)), is_active: true,
   });
   const prevTerm = add("terms", {
-    name: "Önceki dönem", start_date: isoDate(subDays(termStart, 150)), end_date: isoDate(subDays(termStart, 14)), is_active: false,
+    name: seasonName(subDays(termStart, 60)), start_date: isoDate(subDays(termStart, 150)), end_date: isoDate(subDays(termStart, 14)), is_active: false,
   });
 
   const courses: Record<string, Course> = {};
