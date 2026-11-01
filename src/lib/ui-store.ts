@@ -21,6 +21,12 @@ type UIState = {
   dialog: DialogState | null;
   taskSheetId: string | null;
   noteEditorId: string | null;
+  /** Tam ekran odak modu */
+  focusOpen: boolean;
+  /** Kısayollar penceresi */
+  shortcutsOpen: boolean;
+  setFocus: (v: boolean) => void;
+  setShortcuts: (v: boolean) => void;
   open: (d: DialogState) => void;
   close: () => void;
   openTask: (id: string | null) => void;
@@ -32,6 +38,10 @@ export const useUI = create<UIState>()((set) => ({
   dialog: null,
   taskSheetId: null,
   noteEditorId: null,
+  focusOpen: false,
+  shortcutsOpen: false,
+  setFocus: (focusOpen) => set({ focusOpen }),
+  setShortcuts: (shortcutsOpen) => set({ shortcutsOpen }),
   open: (dialog) => set({ dialog }),
   close: () => set({ dialog: null }),
   openTask: (taskSheetId) => set({ taskSheetId }),

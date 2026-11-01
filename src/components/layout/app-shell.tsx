@@ -13,6 +13,8 @@ import { CommandMenu } from "./command-menu";
 import { CommandMenuProvider } from "./command-menu-context";
 import { DialogHost } from "./dialog-host";
 import { MobileNav } from "./mobile-nav";
+import { Shortcuts } from "./shortcuts";
+import { FocusMode } from "@/components/focus/focus-mode";
 import { SidebarProvider } from "./sidebar-context";
 import { Topbar } from "./topbar";
 
@@ -46,6 +48,8 @@ export function AppShell({
             </div>
             <MobileNav />
             <CommandMenu />
+            <Shortcuts />
+            <FocusMode />
             <DialogHost />
             <TaskSheet />
             <NotePanel />

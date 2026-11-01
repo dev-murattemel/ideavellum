@@ -16,6 +16,8 @@ import { useNav } from "@/lib/nav/nav-context";
 import { applyTheme } from "@/lib/theme";
 import { useCommandMenu } from "./command-menu-context";
 import { CommandSearchGroups } from "./command-search-groups";
+import { ui } from "@/lib/ui-store";
+import { Focus, Keyboard } from "lucide-react";
 import { ADD_COURSE_ACTION, QUICK_ADD_ACTIONS } from "./quick-add";
 
 const THEMES = [
@@ -64,6 +66,15 @@ export function CommandMenu() {
               {label}
             </CommandItem>
           ))}
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Araçlar">
+          <CommandItem value="odak modu pomodoro zamanlayıcı" onSelect={() => run(() => ui().setFocus(true))}>
+            <Focus /> Odak modu <span className="ml-auto text-xs text-ink-subtle">F</span>
+          </CommandItem>
+          <CommandItem value="klavye kısayolları yardım" onSelect={() => run(() => ui().setShortcuts(true))}>
+            <Keyboard /> Klavye kısayolları <span className="ml-auto text-xs text-ink-subtle">?</span>
+          </CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Görünüm">
