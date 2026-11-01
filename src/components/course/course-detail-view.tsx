@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, BookOpen, History, Library, NotebookPen } from "lucide-react";
+import { ArrowLeft, BookOpen, Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,11 @@ import { useRow } from "@/lib/data/hooks";
 import { AppLink } from "@/lib/nav/nav-context";
 import { CourseHeader } from "./course-header";
 import { CourseOverview } from "./course-overview";
-import { CourseTabPlaceholder } from "./course-tab-placeholder";
+import { createNote } from "@/components/notes/create-note";
+import { NoteGrid } from "@/components/notes/note-grid";
+import { ResourceList } from "@/components/resources/resource-list";
+import { ui } from "@/lib/ui-store";
+import { CourseHistoryTab } from "./course-history-tab";
 import { CourseTasksTab } from "./course-tasks-tab";
 import { TopicList } from "./topic-list";
 
@@ -54,9 +58,19 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
         <TabsContent value="genel"><CourseOverview course={course} /></TabsContent>
         <TabsContent value="konular"><TopicList course={course} /></TabsContent>
         <TabsContent value="gorevler"><CourseTasksTab course={course} /></TabsContent>
-        <TabsContent value="notlar"><CourseTabPlaceholder icon={NotebookPen} title="Notlar" phase="Faz 3" /></TabsContent>
-        <TabsContent value="kaynaklar"><CourseTabPlaceholder icon={Library} title="Kaynaklar" phase="Faz 3" /></TabsContent>
-        <TabsContent value="gecmis"><CourseTabPlaceholder icon={History} title="Çalışma geçmişi" phase="Faz 3" /></TabsContent>
+        <TabsContent value="notlar">
+          <div className="flex flex-col gap-4">
+            <Button className="self-start" onClick={() => createNote(course.id)}><Plus /> Bu derse not ekle</Button>
+            <NoteGrid courseId={course.id} newCourseId={course.id} />
+          </div>
+        </TabsContent>
+        <TabsContent value="kaynaklar">
+          <div className="flex flex-col gap-4">
+            <Button className="self-start" onClick={() => ui().open({ type: "resource", preset: { course_id: course.id } })}><Plus /> Bu derse kaynak ekle</Button>
+            <ResourceList courseId={course.id} />
+          </div>
+        </TabsContent>
+        <TabsContent value="gecmis"><CourseHistoryTab course={course} /></TabsContent>
       </Tabs>
     </div>
   );

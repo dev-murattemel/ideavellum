@@ -247,3 +247,35 @@
 .check-pop[data-state="checked"] {
   animation: check-pop 260ms cubic-bezier(0.3, 1.4, 0.5, 1);
 }
+
+/* Not editörü (Tiptap) */
+.tiptap-content {
+  outline: none;
+  min-height: 16rem;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.tiptap-content > * + * { margin-top: 0.6em; }
+.tiptap-content h2 { font-size: 20px; line-height: 28px; font-weight: 600; margin-top: 1.2em; }
+.tiptap-content h3 { font-size: 16px; line-height: 24px; font-weight: 600; margin-top: 1em; }
+.tiptap-content ul:not([data-type="taskList"]) { list-style: disc; padding-left: 1.4em; }
+.tiptap-content ol { list-style: decimal; padding-left: 1.4em; }
+.tiptap-content li > p { margin: 0; }
+.tiptap-content li + li { margin-top: 0.2em; }
+.tiptap-content blockquote { border-left: 3px solid var(--line-strong); padding-left: 1em; color: var(--ink-muted); }
+.tiptap-content a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.tiptap-content code { background: var(--surface-sunken); border-radius: 4px; padding: 0.1em 0.3em; font-size: 0.9em; }
+.tiptap-content ul[data-type="taskList"] { padding-left: 0.1em; }
+.tiptap-content ul[data-type="taskList"] li { display: flex; gap: 0.6em; align-items: flex-start; }
+.tiptap-content ul[data-type="taskList"] li > label { margin-top: 0.3em; user-select: none; }
+.tiptap-content ul[data-type="taskList"] li > div { flex: 1; }
+.tiptap-content ul[data-type="taskList"] input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+.tiptap-content ul[data-type="taskList"] li[data-checked="true"] > div { color: var(--ink-muted); text-decoration: line-through; }
+.tiptap-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--ink-subtle);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

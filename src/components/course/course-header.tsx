@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, CircleCheckBig, Ellipsis, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, CircleCheckBig, Ellipsis, Pencil, Play, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
@@ -19,6 +19,7 @@ import type { Course } from "@/lib/data/types";
 import { useCourseStats } from "@/lib/domain/course-stats";
 import { AppLink, useNav } from "@/lib/nav/nav-context";
 import { fmt, formatDuration, parseDay } from "@/lib/time";
+import { startStudy } from "@/lib/timer/start-study";
 import { ui } from "@/lib/ui-store";
 
 /** Ders detayının renkli başlık alanı (ilham 04) */
@@ -48,6 +49,11 @@ export function CourseHeader({ course }: { course: Course }) {
           <ArrowLeft className="size-4" aria-hidden /> Dersler
         </AppLink>
         <div className="flex items-center gap-2">
+          {course.status === "active" && (
+            <Button size="sm" className="bg-course-fg text-surface hover:bg-course-fg/90" onClick={() => startStudy(course.id)}>
+              <Play className="fill-current" /> <span className="max-sm:hidden">Çalışmayı başlat</span>
+            </Button>
+          )}
           {course.status !== "completed" && (
             <Button variant="secondary" size="sm" className="border-transparent bg-surface/70 hover:bg-surface" onClick={() => ui().open({ type: "course", courseId: course.id })}>
               <Pencil /> Düzenle

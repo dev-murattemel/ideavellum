@@ -35,7 +35,7 @@ export function TaskSheet() {
       <SheetContent className="gap-0 overflow-hidden p-0 sm:max-w-lg" onOpenAutoFocus={(e) => e.preventDefault()}>
         <SheetDescription className="sr-only">Görev ayrıntıları</SheetDescription>
         <div className="flex-1 overflow-y-auto p-5 pt-14">
-          <SheetTitle asChild>
+          <SheetTitle asChild className="field-sizing-content w-full resize-none rounded-md bg-transparent px-1 text-xl leading-7 font-semibold outline-none hover:bg-hover focus:bg-sunken">
             <textarea
               key={task.id + task.title}
               defaultValue={task.title}
@@ -43,7 +43,6 @@ export function TaskSheet() {
               aria-label="Görev başlığı"
               onBlur={(e) => e.target.value.trim() && e.target.value.trim() !== task.title && set({ title: e.target.value.trim() })}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), e.currentTarget.blur())}
-              className="field-sizing-content w-full resize-none rounded-md bg-transparent px-1 text-xl leading-7 font-semibold outline-none hover:bg-hover focus:bg-sunken"
             />
           </SheetTitle>
 

@@ -3,7 +3,9 @@
 import { TaskDialog } from "@/components/board/task-dialog";
 import { CourseDialog } from "@/components/course/course-dialog";
 import { TermDialog } from "@/components/course/term-dialog";
+import { ResourceDialog } from "@/components/resources/resource-dialog";
 import { SessionDialog } from "@/components/schedule/session-dialog";
+import { StudyLogDialog } from "@/components/study/study-log-dialog";
 import { useUI } from "@/lib/ui-store";
 
 /** Uygulama genelindeki diyaloglar tek yerden açılır (hızlı ekle, komut paleti, sayfalar). */
@@ -21,6 +23,10 @@ export function DialogHost() {
       return <SessionDialog key={dialog.sessionId ?? "new"} sessionId={dialog.sessionId} preset={dialog.preset} onClose={close} />;
     case "task":
       return <TaskDialog preset={dialog.preset} onClose={close} />;
+    case "resource":
+      return <ResourceDialog key={dialog.resourceId ?? "new"} resourceId={dialog.resourceId} preset={dialog.preset} onClose={close} />;
+    case "study-log":
+      return <StudyLogDialog preset={dialog.preset} onClose={close} />;
     default:
       return null;
   }

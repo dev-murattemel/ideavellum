@@ -15,6 +15,7 @@ import { MAIN_NAV, SETTINGS_NAV } from "@/lib/navigation";
 import { useNav } from "@/lib/nav/nav-context";
 import { applyTheme } from "@/lib/theme";
 import { useCommandMenu } from "./command-menu-context";
+import { CommandSearchGroups } from "./command-search-groups";
 import { ADD_COURSE_ACTION, QUICK_ADD_ACTIONS } from "./quick-add";
 
 const THEMES = [
@@ -34,7 +35,7 @@ export function CommandMenu() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Sayfa ya da eylem ara…" />
+      <CommandInput placeholder="Sayfa, ders, görev, not ya da kaynak ara…" />
       <CommandList>
         <CommandEmpty>Sonuç bulunamadı.</CommandEmpty>
         <CommandGroup heading="Git">
@@ -73,6 +74,8 @@ export function CommandMenu() {
             </CommandItem>
           ))}
         </CommandGroup>
+        <CommandSeparator />
+        <CommandSearchGroups run={run} />
       </CommandList>
     </CommandDialog>
   );

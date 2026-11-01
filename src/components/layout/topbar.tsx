@@ -7,6 +7,7 @@ import { AppLink } from "@/lib/nav/nav-context";
 import { BrandMark } from "./brand";
 import { useCommandMenu } from "./command-menu-context";
 import { QuickAddMenu } from "./quick-add-menu";
+import { TimerPill } from "./timer-pill";
 import { useModifierKey } from "./use-platform";
 
 export function Topbar() {
@@ -36,6 +37,7 @@ export function Topbar() {
         </button>
 
         <div className="ml-auto flex items-center gap-2">
+          <TimerPill />
           <QuickAddMenu />
         </div>
       </div>

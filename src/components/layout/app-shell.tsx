@@ -1,6 +1,7 @@
 "use client";
 
 import { TaskSheet } from "@/components/board/task-sheet";
+import { NotePanel } from "@/components/notes/note-panel";
 import { DataProvider } from "@/components/providers/data-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useData } from "@/lib/data/store";
@@ -44,6 +45,7 @@ export function AppShell({
             <CommandMenu />
             <DialogHost />
             <TaskSheet />
+            <NotePanel />
           </CommandMenuProvider>
         </SidebarProvider>
       </TooltipProvider>

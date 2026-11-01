@@ -1,6 +1,6 @@
-import { BookPlus, Library, ListTodo, NotebookPen, type LucideIcon } from "lucide-react";
-import { toast } from "sonner";
+import { BookPlus, Library, ListTodo, NotebookPen, Timer, type LucideIcon } from "lucide-react";
 
+import { createNote } from "@/components/notes/create-note";
 import { ui } from "@/lib/ui-store";
 
 export type QuickAddAction = {
@@ -10,16 +10,12 @@ export type QuickAddAction = {
   run: () => void;
 };
 
-const comingSoon = (what: string, phase: string) => () =>
-  toast(`${what} ${phase}'de açılacak`, {
-    description: "Şimdilik iskelet hazır; bu eylem ilgili aşamada bağlanacak.",
-  });
-
 /** Hızlı ekle menüsü ve komut paletinin paylaştığı eylemler. */
 export const QUICK_ADD_ACTIONS: QuickAddAction[] = [
   { id: "task", label: "Görev ekle", icon: ListTodo, run: () => ui().open({ type: "task" }) },
-  { id: "note", label: "Not ekle", icon: NotebookPen, run: comingSoon("Not ekleme", "Faz 3") },
-  { id: "resource", label: "Kaynak ekle", icon: Library, run: comingSoon("Kaynak ekleme", "Faz 3") },
+  { id: "note", label: "Not ekle", icon: NotebookPen, run: () => createNote() },
+  { id: "resource", label: "Kaynak ekle", icon: Library, run: () => ui().open({ type: "resource" }) },
+  { id: "study", label: "Çalışma süresi ekle", icon: Timer, run: () => ui().open({ type: "study-log" }) },
 ];
 
 export const ADD_COURSE_ACTION: QuickAddAction = {
