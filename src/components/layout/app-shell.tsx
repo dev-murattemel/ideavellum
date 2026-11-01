@@ -6,6 +6,7 @@ import { useData } from "@/lib/data/store";
 import { AppSidebar } from "./app-sidebar";
 import { CommandMenu } from "./command-menu";
 import { CommandMenuProvider } from "./command-menu-context";
+import { DialogHost } from "./dialog-host";
 import { MobileNav } from "./mobile-nav";
 import { SidebarProvider } from "./sidebar-context";
 import { Topbar } from "./topbar";
@@ -40,6 +41,7 @@ export function AppShell({
             </div>
             <MobileNav />
             <CommandMenu />
+            <DialogHost />
           </CommandMenuProvider>
         </SidebarProvider>
       </TooltipProvider>

@@ -1,6 +1,8 @@
 import { BookPlus, Library, ListTodo, NotebookPen, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 
+import { ui } from "@/lib/ui-store";
+
 export type QuickAddAction = {
   id: string;
   label: string;
@@ -24,5 +26,5 @@ export const ADD_COURSE_ACTION: QuickAddAction = {
   id: "course",
   label: "Ders ekle",
   icon: BookPlus,
-  run: comingSoon("Ders ekleme", "Faz 1"),
+  run: () => ui().open({ type: "course" }),
 };

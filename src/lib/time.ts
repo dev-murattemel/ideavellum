@@ -70,3 +70,6 @@ export function relativeDay(d: Date, today: Date) {
 
 export const WEEKDAY_NAMES = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
 export const WEEKDAY_SHORT = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+
+/** "2026-11-04" → yerel gün (saat dilimi kayması olmadan) */
+export const parseDay = (s: string) => parseISO(s);

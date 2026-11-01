@@ -50,6 +50,13 @@ export async function loadRemote(
   results.forEach((res, i) => {
     if (res.error) throw res.error;
     const table = TABLE_NAMES[i];
+    // Postgres "time" sütunu "09:00:00" döner; uygulama "09:00" kullanır
+    if (table === "class_sessions") {
+      res.data?.forEach((r: { start_time: string; end_time: string }) => {
+        r.start_time = r.start_time.slice(0, 5);
+        r.end_time = r.end_time.slice(0, 5);
+      });
+    }
     (data as Record<string, Record<string, unknown>>)[table] = Object.fromEntries(
       (res.data ?? []).map((r: { id: string }) => [r.id, r]),
     );
