@@ -11,7 +11,7 @@ import { useActiveCourses, useProfile } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
 import { playBell } from "@/lib/notifications/bell-sounds";
 import { formatDuration } from "@/lib/time";
-import { formatClock } from "@/lib/timer/store";
+import { formatClock, useTimer } from "@/lib/timer/store";
 import { phaseMinutes, PRESETS, remaining, usePomodoro, type Phase, type PresetId } from "@/lib/timer/pomodoro";
 import { useUI, ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
@@ -83,6 +83,13 @@ function FocusScreen() {
   const running = !!s.endsAt;
   const total = phaseMinutes(s) * 60_000;
   const left = remaining(s);
+
+  // Açılınca alan seçili gelsin: çalışan zamanlayıcının alanı ya da ilk aktif alan
+  React.useEffect(() => {
+    const st = usePomodoro.getState();
+    if (!st.courseId && courses.length) st.set({ courseId: useTimer.getState().courseId ?? courses[0].id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Yarım saniyede bir ekranı yenile
   React.useEffect(() => {

@@ -17,6 +17,7 @@ import { CourseBars } from "./course-bars";
 import { DailyChart } from "./daily-chart";
 import { StreakHeatmap } from "./streak-heatmap";
 import { useReport, type Period } from "./use-report";
+import { MoodTime } from "./mood-time";
 
 export function ReportsView() {
   const now = useNow(60_000);
@@ -30,7 +31,7 @@ export function ReportsView() {
   const targetPct = r.targetMinutes ? (r.totalMinutes / r.targetMinutes) * 100 : 0;
 
   const stats = [
-    { label: "Çalışma", value: formatDuration(r.totalMinutes), sub: `${r.activeDays} gün çalışıldı` },
+    { label: "Ayrılan süre", value: formatDuration(r.totalMinutes), sub: `${r.activeDays} gün` },
     { label: "Tamamlanan görev", value: String(r.completedTasks), sub: "Bitti sütununa geçen" },
     { label: "Biten konu", value: String(r.completedTopics), sub: "Konular sekmesinden" },
     { label: "Yoklama", value: r.attendanceRate === null ? "—" : `%${r.attendanceRate}`, sub: "Katıldığın program saatleri" },
@@ -79,10 +80,14 @@ export function ReportsView() {
             <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi alanın haftalık hedefini gösterir.</p>
           </div>
         </SectionCard>
-        <SectionCard title="Günlük çalışma" meta={`Günde ort. ${formatDuration(Math.round(r.totalMinutes / Math.max(1, r.days.length)))}`}>
+        <SectionCard title="Günlük süre" meta={`Günde ort. ${formatDuration(Math.round(r.totalMinutes / Math.max(1, r.days.length)))}`}>
           <DailyChart days={r.days} />
         </SectionCard>
       </div>
+
+      <SectionCard title="Ruh hali ve ayrılan süre" meta="Günlükten">
+        <MoodTime days={r.days} />
+      </SectionCard>
 
       <SectionCard title="Seri takvimi" meta={`${r.streak} gün seri`}>
         <StreakHeatmap cells={r.heat} />

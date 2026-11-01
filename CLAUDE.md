@@ -391,3 +391,9 @@ Ekip/paylaşım özellikleri, sohbet, avatar ve rol sistemi, ödeme/abonelik, ha
 - **Yeni bölümler:** Günlük (`journal_entries`, günde bir sayfa, ruh hali 1–5), Aforizmalar (`quotes`, söyleyen boşsa kullanıcının sözü). Notlar, günlük ve sözlerde ortak etiketler (`tags text[]`, renk adından türetilir: `src/lib/tags.ts`).
 - **Öneriler:** Bugün ekranındaki öneriler kurallara dayanır (`src/lib/domain/insights.ts`), yapay zekâ gerektirmez.
 - **Not görselleri:** Supabase Storage `note-images` (herkese açık okuma, yalnızca kendi klasörüne yükleme); yükleme başarısız olursa görsel notun içine gömülür.
+- **Kayıt güvenliği:** Bağlantı hatasında değişiklikler kuyrukta bekler ve internet gelince otomatik gönderilir (`src/lib/data/store.ts` → `useSync`, `retryQueued`); üst çubukta durum göstergesi.
+- **Kısayollar:** `src/lib/shortcuts.ts` + `components/layout/shortcuts.tsx` (N, T, A, S, J, F, /, ?, G + harf). Yazı alanlarında çalışmaz.
+- **Odak modu:** Pomodoro (`src/lib/timer/pomodoro.ts`, `components/focus/focus-mode.tsx`); odak turu bitince süre `study_logs`'a yazılır.
+- **Alışkanlıklar:** `habits` + `habit_checks` (günde bir işaret, `unique(habit_id, date)`); `/aliskanliklar`, Bugün kartı, 12 haftalık ısı haritası.
+- **Alan sırası:** `courses.position` (fractional index), sürükle-bırak `components/course/sortable-areas.tsx`.
+

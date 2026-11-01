@@ -14,6 +14,7 @@ import { TodayTimeline } from "./today-timeline";
 import { useToday } from "./use-today";
 import { DayCard } from "./day-card";
 import { HabitsCard } from "./habits-card";
+import { OnboardingCard } from "./onboarding-card";
 import { InsightsCard } from "./insights-card";
 import { WeekGoalsCard } from "./week-goals-card";
 import { isoDate } from "@/lib/time";
@@ -39,6 +40,8 @@ export function TodayView() {
           {firstName ? `, ${firstName}` : ""}
         </h1>
       </div>
+
+      <OnboardingCard />
 
       <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} weekMinutes={week.minutes} weekTarget={week.target} />
 
