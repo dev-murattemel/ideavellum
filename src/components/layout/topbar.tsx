@@ -10,6 +10,7 @@ import { QuickAddMenu } from "./quick-add-menu";
 import { TimerPill } from "./timer-pill";
 import { BellButton } from "@/components/notifications/bell-button";
 import { useModifierKey } from "./use-platform";
+import { SyncStatus } from "./sync-status";
 
 export function Topbar() {
   const { setOpen } = useCommandMenu();
@@ -38,6 +39,7 @@ export function Topbar() {
         </button>
 
         <div className="ml-auto flex items-center gap-2">
+          <SyncStatus />
           <TimerPill />
           <BellButton />
           <QuickAddMenu />

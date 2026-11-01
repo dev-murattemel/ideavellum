@@ -1,0 +1,62 @@
+"use client";
+
+import * as React from "react";
+import { Check, CloudOff, LoaderCircle } from "lucide-react";
+
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDataMode } from "@/lib/data/hooks";
+import { retryQueued, useSync } from "@/lib/data/store";
+import { cn } from "@/lib/utils";
+
+function useOnline() {
+  return React.useSyncExternalStore(
+    (cb) => {
+      window.addEventListener("online", cb);
+      window.addEventListener("offline", cb);
+      return () => {
+        window.removeEventListener("online", cb);
+        window.removeEventListener("offline", cb);
+      };
+    },
+    () => navigator.onLine,
+    () => true,
+  );
+}
+
+/** Üst çubukta kayıt durumu: bulutla eşitlenme her an görünür */
+export function SyncStatus() {
+  const mode = useDataMode();
+  const { pending, queued } = useSync();
+  const online = useOnline();
+  if (mode !== "remote") return null;
+
+  const offline = !online || queued > 0;
+  const state = offline ? "offline" : pending > 0 ? "saving" : "saved";
+  const label = {
+    offline: queued ? `Çevrimdışı · ${queued} değişiklik bekliyor` : "Çevrimdışı",
+    saving: "Kaydediliyor…",
+    saved: "Tüm değişiklikler kaydedildi",
+  }[state];
+  const Icon = state === "offline" ? CloudOff : state === "saving" ? LoaderCircle : Check;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={retryQueued}
+          aria-live="polite"
+          aria-label={label}
+          className={cn(
+            "flex h-9 cursor-default items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors",
+            state === "offline" ? "cursor-pointer bg-[#FDF4D3] text-[#7D6210] dark:bg-[#E3B524]/16 dark:text-[#F1D37A]" : "text-ink-subtle",
+          )}
+        >
+          <Icon className={cn("size-3.5", state === "saving" && "animate-spin")} aria-hidden />
+          <span className={cn(state === "saved" && "max-lg:sr-only")}>{state === "saved" ? "Kaydedildi" : state === "saving" ? "Kaydediliyor" : "Çevrimdışı"}</span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{label}{state === "offline" ? " — internet gelince otomatik gönderilir" : ""}</TooltipContent>
+    </Tooltip>
+  );
+}

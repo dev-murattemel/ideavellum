@@ -46,8 +46,21 @@ export function setAdapter(next: RemoteAdapter | null, onError?: (error: unknown
   onSyncError = onError ?? null;
 }
 
+/** Kayıt durumu: üst çubuktaki "Kaydedildi / Kaydediliyor / Çevrimdışı" göstergesi için */
+export type SyncState = { pending: number; queued: number; savedAt: number | null };
+export const useSync = create<SyncState>()(() => ({ pending: 0, queued: 0, savedAt: null }));
+
+/** Bağlantı yokken gönderilemeyen değişiklikler; internet gelince sırayla tekrar denenir. */
+let queue: Mutation[] = [];
+
+const isNetworkError = (e: unknown) =>
+  (typeof navigator !== "undefined" && !navigator.onLine) ||
+  e instanceof TypeError ||
+  /fetch|network|failed to fetch|load failed/i.test(String((e as { message?: string })?.message ?? e));
+
 function flush(m: Mutation) {
   if (!adapter) return;
+  if (!m.upserts.length && !m.removed.length) return;
   const a = adapter;
   const grouped = new Map<TableName, object[]>();
   m.upserts.forEach(({ table, row }) => grouped.set(table, [...(grouped.get(table) ?? []), row]));
@@ -55,7 +68,32 @@ function flush(m: Mutation) {
     ...[...grouped].map(([table, rows]) => a.upsert(table, rows)),
     ...m.removed.map(({ table, id }) => a.remove(table, id)),
   ];
-  Promise.all(ops).catch((e) => onSyncError?.(e));
+  useSync.setState((s) => ({ pending: s.pending + 1 }));
+  Promise.all(ops)
+    .then(() => useSync.setState((s) => ({ pending: s.pending - 1, savedAt: Date.now() })))
+    .catch((e) => {
+      useSync.setState((s) => ({ pending: s.pending - 1 }));
+      if (isNetworkError(e)) {
+        queue.push(m);
+        useSync.setState({ queued: queue.length });
+      } else {
+        onSyncError?.(e);
+      }
+    });
+}
+
+/** Kuyruktaki değişiklikleri tekrar gönderir (çevrimiçi olunca ve aralıklarla). */
+export function retryQueued() {
+  if (!queue.length || (typeof navigator !== "undefined" && !navigator.onLine)) return;
+  const pending = queue;
+  queue = [];
+  useSync.setState({ queued: 0 });
+  pending.forEach(flush);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("online", retryQueued);
+  setInterval(retryQueued, 20_000);
 }
 
 export const useData = create<DataState>()((set, get) => ({
