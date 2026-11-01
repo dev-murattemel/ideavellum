@@ -20,7 +20,7 @@ export function SuggestFromTextButton({ courseId, title, text }: { courseId: str
   if (!enabled || !courseId || text.trim().length < 20) return null;
   return (
     <>
-      <Button variant="soft" size="sm" onClick={() => setOpen(true)}><Sparkles /> Konu ve görev öner</Button>
+      <Button variant="soft" size="sm" className="max-sm:size-8 max-sm:px-0" aria-label="Konu ve görev öner" onClick={() => setOpen(true)}><Sparkles /> <span className="max-sm:sr-only">Konu ve görev öner</span></Button>
       {open && <SuggestDialog courseId={courseId} title={title} text={text} onClose={() => setOpen(false)} />}
     </>
   );

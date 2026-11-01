@@ -43,7 +43,7 @@ export function CommandSearchGroups({ run }: { run: (fn: () => void) => void }) 
       </CommandGroup>
       <CommandGroup heading="Notlar">
         {notes.map((n) => (
-          <CommandItem key={n.id} value={`not ${n.title}`} onSelect={() => run(() => ui().openNote(n.id))}>
+          <CommandItem key={n.id} value={`not ${n.title}`} onSelect={() => run(() => { nav.push("/notlar"); setTimeout(() => ui().openNote(n.id), 60); })}>
             <NotebookPen />
             <span className="truncate">{n.title || "Başlıksız not"}</span>
           </CommandItem>

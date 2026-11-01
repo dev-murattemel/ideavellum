@@ -13,6 +13,7 @@ import { useRow } from "@/lib/data/hooks";
 import { docToText } from "@/lib/data/tiptap";
 import { data } from "@/lib/data/store";
 import { fmt, utcToWall } from "@/lib/time";
+import { useNav } from "@/lib/nav/nav-context";
 import { useUI } from "@/lib/ui-store";
 import { NoteEditor } from "./note-editor";
 
@@ -22,7 +23,9 @@ export function NotePanel() {
   const openNote = useUI((s) => s.openNote);
   const note = useRow("notes", id);
   const [confirm, setConfirm] = React.useState(false);
-  if (!note) return null;
+  const { pathname } = useNav();
+  // Notlar sayfasında not, sayfanın kendi editöründe açılır
+  if (!note || pathname === "/notlar") return null;
   const set = (patch: Partial<typeof note>) => data().update("notes", note.id, patch);
   const isNew = !note.title && !note.content.content?.length;
 

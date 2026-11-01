@@ -26,7 +26,7 @@ export function NoteCard({ note, course }: { note: Note; course?: Course }) {
             {course.name}
           </span>
         ) : (
-          <span>Genel</span>
+          <span>Kişisel</span>
         )}
         <span className="tabular">{fmt(utcToWall(note.updated_at), "d MMM")}</span>
       </div>

@@ -251,28 +251,37 @@
 /* Not editörü (Tiptap) */
 .tiptap-content {
   outline: none;
-  min-height: 16rem;
-  font-size: 15px;
-  line-height: 1.65;
+  min-height: 18rem;
+  font-size: 16px;
+  line-height: 1.7;
   color: var(--ink);
+  padding-block: 1rem 6rem;
 }
-.tiptap-content > * + * { margin-top: 0.6em; }
-.tiptap-content h2 { font-size: 20px; line-height: 28px; font-weight: 600; margin-top: 1.2em; }
-.tiptap-content h3 { font-size: 16px; line-height: 24px; font-weight: 600; margin-top: 1em; }
-.tiptap-content ul:not([data-type="taskList"]) { list-style: disc; padding-left: 1.4em; }
-.tiptap-content ol { list-style: decimal; padding-left: 1.4em; }
+.tiptap-content > * + * { margin-top: 0.75em; }
+.tiptap-content h1 { font-size: 26px; line-height: 34px; font-weight: 600; letter-spacing: -0.015em; margin-top: 1.4em; }
+.tiptap-content h2 { font-size: 21px; line-height: 29px; font-weight: 600; letter-spacing: -0.01em; margin-top: 1.3em; }
+.tiptap-content h3 { font-size: 17px; line-height: 26px; font-weight: 600; margin-top: 1.1em; }
+.tiptap-content > :first-child { margin-top: 0; }
+.tiptap-content strong { font-weight: 600; }
+.tiptap-content ul:not([data-type="taskList"]) { list-style: disc; padding-left: 1.5em; }
+.tiptap-content ol { list-style: decimal; padding-left: 1.5em; }
+.tiptap-content li::marker { color: var(--ink-subtle); }
 .tiptap-content li > p { margin: 0; }
-.tiptap-content li + li { margin-top: 0.2em; }
-.tiptap-content blockquote { border-left: 3px solid var(--line-strong); padding-left: 1em; color: var(--ink-muted); }
-.tiptap-content a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
-.tiptap-content code { background: var(--surface-sunken); border-radius: 4px; padding: 0.1em 0.3em; font-size: 0.9em; }
+.tiptap-content li + li { margin-top: 0.25em; }
+.tiptap-content blockquote { border-left: 3px solid var(--accent); padding-left: 1em; color: var(--ink-muted); }
+.tiptap-content a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.tiptap-content code { background: var(--surface-sunken); border: 1px solid var(--line); border-radius: 5px; padding: 0.1em 0.35em; font-size: 0.88em; }
+.tiptap-content pre { background: var(--surface-sunken); border: 1px solid var(--line); border-radius: 10px; padding: 0.9em 1em; font-size: 14px; line-height: 1.6; overflow-x: auto; }
+.tiptap-content pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+.tiptap-content hr { border: 0; border-top: 1px solid var(--line-strong); margin: 1.6em 0; }
+.tiptap-content mark { background: color-mix(in srgb, var(--butter-solid) 38%, transparent); color: inherit; border-radius: 3px; padding: 0 0.1em; }
 .tiptap-content ul[data-type="taskList"] { padding-left: 0.1em; }
 .tiptap-content ul[data-type="taskList"] li { display: flex; gap: 0.6em; align-items: flex-start; }
-.tiptap-content ul[data-type="taskList"] li > label { margin-top: 0.3em; user-select: none; }
+.tiptap-content ul[data-type="taskList"] li > label { margin-top: 0.32em; user-select: none; }
 .tiptap-content ul[data-type="taskList"] li > div { flex: 1; }
 .tiptap-content ul[data-type="taskList"] input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
 .tiptap-content ul[data-type="taskList"] li[data-checked="true"] > div { color: var(--ink-muted); text-decoration: line-through; }
-.tiptap-content p.is-editor-empty:first-child::before {
+.tiptap-content .is-empty::before {
   content: attr(data-placeholder);
   color: var(--ink-subtle);
   float: left;

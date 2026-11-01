@@ -73,3 +73,13 @@ export const WEEKDAY_SHORT = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
 
 /** "2026-11-04" → yerel gün (saat dilimi kayması olmadan) */
 export const parseDay = (s: string) => parseISO(s);
+
+/** "az önce", "12 dk önce", "3 sa önce", "Dün", "4 Kas" */
+export function timeAgo(iso: string, now: Date = new Date()) {
+  const diffMin = Math.round((now.getTime() - new Date(iso).getTime()) / 60000);
+  if (diffMin < 1) return "az önce";
+  if (diffMin < 60) return `${diffMin} dk önce`;
+  if (diffMin < 24 * 60) return `${Math.floor(diffMin / 60)} sa önce`;
+  if (diffMin < 48 * 60) return "Dün";
+  return format(new Date(iso), "d MMM", { locale: tr });
+}
