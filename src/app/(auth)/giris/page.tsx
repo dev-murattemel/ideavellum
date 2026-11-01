@@ -6,20 +6,20 @@ import { BrandMark, BrandWordmark } from "@/components/layout/brand";
 import { Button } from "@/components/ui/button";
 import { COURSE_COLORS } from "@/lib/course-colors";
 import { isSupabaseConfigured } from "@/lib/env";
-import { LoginForm } from "./login-form";
+import { StorageChoice } from "./storage-choice";
 
 export const metadata: Metadata = { title: "Giriş yap" };
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ hata?: string }>;
+  searchParams: Promise<{ hata?: string; tasi?: string }>;
 }) {
-  const { hata } = await searchParams;
+  const { hata, tasi } = await searchParams;
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
-      <div className="flex w-full max-w-[400px] flex-col items-center">
+      <div className="flex w-full max-w-[440px] flex-col items-center">
         <div className="mb-8 flex flex-col items-center gap-4">
           <div className="flex items-center gap-2.5">
             <BrandMark className="size-9" />
@@ -45,7 +45,7 @@ export default async function LoginPage({
           )}
 
           {isSupabaseConfigured ? (
-            <LoginForm />
+            <StorageChoice moving={tasi === "1"} />
           ) : (
             <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">

@@ -1,5 +1,8 @@
 "use client";
 
+import { usePlace } from "@/lib/data/hooks";
+import { DeviceOnlyNote } from "./device-only-note";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TimeSelect } from "@/components/ui/time-select";
 import { useProfile } from "@/lib/data/hooks";
@@ -9,6 +12,12 @@ import { WEEKDAY_NAMES } from "@/lib/time";
 import { SettingsRow, SettingsSection } from "./settings-section";
 
 export function EmailSection() {
+  const place = usePlace();
+  if (place === "device") return <DeviceOnlyNote title="E-posta" />;
+  return <EmailSectionInner />;
+}
+
+function EmailSectionInner() {
   const profile = useProfile();
   const p = profile.notification_prefs;
   const set = (patch: Partial<NotificationPrefs>) => data().updateProfile({ notification_prefs: { ...p, ...patch } });

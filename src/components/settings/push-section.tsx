@@ -1,5 +1,8 @@
 "use client";
 
+import { usePlace } from "@/lib/data/hooks";
+import { DeviceOnlyNote } from "./device-only-note";
+
 import * as React from "react";
 import { BellRing, Share, Smartphone, SquarePlus } from "lucide-react";
 import { toast } from "sonner";
@@ -9,6 +12,12 @@ import { pushSupported, subscribePush } from "@/lib/notifications/push-client";
 import { SettingsSection } from "./settings-section";
 
 export function PushSection() {
+  const place = usePlace();
+  if (place === "device") return <DeviceOnlyNote title="Telefon bildirimleri" />;
+  return <PushSectionInner />;
+}
+
+function PushSectionInner() {
   const [busy, setBusy] = React.useState(false);
   const supported = React.useSyncExternalStore(() => () => {}, pushSupported, () => false);
 

@@ -396,4 +396,5 @@ Ekip/paylaşım özellikleri, sohbet, avatar ve rol sistemi, ödeme/abonelik, ha
 - **Odak modu:** Pomodoro (`src/lib/timer/pomodoro.ts`, `components/focus/focus-mode.tsx`); odak turu bitince süre `study_logs`'a yazılır.
 - **Alışkanlıklar:** `habits` + `habit_checks` (günde bir işaret, `unique(habit_id, date)`); `/aliskanliklar`, Bugün kartı, 12 haftalık ısı haritası.
 - **Alan sırası:** `courses.position` (fractional index), sürükle-bırak `components/course/sortable-areas.tsx`.
+- **Saklama yeri (iki seçenek):** Girişte "Bulutta sakla" (Supabase, e-posta ile) ya da "Sadece bu cihazda" (hesapsız). Seçim `ivl_storage` çerezinde (`src/lib/data/storage-mode.ts`); cihaz modunda oturum koruması atlanır. Cihaz verisi IndexedDB'de (`src/lib/data/device-db.ts`, anahtar `device-snapshot`). Bulut modunda da bir kopya `cloud-cache:<uid>` olarak tutulur (anında açılış, çevrimdışı okuma), çıkışta silinir. Yedek indir/yükle ve "Buluta taşı" Ayarlar → Veriler ve yedek (`src/lib/data/backup.ts`). Cihaz modunda push ve e-posta kapalıdır.
 

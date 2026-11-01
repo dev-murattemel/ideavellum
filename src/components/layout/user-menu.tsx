@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, Monitor, Moon, Sun, UserRound } from "lucide-react";
+import { ChevronsUpDown, Download, HardDrive, LogOut, Monitor, Moon, Settings2, Sun, UserRound } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -11,16 +11,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useDataMode, useProfile } from "@/lib/data/hooks";
+import { usePlace, useProfile } from "@/lib/data/hooks";
+import { downloadBackup } from "@/lib/data/backup";
+import { AppLink } from "@/lib/nav/nav-context";
 import { signOutClient } from "@/lib/supabase/sign-out";
 import { applyTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 export function UserMenu({ collapsed }: { collapsed: boolean }) {
   const profile = useProfile();
-  const mode = useDataMode();
-  const name = profile.full_name ?? profile.email?.split("@")[0] ?? "Murat";
-  const sub = mode === "remote" ? (profile.email ?? "") : "Önizleme · veriler bu tarayıcıda";
+  const place = usePlace();
+  const name = profile.full_name ?? profile.email?.split("@")[0] ?? (place === "device" ? "Bu cihaz" : "Murat");
+  const sub = place === "cloud" ? (profile.email ?? "") : place === "device" ? "Veriler bu cihazda" : "Önizleme · veriler bu tarayıcıda";
 
   return (
     <DropdownMenu>
@@ -32,7 +34,7 @@ export function UserMenu({ collapsed }: { collapsed: boolean }) {
         )}
       >
         <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-muted">
-          <UserRound className="size-4" aria-hidden />
+          {place === "device" ? <HardDrive className="size-4" aria-hidden /> : <UserRound className="size-4" aria-hidden />}
         </span>
         {!collapsed && (
           <>
@@ -57,7 +59,18 @@ export function UserMenu({ collapsed }: { collapsed: boolean }) {
             <Monitor /> Sistemle aynı
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        {mode === "remote" && (
+        {place === "device" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => downloadBackup()}>
+              <Download /> Yedeği indir
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <AppLink href="/ayarlar"><Settings2 /> Saklama yeri ve yedek</AppLink>
+            </DropdownMenuItem>
+          </>
+        )}
+        {place === "cloud" && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => void signOutClient()}>

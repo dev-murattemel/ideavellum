@@ -50,3 +50,4 @@ export function useCourseTopics(courseId: string) {
 
 export const useProfile = () => useData((s) => s.profile);
 export const useDataMode = () => useData((s) => s.mode);
+export const usePlace = () => useData((s) => s.place);

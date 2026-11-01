@@ -1,5 +1,7 @@
 "use client";
 
+import { usePlace } from "@/lib/data/hooks";
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProfile } from "@/lib/data/hooks";
@@ -16,6 +18,7 @@ const ZONES = [
 ];
 
 export function ProfileSection() {
+  const place = usePlace();
   const p = useProfile();
   return (
     <>
@@ -25,7 +28,7 @@ export function ProfileSection() {
             <Input key={p.full_name} defaultValue={p.full_name ?? ""} placeholder="Adın" aria-label="Ad" className="h-8 w-56"
               onBlur={(e) => e.target.value.trim() !== (p.full_name ?? "") && data().updateProfile({ full_name: e.target.value.trim() || null })} />
           </SettingsRow>
-          <SettingsRow label="E-posta">{p.email ?? "Önizleme modunda"}</SettingsRow>
+          <SettingsRow label="E-posta">{p.email ?? (place === "device" ? "Hesap yok · veriler bu cihazda" : "Önizleme modunda")}</SettingsRow>
           <SettingsRow label="Saat dilimi">
             <Select value={p.timezone} onValueChange={(timezone) => data().updateProfile({ timezone })}>
               <SelectTrigger size="sm" className="w-56" aria-label="Saat dilimi"><SelectValue /></SelectTrigger>

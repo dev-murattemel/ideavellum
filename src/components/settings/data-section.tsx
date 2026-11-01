@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useDataMode, useProfile } from "@/lib/data/hooks";
+import { usePlace, useProfile } from "@/lib/data/hooks";
 import { buildDemoData } from "@/lib/data/seed";
 import { emptySnapshot, useData } from "@/lib/data/store";
 import { useTimer } from "@/lib/timer/store";
@@ -14,15 +14,15 @@ import { SettingsSection } from "./settings-section";
 
 /** Önizleme modunda: örnek verileri geri yükle ya da boş başla */
 export function DataSection() {
-  const mode = useDataMode();
+  const place = usePlace();
   const profile = useProfile();
   const [confirm, setConfirm] = React.useState<"reset" | "clear" | null>(null);
-  if (mode !== "local") return null;
+  if (place !== "preview") return null;
 
   const apply = () => {
     useTimer.getState().discard();
     const snap = confirm === "reset" ? buildDemoData(profile.id) : emptySnapshot();
-    useData.getState().load(snap, profile, "local");
+    useData.getState().load(snap, profile, "local", "preview");
     toast.success(confirm === "reset" ? "Örnek veriler yeniden yüklendi" : "Tüm veriler temizlendi; boş bir dönemle başlayabilirsin");
   };
 

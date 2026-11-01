@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Check, CloudOff, LoaderCircle } from "lucide-react";
+import { Check, CloudOff, HardDrive, LoaderCircle } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useDataMode } from "@/lib/data/hooks";
+import { useDataMode, usePlace } from "@/lib/data/hooks";
 import { retryQueued, useSync } from "@/lib/data/store";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +28,19 @@ export function SyncStatus() {
   const mode = useDataMode();
   const { pending, queued } = useSync();
   const online = useOnline();
+  const place = usePlace();
+  if (place === "device") {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span tabIndex={0} className="flex h-9 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-ink-subtle outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <HardDrive className="size-3.5" aria-hidden /> <span className="max-lg:sr-only">Bu cihazda</span>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>Veriler yalnızca bu cihazda; hiçbir sunucuya gönderilmez</TooltipContent>
+      </Tooltip>
+    );
+  }
   if (mode !== "remote") return null;
 
   const offline = !online || queued > 0;

@@ -9,6 +9,10 @@ export async function updateSession(request: NextRequest) {
   // Kurulum modu: anahtarlar yoksa korumasız aç ki arayüz görülebilsin.
   if (!isSupabaseConfigured) return NextResponse.next({ request });
 
+  // Cihaz modu: hesapsız kullanım; veriler tarayıcıda, sunucuya oturum gerekmez
+  const deviceMode = request.cookies.get("ivl_storage")?.value === "device";
+  if (deviceMode && !request.nextUrl.pathname.startsWith("/api/")) return NextResponse.next({ request });
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

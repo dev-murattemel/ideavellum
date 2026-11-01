@@ -8,6 +8,7 @@ import { DataSection } from "./data-section";
 import { EmailSection } from "./email-section";
 import { ProfileSection } from "./profile-section";
 import { PushSection } from "./push-section";
+import { StorageSection } from "./storage-section";
 
 export function SettingsView() {
   return (
@@ -15,6 +16,7 @@ export function SettingsView() {
       <PageHeader title="Ayarlar" description="Profil, görünüm, zil ve bildirim tercihlerin." />
       <div className="rounded-xl border border-line bg-surface px-5 py-8 md:px-8">
         <ProfileSection />
+        <StorageSection />
         <BellSection />
         <ChannelsSection />
         <PushSection />

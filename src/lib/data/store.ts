@@ -26,9 +26,11 @@ type Mutation = { upserts: { table: TableName; row: object }[]; removed: { table
 export type DataState = DataSnapshot & {
   status: "loading" | "ready" | "error";
   mode: "local" | "remote";
+  /** Verinin nerede durduğu: önizleme, bu cihaz (hesapsız) ya da bulut */
+  place: "preview" | "device" | "cloud";
   userId: string;
   profile: Profile;
-  load: (data: DataSnapshot, profile: Profile, mode: "local" | "remote") => void;
+  load: (data: DataSnapshot, profile: Profile, mode: "local" | "remote", place?: "preview" | "device" | "cloud") => void;
   insert: <K extends TableName>(table: K, values: NewRow<K>) => Tables[K];
   update: <K extends TableName>(table: K, id: string, patch: Partial<Tables[K]>) => void;
   remove: (table: TableName, id: string) => void;
@@ -100,10 +102,12 @@ export const useData = create<DataState>()((set, get) => ({
   ...emptySnapshot(),
   status: "loading",
   mode: "local",
+  place: "preview",
   userId: LOCAL_USER_ID,
   profile: defaultProfile(LOCAL_USER_ID),
 
-  load: (data, profile, mode) => set({ ...data, profile, mode, userId: profile.id, status: "ready" }),
+  load: (data, profile, mode, place) =>
+    set({ ...data, profile, mode, place: place ?? (mode === "remote" ? "cloud" : "preview"), userId: profile.id, status: "ready" }),
 
   insert: (table, values) => {
     const now = new Date().toISOString();
