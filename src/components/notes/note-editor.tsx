@@ -2,17 +2,19 @@
 
 import * as React from "react";
 import Highlight from "@tiptap/extension-highlight";
+import Image from "@tiptap/extension-image";
 import { TaskItem } from "@tiptap/extension-task-item";
 import { TaskList } from "@tiptap/extension-task-list";
 import Typography from "@tiptap/extension-typography";
 import { CharacterCount, Placeholder } from "@tiptap/extensions";
-import { EditorContent, useEditor, type JSONContent } from "@tiptap/react";
+import { EditorContent, useEditor, type Editor, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 import type { TiptapDoc } from "@/lib/data/types";
 import { cn } from "@/lib/utils";
 import { EditorBubble } from "./editor-bubble";
 import { EditorToolbar } from "./editor-toolbar";
+import { insertImages } from "./image-button";
 
 export type EditorStats = { words: number; characters: number; saving: boolean };
 
@@ -37,6 +39,7 @@ export function NoteEditor({
 }) {
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
   const statsRef = React.useRef(onStats);
+  const editorRef = React.useRef<Editor | null>(null);
   React.useEffect(() => {
     statsRef.current = onStats;
   });
@@ -49,6 +52,7 @@ export function NoteEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight,
+      Image.configure({ allowBase64: true }),
       Typography,
       CharacterCount,
       Placeholder.configure({
@@ -56,7 +60,23 @@ export function NoteEditor({
       }),
     ],
     content: content as JSONContent,
-    editorProps: { attributes: { class: cn("tiptap-content", contentClassName), "aria-label": "Not içeriği" } },
+    editorProps: {
+      attributes: { class: cn("tiptap-content", contentClassName), "aria-label": "Not içeriği" },
+      // Görsel yapıştırma ve sürükleyip bırakma
+      handlePaste: (view, event) => {
+        const files = [...(event.clipboardData?.files ?? [])];
+        if (!files.some((f) => f.type.startsWith("image/")) || !editorRef.current) return false;
+        void insertImages(editorRef.current, files);
+        return true;
+      },
+      handleDrop: (view, event, _slice, moved) => {
+        const files = [...(event.dataTransfer?.files ?? [])];
+        if (moved || !files.some((f) => f.type.startsWith("image/")) || !editorRef.current) return false;
+        const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos;
+        void insertImages(editorRef.current, files, pos);
+        return true;
+      },
+    },
     onCreate: ({ editor: e }) => statsRef.current?.({ words: e.storage.characterCount.words(), characters: e.storage.characterCount.characters(), saving: false }),
     onUpdate: ({ editor: e }) => {
       const words = e.storage.characterCount.words();
@@ -69,6 +89,10 @@ export function NoteEditor({
       }, 400);
     },
   });
+
+  React.useEffect(() => {
+    editorRef.current = editor;
+  }, [editor]);
 
   // Kapanırken bekleyen değişikliği kaydet
   React.useEffect(() => () => {

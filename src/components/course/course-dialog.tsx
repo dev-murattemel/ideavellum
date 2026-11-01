@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -17,6 +18,7 @@ import { data } from "@/lib/data/store";
 import { useNav } from "@/lib/nav/nav-context";
 import { formatDuration } from "@/lib/time";
 import { ColorPicker } from "./color-picker";
+import { SlotFields, slotError, type Slot } from "./slot-fields";
 
 const schema = z
   .object({
@@ -47,6 +49,8 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
   const nav = useNav();
   const usedColors = useRows("courses").map((c) => c.color);
   const freeColor = COURSE_COLOR_KEYS.find((c) => !usedColors.includes(c)) ?? "lavender";
+  const [slots, setSlots] = React.useState<Slot[]>([]);
+  const [slotErr, setSlotErr] = React.useState<string | null>(null);
 
   const form = useForm<Values>({
     resolver: zodResolver(schema),
@@ -66,6 +70,9 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
   const { errors } = form.formState;
 
   const submit = form.handleSubmit((v) => {
+    const sErr = course ? null : slotError(slots);
+    setSlotErr(sErr);
+    if (sErr) return;
     const values = {
       name: v.name,
       code: v.code || null,
@@ -86,7 +93,16 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
       const created = data().insert("courses", {
         ...values, completed_at: null, final_reflection: null, final_note: null, final_rating: null,
       });
-      toast.success(`“${created.name}” eklendi`, { description: "Şimdi konularını ve ders saatlerini ekleyebilirsin." });
+      const term = terms.find((t) => t.id === values.term_id);
+      slots.forEach((x) =>
+        data().insert("class_sessions", {
+          course_id: created.id, weekday: x.weekday, start_time: x.start, end_time: x.end, location: null,
+          bell_overrides: {}, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null,
+        }),
+      );
+      toast.success(`“${created.name}” eklendi`, {
+        description: slots.length ? `${slots.length} haftalık ders saati programa eklendi.` : "Şimdi konularını ve ders saatlerini ekleyebilirsin.",
+      });
       onClose();
       nav.push(`/dersler/${created.id}`);
     }
@@ -143,6 +159,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
               <Input id="c-end" type="date" aria-invalid={!!errors.target_end_date} {...form.register("target_end_date")} />
             </Field>
           </div>
+          {!course && <SlotFields value={slots} onChange={(v) => { setSlots(v); setSlotErr(null); }} error={slotErr} />}
           {course && (
             <Field label="Durum">
               <Controller control={form.control} name="status" render={({ field }) => (

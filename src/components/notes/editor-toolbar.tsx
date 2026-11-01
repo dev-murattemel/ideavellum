@@ -9,6 +9,7 @@ import {
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { ImageButton } from "./image-button";
 import { LinkButton } from "./link-button";
 
 type Item = { label: string; icon: LucideIcon; active?: boolean; disabled?: boolean; run: () => void; shortcut?: string };
@@ -95,7 +96,9 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
       <ToolButton label="Alıntı" icon={Quote} active={s.quote} run={() => c().toggleBlockquote().run()} />
       <ToolButton label="Kod bloğu" icon={CodeXml} active={s.codeBlock} run={() => c().toggleCodeBlock().run()} />
       <ToolButton label="Ayırıcı çizgi" icon={Minus} run={() => c().setHorizontalRule().run()} />
+      <Sep />
       <LinkButton editor={editor} active={s.link} />
+      <ImageButton editor={editor} />
     </div>
   );
 }
