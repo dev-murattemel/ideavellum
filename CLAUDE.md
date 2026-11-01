@@ -200,7 +200,7 @@ Nötrler (açık tema):
 - `--ink`: `#1D1D21` (metin)
 - `--ink-muted`: `#6B6B73`
 - `--line`: `#E4E4DF`
-- `--accent`: `#4F46E5` (birincil buton, odak halkası, aktif menü)
+- `--accent`: `#1C1917` sıcak mürekkep siyahı (birincil buton, aktif menü; koyu temada `#F5F5F4`); odak halkası `--focus` `#A8A29E`. Eski indigo `#4F46E5`, Murat'ın isteğiyle shadcn tarzı nötr bir birincile çevrildi.
 
 Ders paleti (her biri `bg` / `fg` / `solid` üçlüsü; `bg` kart zemini, `fg` kart metni, `solid` ilerleme çubuğu ve takvim kenarı):
 - `lavender` `#EEEAFE` / `#4C3A9E` / `#7C6CF2`

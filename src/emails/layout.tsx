@@ -26,7 +26,7 @@ export function EmailLayout({ preview, title, appUrl, children }: { preview: str
           {children}
           <Hr style={{ borderColor: "#e4e4df", margin: "24px 0 16px" }} />
           <Section>
-            <Link href={`${appUrl}/bugun`} style={{ backgroundColor: "#4f46e5", color: "#fff", borderRadius: "8px", padding: "10px 16px", fontSize: "14px", fontWeight: 500, textDecoration: "none" }}>
+            <Link href={`${appUrl}/bugun`} style={{ backgroundColor: "#1c1917", color: "#fff", borderRadius: "8px", padding: "10px 16px", fontSize: "14px", fontWeight: 500, textDecoration: "none" }}>
               Bugün ekranını aç
             </Link>
           </Section>
