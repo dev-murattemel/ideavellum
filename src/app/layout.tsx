@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Onest } from "next/font/google";
 
+import { PwaProvider } from "@/components/providers/pwa-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -18,6 +19,9 @@ export const metadata: Metadata = {
     template: "%s · ideavellum",
   },
   description: "Hayatını bir üniversite dönemi gibi programla: dersler, ders saatleri, görevler, notlar ve kaynaklar tek yerde.",
+  applicationName: "ideavellum",
+  appleWebApp: { capable: true, title: "ideavellum", statusBarStyle: "default" },
+  icons: { icon: "/icons/icon.svg", apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {
@@ -34,7 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-dvh font-sans">
-        {children}
+        <PwaProvider>{children}</PwaProvider>
         <Toaster />
       </body>
     </html>

@@ -2,7 +2,9 @@
 
 import { TaskSheet } from "@/components/board/task-sheet";
 import { NotePanel } from "@/components/notes/note-panel";
+import { BellRunner } from "@/components/notifications/bell-runner";
 import { DataProvider } from "@/components/providers/data-provider";
+import { ReminderSync } from "@/components/providers/reminder-sync";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useData } from "@/lib/data/store";
 import { AppSidebar } from "./app-sidebar";
@@ -46,6 +48,8 @@ export function AppShell({
             <DialogHost />
             <TaskSheet />
             <NotePanel />
+            <BellRunner />
+            <ReminderSync />
           </CommandMenuProvider>
         </SidebarProvider>
       </TooltipProvider>

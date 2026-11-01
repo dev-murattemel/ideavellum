@@ -3,7 +3,7 @@ import { differenceInCalendarDays } from "date-fns";
 import { positionAtEnd, positionAtStart } from "@/lib/data/position";
 import { data } from "@/lib/data/store";
 import type { AttendanceStatus, Task, TaskPriority, TaskStatus } from "@/lib/data/types";
-import { formatShortDate, fmt, isoDate, utcToWall, wallToUtc } from "@/lib/time";
+import { formatShortDate, fmt, utcToWall } from "@/lib/time";
 
 export const STATUSES: { id: TaskStatus; label: string; dot: string }[] = [
   { id: "todo", label: "Yapılacak", dot: "bg-ink-subtle" },
@@ -58,9 +58,4 @@ export function setAttendance(sessionId: string, date: string, status: Attendanc
   else data().insert("attendance", { class_session_id: sessionId, date, status, note: null });
 }
 
-/** Görev hatırlatması: saatliyse 1 saat önce, saatsizse (23:59) o gün 09:00 */
-export function taskReminderAt(dueAt: string, tz?: string): Date {
-  const wall = utcToWall(dueAt, tz);
-  if (fmt(wall, "HH:mm") === "23:59") return wallToUtc(isoDate(wall), "09:00", tz);
-  return new Date(new Date(dueAt).getTime() - 3600e3);
-}
+export { taskReminderAt } from "./task-time";

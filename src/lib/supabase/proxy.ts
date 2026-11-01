@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/giris", "/auth"];
+const PUBLIC_PATHS = ["/giris", "/auth", "/serwist", "/manifest.webmanifest", "/api/cron"];
 
 /** Her istekte Supabase oturumunu tazeler ve girişi olmayanı /giris'e yollar. */
 export async function updateSession(request: NextRequest) {
