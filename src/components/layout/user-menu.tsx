@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePlace, useProfile } from "@/lib/data/hooks";
-import { downloadBackup } from "@/lib/data/backup";
+import { shareBackup } from "@/lib/data/file-link";
 import { AppLink } from "@/lib/nav/nav-context";
 import { signOutClient } from "@/lib/supabase/sign-out";
 import { applyTheme } from "@/lib/theme";
@@ -62,8 +62,8 @@ export function UserMenu({ collapsed }: { collapsed: boolean }) {
         {place === "device" && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => downloadBackup()}>
-              <Download /> Yedeği indir
+            <DropdownMenuItem onSelect={() => void shareBackup()}>
+              <Download /> Yedeği kaydet
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <AppLink href="/ayarlar"><Settings2 /> Saklama yeri ve yedek</AppLink>

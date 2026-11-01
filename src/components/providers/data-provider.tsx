@@ -13,6 +13,7 @@ import { cloudCacheKey, DEVICE_KEY, getStorageMode, MIGRATE_FLAG } from "@/lib/d
 import { emptySnapshot, setAdapter, useData } from "@/lib/data/store";
 import { TABLE_NAMES, type DataSnapshot, type Profile } from "@/lib/data/types";
 import { isSupabaseConfigured } from "@/lib/env";
+import { resumeFileLink } from "@/lib/data/file-link";
 
 type Saved = { data: DataSnapshot; profile: Profile };
 
@@ -83,6 +84,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         if (res) {
           if (!uid) stop = persistTo(cloudCacheKey(res.profile.id));
           await migrateDeviceData(res.profile.id, adapter, reload);
+          // Seçilmiş bir yedek dosyası varsa ona otomatik yazmaya devam et
+          void resumeFileLink({ asSource: false });
         }
       } catch {
         if (fromCache) toast("Çevrimdışısın", { description: "Cihazdaki son kopya gösteriliyor; değişiklikler bağlantı gelince gönderilir." });
@@ -97,6 +100,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       useData.getState().load(withAllTables(saved?.data ?? emptySnapshot()), profile, "local", "device");
       stop = persistTo(DEVICE_KEY);
       void requestPersistence();
+      // Seçilmiş bir veri dosyası varsa veriler oradan okunur ve oraya yazılır
+      void resumeFileLink({ asSource: true });
     }
 
     function initPreview() {

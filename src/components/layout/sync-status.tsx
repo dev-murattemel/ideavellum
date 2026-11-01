@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Check, CloudOff, HardDrive, LoaderCircle } from "lucide-react";
+import { Check, CloudOff, FileCheck2, HardDrive, LoaderCircle } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useDataMode, usePlace } from "@/lib/data/hooks";
 import { retryQueued, useSync } from "@/lib/data/store";
+import { useFileLink } from "@/lib/data/file-link";
 import { cn } from "@/lib/utils";
 
 function useOnline() {
@@ -29,15 +30,18 @@ export function SyncStatus() {
   const { pending, queued } = useSync();
   const online = useOnline();
   const place = usePlace();
+  const file = useFileLink();
   if (place === "device") {
+    const linked = file.status === "linked";
     return (
       <Tooltip>
         <TooltipTrigger asChild>
           <span tabIndex={0} className="flex h-9 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-ink-subtle outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <HardDrive className="size-3.5" aria-hidden /> <span className="max-lg:sr-only">Bu cihazda</span>
+            {linked ? <FileCheck2 className="size-3.5" aria-hidden /> : <HardDrive className="size-3.5" aria-hidden />}
+            <span className="max-w-40 truncate max-lg:sr-only">{linked ? file.fileName : "Bu cihazda"}</span>
           </span>
         </TooltipTrigger>
-        <TooltipContent>Veriler yalnızca bu cihazda; hiçbir sunucuya gönderilmez</TooltipContent>
+        <TooltipContent>{linked ? `Veriler ${file.fileName} dosyasına otomatik kaydediliyor` : "Veriler yalnızca bu cihazda; hiçbir sunucuya gönderilmez"}</TooltipContent>
       </Tooltip>
     );
   }

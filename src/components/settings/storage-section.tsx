@@ -14,6 +14,8 @@ import { emptySnapshot, useData } from "@/lib/data/store";
 import { timeAgo } from "@/lib/time";
 import { useTimer } from "@/lib/timer/store";
 import { SettingsSection } from "./settings-section";
+import { FileLinkPanel } from "./file-link-panel";
+import { useFileLink } from "@/lib/data/file-link";
 import { hardNavigate } from "@/lib/nav/hard-navigate";
 
 const PLACE = {
@@ -31,7 +33,10 @@ export function StorageSection() {
   const [confirmWipe, setConfirmWipe] = React.useState(false);
   const [last, setLast] = React.useState<number | null>(() => lastBackupAt());
   const rows = countRows(snapshotNow().data);
-  const P = PLACE[place];
+  const linked = useFileLink((l) => l.status === "linked");
+  const P = place === "device" && linked
+    ? { ...PLACE.device, text: "Hesap yok; veriler bu cihazda ve seçtiğin dosyada. Her değişiklik dosyaya otomatik kaydediliyor." }
+    : PLACE[place];
   const Icon = P.icon;
 
   const backup = () => {
@@ -82,6 +87,8 @@ export function StorageSection() {
             <p className="tabular mt-1 text-xs text-ink-subtle">{rows} kayıt · Son yedek: {last ? timeAgo(new Date(last).toISOString()) : "hiç alınmadı"}</p>
           </div>
         </div>
+
+        {place !== "preview" && <FileLinkPanel />}
 
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={backup}><Download /> Yedeği indir</Button>
