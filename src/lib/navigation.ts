@@ -35,7 +35,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/takvim", label: "Takvim", icon: CalendarDays, description: "Haftalık ve aylık program" },
       { href: "/pano", label: "Pano", icon: SquareKanban, description: "Görevler sütunlarda" },
       { href: "/aliskanliklar", label: "Alışkanlıklar", icon: Repeat, description: "Her gün işaretlenen küçük rutinler, seriler" },
-      { href: "/dersler", label: "Dersler", icon: LayoutGrid, description: "Dönemin dersleri: dil, spor, okuma, mutfak…" },
+      { href: "/dersler", label: "Müfredat", icon: LayoutGrid, description: "Dönemde takip ettiğin her şey: dil, spor, okuma, mutfak…" },
     ],
   },
   {

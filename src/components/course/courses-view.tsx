@@ -41,7 +41,7 @@ export function CoursesView() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Dersler"
+        title="Müfredat"
         description={termLabel}
         actions={
           <>

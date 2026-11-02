@@ -43,7 +43,7 @@ export function TermCourses() {
                   data-course={c.color}
                   className={cn(
                     "flex h-8 items-center gap-2.5 rounded-md pr-2.5 pl-[30px] text-13 transition-colors",
-                    active ? "bg-course font-medium text-course-fg" : "text-ink-muted hover:bg-hover hover:text-foreground",
+                    active ? "bg-course font-medium text-course-fg" : "text-ink-muted hover:bg-surface/60 hover:text-foreground",
                   )}
                 >
                   <Icon className={cn("size-3.5 shrink-0 text-course-solid", c.status === "paused" && "opacity-40")} strokeWidth={2.2} aria-hidden />
@@ -68,7 +68,7 @@ export function TermCourses() {
             <button
               type="button"
               onClick={() => ui().open({ type: "course" })}
-              className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md pr-2.5 pl-[30px] text-13 text-ink-subtle transition-colors hover:bg-hover hover:text-foreground"
+              className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md pr-2.5 pl-[30px] text-13 text-ink-subtle transition-colors hover:bg-surface/60 hover:text-foreground"
             >
               <Plus className="size-3.5 shrink-0" aria-hidden /> Ders ekle
             </button>

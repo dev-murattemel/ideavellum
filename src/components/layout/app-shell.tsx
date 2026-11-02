@@ -35,13 +35,14 @@ export function AppShell({
       <TooltipProvider>
         <SidebarProvider defaultCollapsed={defaultCollapsed}>
           <CommandMenuProvider>
-            <div className="flex min-h-dvh">
+            <div className="flex min-h-dvh md:bg-shell">
               <AppSidebar />
-              <div className="flex min-w-0 flex-1 flex-col">
+              {/* Masaüstünde içerik, gri çerçevenin içinde beyaz ve köşeleri yuvarlak bir tuvalde durur */}
+              <div className="flex min-w-0 flex-1 flex-col md:my-2 md:mr-2 md:min-h-[calc(100dvh-1rem)] md:rounded-2xl md:border md:border-line md:bg-surface md:shadow-[0_1px_3px_rgb(0_0_0/0.04)]">
                 <Topbar />
                 <main
                   id="icerik"
-                  className="mx-auto w-full max-w-[1600px] flex-1 px-4 pt-6 pb-28 md:px-8 md:pt-8 md:pb-12 2xl:px-12"
+                  className="mx-auto w-full max-w-[1600px] flex-1 px-4 pt-6 pb-28 md:px-8 md:pt-6 md:pb-12 2xl:px-10"
                 >
                   {banner}
                   <ReadyGate>{children}</ReadyGate>

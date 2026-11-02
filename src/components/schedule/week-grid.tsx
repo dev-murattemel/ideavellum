@@ -20,8 +20,9 @@ import { useNow } from "./use-now";
 
 const HOURS = Array.from({ length: (DAY_END - DAY_START) / 60 }, (_, i) => DAY_START / 60 + i);
 
-export function WeekGrid({ days }: { days: Date[] }) {
-  const sessions = useRows("class_sessions");
+export function WeekGrid({ days, filter = null }: { days: Date[]; filter?: string | null }) {
+  const allSessions = useRows("class_sessions");
+  const sessions = React.useMemo(() => (filter ? allSessions.filter((s) => s.course_id === filter) : allSessions), [allSessions, filter]);
   const courses = useRows("courses");
   const attendance = useRows("attendance");
   const entries = useRows("session_entries");
@@ -84,18 +85,22 @@ export function WeekGrid({ days }: { days: Date[] }) {
             <div className="grid flex-1" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))` }}>
               {days.map((d, i) => {
                 const isToday = i === todayIndex;
+                const count = columns[i].length;
                 return (
-                  <div key={i} className="flex h-14 flex-col items-center justify-center gap-0.5 border-l border-line first:border-l-0">
-                    <span className={cn("text-xs", isToday ? "font-medium text-accent-text" : "text-ink-muted")}>
-                      {days.length === 1 ? fmt(d, "EEEE") : WEEKDAY_SHORT[isoWeekday(d) - 1]}
-                    </span>
+                  <div key={i} className="flex h-14 items-center justify-center gap-2.5 border-l border-line px-2 first:border-l-0">
                     <span
                       className={cn(
-                        "tabular flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-sm font-semibold",
-                        isToday && "bg-primary text-primary-foreground",
+                        "tabular flex size-8 shrink-0 items-center justify-center rounded-lg text-base font-semibold",
+                        isToday ? "bg-primary text-primary-foreground" : "text-foreground",
                       )}
                     >
                       {fmt(d, "d")}
+                    </span>
+                    <span className="flex min-w-0 flex-col leading-tight">
+                      <span className={cn("truncate text-13", isToday ? "font-semibold text-foreground" : "font-medium text-ink-muted")}>
+                        {days.length === 1 ? fmt(d, "EEEE") : WEEKDAY_SHORT[isoWeekday(d) - 1]}
+                      </span>
+                      <span className="tabular truncate text-xs text-ink-subtle">{count ? `${count} saat` : "boş"}</span>
                     </span>
                   </div>
                 );
@@ -112,7 +117,7 @@ export function WeekGrid({ days }: { days: Date[] }) {
                 </span>
               ))}
               {nowVisible && (
-                <span className="tabular absolute right-1 z-10 -translate-y-1/2 rounded-sm bg-primary px-1 text-xs font-medium text-primary-foreground" style={{ top: minToPx(nowMin) }}>
+                <span className="tabular absolute right-1 z-10 -translate-y-1/2 rounded-sm bg-destructive px-1 text-xs font-medium text-white" style={{ top: minToPx(nowMin) }}>
                   {minutesToTime(nowMin)}
                 </span>
               )}
@@ -196,8 +201,8 @@ export function WeekGrid({ days }: { days: Date[] }) {
                     })()}
                     {nowVisible && i === todayIndex && (
                       <div aria-hidden className="pointer-events-none absolute inset-x-0 z-10 flex items-center" style={{ top: minToPx(nowMin) }}>
-                        <span className="-ml-1 size-2 rounded-full bg-primary" />
-                        <span className="h-0.5 flex-1 bg-primary" />
+                        <span className="-ml-1 size-2 rounded-full bg-destructive" />
+                        <span className="h-px flex-1 bg-destructive" />
                       </div>
                     )}
                   </div>

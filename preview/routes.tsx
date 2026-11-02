@@ -16,7 +16,7 @@ const TITLES: Record<string, string> = {
   "/bugun": "Bugün",
   "/takvim": "Takvim",
   "/pano": "Pano",
-  "/dersler": "Dersler",
+  "/dersler": "Müfredat",
   "/notlar": "Notlar",
   "/kaynaklar": "Kaynaklar",
   "/gunluk": "Günlük",

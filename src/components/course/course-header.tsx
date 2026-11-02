@@ -48,7 +48,7 @@ export function CourseHeader({ course }: { course: Course }) {
 
       <div className="relative flex items-start justify-between gap-3">
         <AppLink href="/dersler" className="-ml-1 inline-flex items-center gap-1.5 rounded-md px-1 text-13 font-medium opacity-80 hover:opacity-100">
-          <ArrowLeft className="size-4" aria-hidden /> Dersler
+          <ArrowLeft className="size-4" aria-hidden /> Müfredat
         </AppLink>
         <div className="flex items-center gap-2">
           {course.status === "active" && (

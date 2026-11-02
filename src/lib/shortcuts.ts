@@ -3,7 +3,7 @@ export const GO_SHORTCUTS: { key: string; href: string; label: string }[] = [
   { key: "b", href: "/bugun", label: "Bugün" },
   { key: "t", href: "/takvim", label: "Takvim" },
   { key: "p", href: "/pano", label: "Pano" },
-  { key: "a", href: "/dersler", label: "Dersler" },
+  { key: "a", href: "/dersler", label: "Müfredat" },
   { key: "n", href: "/notlar", label: "Notlar" },
   { key: "g", href: "/gunluk", label: "Günlük" },
   { key: "s", href: "/aforizmalar", label: "Sözler" },

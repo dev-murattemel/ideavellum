@@ -48,7 +48,8 @@ export function SessionBlock({
   const title = entry?.title;
   const checks = entry?.checklist ?? [];
   const doneChecks = checks.filter((c) => c.done).length;
-  // Kartın yüksekliğine kaç satır sığıyorsa öncelik sırasıyla göster: ad, saat, başlık, liste, yer
+  // İlk satır her zaman saat + ad; kalan satırlara öncelik sırasıyla başlık, liste, yer
+  // Dar sütunda saat ve ad iki satıra bölünür; bir satır daha az yer kalır
   const lines = compact ? 0 : Math.floor((height - 12 + 2) / 18) - 2;
   const wants = [title ? "title" : null, checks.length ? "checks" : null, item.session.location ? "location" : null].filter(Boolean).slice(0, Math.max(0, lines));
   const show = { title: wants.includes("title"), checks: wants.includes("checks"), location: wants.includes("location") };
@@ -93,7 +94,7 @@ export function SessionBlock({
           }
         }}
         className={cn(
-          "group relative flex h-full w-full cursor-grab flex-col overflow-hidden rounded-lg bg-course text-left text-course-fg ring-1 ring-course-solid/15 ring-inset transition-[box-shadow,filter] select-none hover:brightness-[0.98]",
+          "group @container relative flex h-full w-full cursor-grab flex-col overflow-hidden rounded-lg bg-course text-left text-course-fg ring-1 ring-course-solid/15 ring-inset transition-[box-shadow,filter] select-none hover:brightness-[0.98]",
           "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
           compact ? "flex-row items-center gap-1.5 pr-2 pl-3" : "gap-0.5 py-1.5 pr-2 pl-3",
           dragging && "cursor-grabbing shadow-lift",
@@ -101,11 +102,11 @@ export function SessionBlock({
         )}
       >
         <span aria-hidden className="absolute inset-y-1 left-1 w-[3px] rounded-full bg-course-solid" />
-        <span className={cn("truncate font-semibold", compact ? "text-xs" : "text-13 leading-4")}>{item.course.name}</span>
-        {show.title && <span className="truncate text-xs leading-4 font-medium">{title}</span>}
-        <span className="tabular truncate text-xs opacity-80">
-          {minutesToTime(start)}–{minutesToTime(end)}
+        <span className={cn("flex min-w-0 font-semibold", compact ? "items-baseline gap-1.5 text-xs" : "flex-col text-13 leading-4 @[170px]:flex-row @[170px]:items-baseline @[170px]:gap-1.5")}>
+          <span className="tabular shrink-0 whitespace-nowrap">{minutesToTime(start)}–{minutesToTime(end)}</span>
+          <span className="truncate">{item.course.name}</span>
         </span>
+        {show.title && <span className="truncate text-xs leading-4 opacity-85">{title}</span>}
         {show.location && (
           <span className="flex items-center gap-1 truncate text-xs opacity-80">
             <MapPin className="size-3 shrink-0" aria-hidden />

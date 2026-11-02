@@ -12,6 +12,7 @@ import { SidebarNavLink } from "./nav-link";
 import { useSidebar } from "./sidebar-context";
 import { TermCourses } from "./term-courses";
 import { TermBadge } from "./term-badge";
+import { SidebarSearch } from "./sidebar-search";
 import { UserMenu } from "./user-menu";
 import { useModifierKey } from "./use-platform";
 
@@ -23,7 +24,7 @@ export function AppSidebar() {
     <aside
       aria-label="Ana menü"
       className={cn(
-        "group/sidebar sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200 ease-out motion-reduce:transition-none md:flex",
+        "group/sidebar sticky top-0 hidden h-dvh shrink-0 flex-col bg-shell transition-[width] duration-200 ease-out motion-reduce:transition-none md:flex",
         collapsed ? "w-[68px]" : "w-[248px]",
       )}
     >
@@ -62,6 +63,7 @@ export function AppSidebar() {
         )}
       </div>
 
+      <SidebarSearch collapsed={collapsed} />
       {!collapsed && <TermBadge />}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden [scrollbar-width:thin]">
         {NAV_GROUPS.map((group, gi) => (
@@ -80,7 +82,7 @@ export function AppSidebar() {
         ))}
       </div>
 
-      <div className="flex flex-col gap-0.5 border-t border-line px-3 pt-2 pb-3">
+      <div className="flex flex-col gap-0.5 px-3 pt-2 pb-3">
         <SidebarNavLink item={SETTINGS_NAV} collapsed={collapsed} />
         <UserMenu collapsed={collapsed} />
       </div>

@@ -37,7 +37,8 @@ export function TodayView() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <p className="text-13 font-medium text-ink-muted">
+        {/* Masaüstünde tarih üst çubukta yazıyor */}
+        <p className="text-13 font-medium text-ink-muted md:hidden">
           <time dateTime={real.toISOString()}>{formatLongDate(real, profile.timezone)}</time>
         </p>
         <h1 className="text-2xl font-semibold tracking-[-0.015em]">

@@ -29,11 +29,11 @@ export function UserMenu({ collapsed }: { collapsed: boolean }) {
       <DropdownMenuTrigger
         aria-label="Hesap menüsü"
         className={cn(
-          "flex w-full cursor-pointer items-center gap-2.5 rounded-md p-2 text-left transition-colors outline-none hover:bg-hover focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-hover",
+          "flex w-full cursor-pointer items-center gap-2.5 rounded-md p-2 text-left transition-colors outline-none hover:bg-surface/60 focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-surface",
           collapsed && "justify-center",
         )}
       >
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-muted">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-surface text-ink-muted ring-1 ring-line">
           {place === "device" ? <HardDrive className="size-4" aria-hidden /> : <UserRound className="size-4" aria-hidden />}
         </span>
         {!collapsed && (

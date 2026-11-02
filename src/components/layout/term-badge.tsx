@@ -38,7 +38,7 @@ export function TermBadge() {
       type="button"
       onClick={() => ui().open({ type: "term", termId: term.id })}
       title="Dönemi düzenle"
-      className="mx-3 mt-2 flex cursor-pointer flex-col gap-1.5 rounded-lg bg-sunken/60 px-3 py-2.5 text-left transition-colors hover:bg-hover"
+      className="mx-3 mt-2 flex cursor-pointer flex-col gap-1.5 rounded-lg bg-surface/70 px-3 py-2.5 text-left ring-1 ring-line transition-colors hover:bg-surface"
     >
       <span className="flex items-center justify-between gap-2 text-xs">
         <span className="flex min-w-0 items-center gap-1.5 font-medium text-foreground">

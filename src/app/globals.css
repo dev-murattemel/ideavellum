@@ -11,6 +11,8 @@
 :root {
   /* Nötrler */
   --surface-page: #f6f6f3;
+  /* Masaüstünde kenar çubuğu ve çerçeve zemini; içerik beyaz bir tuvalde durur */
+  --surface-shell: #efefeb;
   --surface-card: #ffffff;
   --surface-sunken: #eeeeea;
   --surface-hover: #f1f1ed;
@@ -81,6 +83,7 @@
 
 .dark {
   --surface-page: #141416;
+  --surface-shell: #0e0e10;
   --surface-card: #1c1c1f;
   --surface-sunken: #111113;
   --surface-hover: #242428;
@@ -162,6 +165,7 @@
   --shadow-panel: var(--shadow-panel);
 
   --color-page: var(--surface-page);
+  --color-shell: var(--surface-shell);
   --color-surface: var(--surface-card);
   --color-sunken: var(--surface-sunken);
   --color-hover: var(--surface-hover);

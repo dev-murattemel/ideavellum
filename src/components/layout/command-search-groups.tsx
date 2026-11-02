@@ -21,7 +21,7 @@ export function CommandSearchGroups({ run }: { run: (fn: () => void) => void }) 
 
   return (
     <>
-      <CommandGroup heading="Dersler">
+      <CommandGroup heading="Müfredat">
         {courses.map((c) => {
           const k = kindOf(c);
           const Icon = k.icon;
