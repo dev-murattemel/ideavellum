@@ -11,10 +11,10 @@ const DEFAULT: Hints = {
 
 /** Gün panelindeki örnek metinler: dersin türüne göre (spor → setler, mutfak → malzemeler) */
 const HINTS: Partial<Record<AreaKind, Hints>> = {
-  fitness: { title: "Bugün: üst göğüs, bacak günü…", listTitle: "Hareketler ve setler", list: "Bench press · 4×10 · 60 kg", details: "Isınma, ağırlıklar, nasıl hissettim…" },
-  cooking: { title: "Bugünkü tarif: mercimek çorbası…", listTitle: "Malzemeler", list: "1 su bardağı kırmızı mercimek", details: "Yapılışı, pişirme süresi, püf noktaları…" },
-  reading: { title: "Bugün: 3. bölüm", listTitle: "Okuma listesi", list: "Sayfa 40–60", details: "Altını çizdiğim yerler, düşüncelerim…" },
-  spiritual: { title: "Bugün: Bakara 1–20", listTitle: "Bugünkü okuma", list: "Bir sayfa ya da sure ekle", details: "Üzerine düşündüklerim…" },
+  fitness: { title: "Bugün: üst göğüs, bacak günü…", listTitle: "Hareketler ve setler", list: "Hareket ara: bench press, squat, koşu…", details: "Isınma, ağırlıklar, nasıl hissettim…" },
+  cooking: { title: "Bugünkü tarif: mercimek çorbası…", listTitle: "Malzemeler", list: "Malzeme ara: soğan, mercimek, zeytinyağı…", details: "Yapılışı, pişirme süresi, püf noktaları…" },
+  reading: { title: "Bugün: 3. bölüm", listTitle: "Okuma listesi", list: "Ekle: bölüm okuma, not çıkarma…", details: "Altını çizdiğim yerler, düşüncelerim…" },
+  spiritual: { title: "Bugün: Bakara 1–20", listTitle: "Sureler ve okuma", list: "Sure ara: Yâsîn, Mülk…", details: "Üzerine düşündüklerim…" },
   watching: { title: "Bugün izlenecek video", listTitle: "İzleme listesi", list: "Video başlığı ya da bağlantı", details: "Aldığım notlar…" },
   course: { title: "Bugünün konusu: Present perfect", listTitle: "Kontrol listesi", list: "20 kelime tekrar et", details: "Ders notları, sorular, bağlantılar…" },
 };

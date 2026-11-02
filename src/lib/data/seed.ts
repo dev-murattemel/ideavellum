@@ -7,7 +7,7 @@ import { positionAtEnd } from "./position";
 import { createBuilder } from "./seed-builder";
 import { seedContent, seedHabits, seedJournalAndQuotes } from "./seed-content";
 import { seedHistory } from "./seed-history";
-import type { ClassSession, Course, DataSnapshot, NewRow, TopicStatus } from "./types";
+import type { ClassSession, EntryCheck, Course, DataSnapshot, NewRow, TopicStatus } from "./types";
 
 type CourseSeed = Omit<NewRow<"courses">, "term_id" | "completed_at" | "final_reflection" | "final_note" | "final_rating" | "status" | "position"> & {
   key: string;
@@ -133,16 +133,18 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
   );
 
   // Takvimdeki birkaç günün ayrıntısı: başlık, kontrol listesi, not
-  const entry = (i: number, dayOffset: number, title: string, checks: [string, boolean][], details: string | null) => {
+  const entry = (i: number, dayOffset: number, title: string, checks: [string, boolean, Partial<EntryCheck>?][], details: string | null) => {
     const sessionId = sessions[i].id;
     const date = isoDate(addDays(today, dayOffset));
     add("session_entries", {
       id: entryId(sessionId, date), class_session_id: sessionId, date, title, details, note_id: null,
-      checklist: checks.map(([label, done], n) => ({ id: `${sessionId.slice(0, 8)}-${n}`, label, done })),
+      checklist: checks.map(([label, done, m], n) => ({ id: `${sessionId.slice(0, 8)}-${n}`, label, done, ...m })),
     });
   };
-  entry(12, 0, "Tempo koşusu + mobilite", [["Isınma · 10 dk", true], ["Tempo · 3×8 dk", true], ["Kalça mobilitesi · 2 tur", false], ["Esneme · 5 dk", false]], "Nabız 150 civarında kalsın. Sağ diz hafif hassas, yokuşa dikkat.");
-  entry(13, 2, "Uzun koşu · 6 km", [["Isınma · 10 dk", false], ["6 km sakin tempo", false], ["Esneme · 5 dk", false]], null);
+  const cardio = (minutes: number | null, km: number | null = null) => ({ metric: "cardio" as const, minutes, km });
+  const lift = (sets: number, reps: number, weight: number | null) => ({ metric: "strength" as const, sets, reps, weight });
+  entry(12, 0, "Tempo koşusu + güç", [["Isınma", true, cardio(10)], ["Tempolu koşu", true, cardio(24, 4.5)], ["Goblet squat", false, lift(3, 12, 16)], ["Lunge", false, lift(3, 10, 8)], ["Esneme", false, cardio(5)]], "Nabız 150 civarında kalsın. Sağ diz hafif hassas, yokuşa dikkat.");
+  entry(13, 2, "Uzun koşu", [["Isınma", false, cardio(10)], ["Koşu", false, cardio(40, 6)], ["Esneme", false, cardio(5)]], null);
   entry(0, 0, "Present perfect + sunum provası", [["20 kelime tekrar", true], ["Sunumu sesli prova et", false]], null);
 
   seedContent(add, snap, { courses, today, tz });

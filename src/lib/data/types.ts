@@ -81,8 +81,21 @@ export type Attendance = Base & {
   note: string | null;
 };
 
-/** Takvimdeki tek bir günün kontrol maddesi (set, malzeme, adım…) */
-export type EntryCheck = { id: string; label: string; done: boolean };
+/** Takvimdeki tek bir günün kontrol maddesi (hareket, malzeme, bölüm…) */
+export type EntryCheck = {
+  id: string;
+  label: string;
+  done: boolean;
+  /** Nasıl ölçüldüğü; yoksa sadece metin */
+  metric?: "strength" | "cardio" | "amount" | "plain";
+  sets?: number | null;
+  reps?: number | null;
+  weight?: number | null; // kg
+  minutes?: number | null;
+  km?: number | null;
+  amount?: number | null;
+  unit?: string | null;
+};
 
 /** Bir ders saatinin belirli bir güne ait ayrıntısı: "Spor · 2 Kasım" → "Üst göğüs", setler, notlar */
 export type SessionEntry = Base & {

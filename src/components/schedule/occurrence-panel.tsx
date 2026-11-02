@@ -12,7 +12,8 @@ import { kindOf } from "@/lib/area-kinds";
 import { useProfile, useRow, useRows } from "@/lib/data/hooks";
 import type { EntryCheck } from "@/lib/data/types";
 import { repeatLabel } from "@/lib/domain/schedule";
-import { entryId, newCheck, previousEntry, saveEntry } from "@/lib/domain/session-entries";
+import { newId } from "@/lib/data/ids";
+import { entryId, previousEntry, saveEntry, usedChecks } from "@/lib/domain/session-entries";
 import { fmt, isoDate, WEEKDAY_NAMES, zonedNow } from "@/lib/time";
 import { ui, useUI, type OccurrenceRef } from "@/lib/ui-store";
 import { EntryChecklist } from "./entry-checklist";
@@ -62,6 +63,8 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
   const course = useRow("courses", session.course_id);
   const entry = useRow("session_entries", entryId(sessionId, date));
   const entries = useRows("session_entries");
+  const allSessions = useRows("class_sessions");
+  const allCourses = useRows("courses");
   const attendance = useRows("attendance").find((a) => a.class_session_id === sessionId && a.date === date);
   const profile = useProfile();
   const vocab = kindOf(course);
@@ -78,13 +81,20 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
   const isPastOrToday = date <= isoDate(zonedNow(profile.timezone));
   const day = parseISO(date);
 
+  // Aynı türdeki derslerin (ör. tüm spor dersleri) daha önce kullanılan maddeleri
+  const used = React.useMemo(() => {
+    const kinds = new Set(allCourses.filter((c) => (c.kind ?? "course") === (course?.kind ?? "course")).map((c) => c.id));
+    return usedChecks(entries, new Set(allSessions.filter((s) => kinds.has(s.course_id)).map((s) => s.id)));
+  }, [entries, allSessions, allCourses, course?.kind]);
+
   const takePrevious = () => {
     if (!prev) return;
     if (prev.title && !title) {
       setTitle(prev.title);
       markTitle();
     }
-    setChecklist(prev.checklist.map((c) => ({ ...newCheck(c.label) })));
+    // Ölçüler (set, kg, miktar) korunur; işaretler sıfırlanır
+    setChecklist(prev.checklist.map((c) => ({ ...c, id: newId(), done: false })));
   };
 
   return (
@@ -148,7 +158,7 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
             </button>
           )}
 
-          <EntryChecklist items={checklist} onChange={setChecklist} placeholder={hints.list} title={hints.listTitle} />
+          <EntryChecklist items={checklist} onChange={setChecklist} placeholder={hints.list} title={hints.listTitle} kind={course?.kind} used={used} />
 
           <label className="flex flex-col gap-1.5">
             <span className="text-13 font-semibold">Ayrıntılar</span>

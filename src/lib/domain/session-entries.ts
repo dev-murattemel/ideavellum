@@ -3,6 +3,7 @@ import { addDays, parseISO } from "date-fns";
 import { newId } from "@/lib/data/ids";
 import { data } from "@/lib/data/store";
 import type { ClassSession, EntryCheck, SessionEntry, TiptapDoc } from "@/lib/data/types";
+import { checkText } from "@/lib/catalog/format";
 import { fmt, isoDate, isoWeekday, minutesToTime, timeToMinutes } from "@/lib/time";
 
 /**
@@ -41,7 +42,24 @@ export function saveEntry(sessionId: string, date: string, patch: Partial<Pick<S
   });
 }
 
-export const newCheck = (label: string): EntryCheck => ({ id: newId(), label, done: false });
+export const newCheck = (label: string, extra: Partial<EntryCheck> = {}): EntryCheck => ({ ...extra, id: newId(), label, done: false });
+
+/**
+ * Daha önce kullanılan maddeler, en son girilen ölçüleriyle ("Bench press" → 4×10 · 60 kg).
+ * Yalnızca verilen ders saatlerinin kayıtlarına bakılır (ör. aynı türdeki dersler).
+ */
+export function usedChecks(entries: SessionEntry[], sessionIds: Set<string>) {
+  const latest = new Map<string, { check: EntryCheck; date: string }>();
+  for (const e of entries) {
+    if (!sessionIds.has(e.class_session_id)) continue;
+    for (const c of e.checklist) {
+      const key = c.label.toLocaleLowerCase("tr");
+      const prev = latest.get(key);
+      if (!prev || prev.date < e.date) latest.set(key, { check: c, date: e.date });
+    }
+  }
+  return [...latest.values()].sort((a, b) => b.date.localeCompare(a.date)).map((x) => x.check);
+}
 
 /** Aynı saatin bu tarihten önceki en son dolu günü ("Geçen seferden al" için) */
 export function previousEntry(sessionId: string, date: string, entries: SessionEntry[]) {
@@ -60,7 +78,7 @@ function entryToDoc(e: Pick<SessionEntry, "details" | "checklist">): TiptapDoc {
   const list = e.checklist.length
     ? [{
         type: "taskList",
-        content: e.checklist.map((c) => ({ type: "taskItem", attrs: { checked: c.done }, content: [{ type: "paragraph", content: text(c.label) }] })),
+        content: e.checklist.map((c) => ({ type: "taskItem", attrs: { checked: c.done }, content: [{ type: "paragraph", content: text(checkText(c)) }] })),
       }]
     : [];
   return { type: "doc", content: [...(e.details ? paragraphs : []), ...list] };

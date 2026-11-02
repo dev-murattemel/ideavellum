@@ -1,90 +1,58 @@
 "use client";
 
 import * as React from "react";
-import { Plus, X } from "lucide-react";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import type { EntryCheck } from "@/lib/data/types";
+import { catalogFor } from "@/lib/catalog";
+import type { AreaKind, EntryCheck } from "@/lib/data/types";
 import { newCheck } from "@/lib/domain/session-entries";
-import { cn } from "@/lib/utils";
+import { CatalogCombobox } from "./catalog-combobox";
+import { EntryItemRow } from "./entry-item-row";
 
 /**
- * O güne ait kontrol listesi: setler ("Bench press 4×10"), malzemeler, adımlar.
- * Maddeye çift tıklayınca düzenlenir; Enter ile yeni madde eklenir.
+ * O güne ait liste: spor için hareketler (set · tekrar · kg), mutfak için malzemeler
+ * (miktar · birim), Kuran için sureler. Hazır listeden aranır ya da yeni ad yazılır.
  */
-export function EntryChecklist({ items, onChange, placeholder, title }: { items: EntryCheck[]; onChange: (v: EntryCheck[]) => void; placeholder: string; title: string }) {
-  const [draft, setDraft] = React.useState("");
-  const [editing, setEditing] = React.useState<string | null>(null);
+export function EntryChecklist({ items, onChange, placeholder, title, kind, used }: {
+  items: EntryCheck[];
+  onChange: (v: EntryCheck[]) => void;
+  placeholder: string;
+  title: string;
+  kind: AreaKind | undefined;
+  /** Daha önce kullanılan maddeler (son ölçüleriyle) */
+  used: EntryCheck[];
+}) {
+  const catalog = React.useMemo(() => catalogFor(kind), [kind]);
   const done = items.filter((i) => i.done).length;
-
-  const add = (e: React.FormEvent) => {
-    e.preventDefault();
-    const lines = draft.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (!lines.length) return;
-    onChange([...items, ...lines.map(newCheck)]);
-    setDraft("");
-  };
   const patch = (id: string, p: Partial<EntryCheck>) => onChange(items.map((i) => (i.id === id ? { ...i, ...p } : i)));
+  const sets = items.reduce((n, i) => n + (i.metric === "strength" ? (i.sets ?? 0) : 0), 0);
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h3 className="text-13 font-semibold">{title}</h3>
-        {items.length > 0 && <span className="tabular text-xs text-ink-muted">{done}/{items.length}</span>}
+        {items.length > 0 && (
+          <span className="tabular text-xs text-ink-muted">
+            {sets > 0 && `${sets} set · `}{done}/{items.length} tamam
+          </span>
+        )}
       </div>
-      {items.length > 0 && <Progress value={(done / items.length) * 100} label="Kontrol listesi ilerlemesi" />}
-      <ul className="flex flex-col">
-        {items.map((i) => (
-          <li key={i.id} className="group flex min-h-9 items-center gap-2.5 rounded-md px-1 hover:bg-hover/60">
-            <Checkbox checked={i.done} onCheckedChange={(c) => patch(i.id, { done: c === true })} aria-label={i.label} />
-            {editing === i.id ? (
-              <input
-                autoFocus
-                defaultValue={i.label}
-                aria-label="Maddeyi düzenle"
-                onBlur={(e) => { const v = e.target.value.trim(); if (v) patch(i.id, { label: v }); setEditing(null); }}
-                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") setEditing(null); }}
-                className="h-8 flex-1 rounded-sm bg-sunken px-1.5 text-sm outline-none"
-              />
-            ) : (
-              <span
-                onDoubleClick={() => setEditing(i.id)}
-                className={cn("tabular flex-1 py-1.5 text-sm", i.done && "text-ink-muted line-through")}
-              >
-                {i.label}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((x) => x.id !== i.id))}
-              aria-label={`${i.label} maddesini sil`}
-              className="flex size-6 cursor-pointer items-center justify-center rounded-sm text-ink-subtle opacity-0 group-hover:opacity-100 hover:text-destructive focus-visible:opacity-100"
-            >
-              <X className="size-3.5" />
-            </button>
-          </li>
-        ))}
-      </ul>
-      <form onSubmit={add} className="flex items-center gap-2 rounded-md border border-dashed border-line-strong px-2 focus-within:border-ring">
-        <Plus className="size-4 text-ink-subtle" aria-hidden />
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onPaste={(e) => {
-            // Birden çok satır yapıştırılırsa her satır ayrı madde olur
-            const text = e.clipboardData.getData("text");
-            if (text.includes("\n")) {
-              e.preventDefault();
-              const lines = text.split("\n").map((l) => l.replace(/^[-*•\d.)\s]+/, "").trim()).filter(Boolean);
-              onChange([...items, ...lines.map(newCheck)]);
-            }
-          }}
-          placeholder={placeholder}
-          aria-label="Yeni madde"
-          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-ink-subtle"
-        />
-      </form>
+      {items.length > 0 && <Progress value={(done / items.length) * 100} label={`${title} ilerlemesi`} />}
+      {items.length > 0 && (
+        <ul className="-mx-1.5 flex flex-col">
+          {items.map((c) => (
+            <EntryItemRow key={c.id} c={c} onChange={(p) => patch(c.id, p)} onRemove={() => onChange(items.filter((x) => x.id !== c.id))} />
+          ))}
+        </ul>
+      )}
+      <CatalogCombobox
+        items={catalog.items}
+        used={used.filter((u) => !items.some((i) => i.label.toLocaleLowerCase("tr") === u.label.toLocaleLowerCase("tr")))}
+        fallback={catalog.fallback}
+        unit={catalog.unit}
+        placeholder={placeholder}
+        onPick={({ label, ...extra }) => onChange([...items, newCheck(label, extra)])}
+      />
     </div>
   );
 }
