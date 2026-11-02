@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/giris", "/auth", "/serwist", "/manifest.webmanifest", "/api/cron"];
+const PUBLIC_PATHS = ["/giris", "/auth", "/serwist", "/manifest.webmanifest", "/api/cron", "/privacy", "/terms", "/refund"];
 
 /** Her istekte Supabase oturumunu tazeler ve girişi olmayanı /giris'e yollar. */
 export async function updateSession(request: NextRequest) {
@@ -11,6 +11,7 @@ export async function updateSession(request: NextRequest) {
 
   // Cihaz modu: hesapsız kullanım; veriler tarayıcıda, sunucuya oturum gerekmez
   const deviceMode = request.cookies.get("ivl_storage")?.value === "device";
+  if (deviceMode && request.nextUrl.pathname === "/") return redirectTo(request, "/bugun");
   if (deviceMode && !request.nextUrl.pathname.startsWith("/api/")) return NextResponse.next({ request });
 
   let response = NextResponse.next({ request });
@@ -39,7 +40,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
+  // "/" giriş yapmamış ziyaretçiye tanıtım sayfasıdır
+  const isPublic = path === "/" || PUBLIC_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
 
   if (!user && !isPublic && !path.startsWith("/api/cron")) {
     const url = request.nextUrl.clone();
@@ -48,7 +50,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && path === "/giris") {
+  if (user && (path === "/giris" || path === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/bugun";
     url.search = "";
@@ -56,4 +58,11 @@ export async function updateSession(request: NextRequest) {
   }
 
   return response;
+}
+
+function redirectTo(request: NextRequest, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = "";
+  return NextResponse.redirect(url);
 }

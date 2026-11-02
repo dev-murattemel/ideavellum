@@ -5,6 +5,7 @@ export function SetupBanner({ text }: { text?: string }) {
   return (
     <div
       role="status"
+      data-setup-banner=""
       data-course="butter"
       className="mb-6 flex items-start gap-2.5 rounded-lg bg-course px-3 py-2.5 text-13 text-course-fg md:items-center"
     >

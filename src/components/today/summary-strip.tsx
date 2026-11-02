@@ -30,15 +30,15 @@ export function SummaryStrip({
       {stats.map(({ label, value, unit, icon: Icon }) => (
         <div
           key={label}
-          className="lift flex flex-col-reverse justify-end gap-1 rounded-xl border border-line bg-surface p-3 sm:flex-col sm:gap-3 sm:p-4"
+          className="lift flex flex-col-reverse justify-end gap-1 sm:justify-start rounded-xl border border-line bg-surface p-3 sm:flex-col sm:gap-3 sm:p-4"
         >
           <dt className="flex items-center gap-2 text-xs text-ink-muted sm:text-13">
             <Icon className="hidden size-4 shrink-0 text-ink-subtle sm:block" strokeWidth={1.8} aria-hidden />
             <span>{label}</span>
           </dt>
-          <dd className="tabular flex items-baseline gap-1">
-            <span className="text-xl font-semibold tracking-[-0.02em] sm:text-2xl">{value}</span>
-            {unit && <span className="text-13 text-ink-muted">{unit}</span>}
+          <dd className="tabular flex flex-wrap items-baseline gap-x-1">
+            <span className="whitespace-nowrap text-xl font-semibold tracking-[-0.02em] sm:text-2xl">{value}</span>
+            {unit && <span className="whitespace-nowrap text-13 text-ink-muted">{unit}</span>}
           </dd>
         </div>
       ))}
