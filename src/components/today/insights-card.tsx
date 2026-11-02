@@ -17,7 +17,7 @@ const TONE = {
 } as const;
 
 /** Verilerine bakarak çıkarılan kısa öneriler: gecikenler, hedefin gerisindekiler, unutulan alanlar */
-export function InsightsCard({ now, streak, studiedToday }: { now: Date; streak: number; studiedToday: number }) {
+export function InsightsCard({ now, streak, studiedToday, hero }: { now: Date; streak: number; studiedToday: number; hero?: boolean }) {
   const tz = useProfile().timezone;
   const courses = useRows("courses");
   const logs = useRows("study_logs");
@@ -25,6 +25,8 @@ export function InsightsCard({ now, streak, studiedToday }: { now: Date; streak:
   const journal = useRows("journal_entries");
   const nav = useNav();
   const items = buildInsights({ now, tz, courses, logs, tasks, journal, streak, studiedToday });
+
+  if (!courses.some((c) => c.status === "active") && items.length === 0) return null;
 
   const act = (a: NonNullable<Insight["action"]>) => {
     if (a.kind === "start" && a.courseId) startStudy(a.courseId);
@@ -34,7 +36,11 @@ export function InsightsCard({ now, streak, studiedToday }: { now: Date; streak:
   };
 
   return (
-    <SectionCard title="Öneriler" meta={<span className="flex items-center gap-1"><Sparkles className="size-3.5" aria-hidden /> verilerine göre</span>}>
+    <SectionCard
+      title={hero ? "Bugün için önerilerim" : "Öneriler"}
+      meta={<span className="flex items-center gap-1"><Sparkles className="size-3.5" aria-hidden /> verilerine göre</span>}
+      className={hero ? "ring-1 ring-foreground/[0.06] shadow-[0_8px_24px_-16px_rgb(28_25_23/0.25)]" : undefined}
+    >
       {items.length === 0 ? (
         <p className="text-13 text-ink-muted">Her şey yolunda görünüyor. Programına devam et.</p>
       ) : (

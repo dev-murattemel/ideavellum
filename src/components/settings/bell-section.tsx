@@ -11,6 +11,22 @@ import { data } from "@/lib/data/store";
 import type { BellSettings, BellSound } from "@/lib/data/types";
 import { BELL_SOUNDS, playBell } from "@/lib/notifications/bell-sounds";
 import { SettingsRow, SettingsSection } from "./settings-section";
+import { useBellState } from "@/lib/notifications/bell-state";
+import { toast } from "sonner";
+
+function BellUnlock() {
+  const { enabled, enable } = useBellState();
+  const s = useProfile().bell_settings;
+  if (enabled) return <span className="text-13 text-ink-muted">Açık</span>;
+  return (
+    <Button size="sm" onClick={async () => {
+      const ok = await enable(s.sound, s.volume);
+      toast[ok ? "success" : "error"](ok ? "Zil sesleri açık" : "Bu tarayıcı ses çalmaya izin vermedi");
+    }}>
+      Zil seslerini aç
+    </Button>
+  );
+}
 
 export function BellSection() {
   const s = useProfile().bell_settings;
@@ -19,6 +35,9 @@ export function BellSection() {
   return (
     <SettingsSection title="Zil" description="Başlamadan önce uyarı, başlangıç ve bitiş zili. Bir saate özel ayar o saatin penceresinden yapılır.">
       <div className="flex flex-col divide-y divide-line">
+        <SettingsRow label="Zil sesleri" hint="Tarayıcılar sesi ancak bir tıklamadan sonra çalmaya izin verir.">
+          <BellUnlock />
+        </SettingsRow>
         <SettingsRow label="Başlamadan önce uyarı">
           <Select value={String(s.before_minutes)} onValueChange={(v) => set({ before_minutes: Number(v) })}>
             <SelectTrigger size="sm" className="w-40" aria-label="Başlamadan önce uyarı"><SelectValue /></SelectTrigger>

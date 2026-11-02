@@ -27,6 +27,10 @@ export function TodayView() {
   const tasks = useTodayTasks(now);
   const weeks = areaWeeks(useRows("courses"), useRows("study_logs"), now, profile.timezone);
   const week = { minutes: weeks.reduce((a, w) => a + w.minutes, 0), target: weeks.reduce((a, w) => a + w.target, 0) };
+  const logs = useRows("study_logs");
+  const allTasks = useRows("tasks");
+  // Veri oluşana kadar sıfırlarla dolu istatistikler gösterilmez
+  const hasHistory = logs.length > 0 || allTasks.some((x) => x.status === "done");
   const firstName = profile.full_name?.split(" ")[0];
   const real = new Date();
 
@@ -45,13 +49,12 @@ export function TodayView() {
       <BackupReminder />
       <OnboardingCard />
 
-      <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} weekMinutes={week.minutes} weekTarget={week.target} />
-
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex min-w-0 flex-col gap-4">
-          <FocusCard t={t} now={now} />
+          <InsightsCard now={now} streak={t.streak} studiedToday={t.studiedToday} hero />
           <NowCard t={t} now={now} />
-          <InsightsCard now={now} streak={t.streak} studiedToday={t.studiedToday} />
+          {hasHistory && <SummaryStrip studiedMinutes={t.studiedToday} completedTasks={t.completedToday} streakDays={t.streak} weekMinutes={week.minutes} weekTarget={week.target} />}
+          <FocusCard t={t} now={now} />
         </div>
         <div className="flex flex-col gap-4">
           <DayCard today={isoDate(now)} />

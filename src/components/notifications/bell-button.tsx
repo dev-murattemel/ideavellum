@@ -32,19 +32,22 @@ export function BellButton() {
     return bellEvents(sessions, map, s, zonedNow(profile.timezone), 2, profile.timezone).find((e) => e.fireAt.getTime() > now) ?? null;
   }, [sessions, courses, s, profile.timezone, now]);
 
+  // Zil kapalıyken: yalnızca yakında bir ders varsa küçük, sessiz bir ikon (ayar Ayarlar'da)
   if (!enabled) {
+    if (!next) return null;
     return (
       <Button
-        variant="secondary"
-        className="relative max-sm:size-9 max-sm:px-0"
+        variant="ghost"
+        size="icon"
+        aria-label="Zil seslerini aç"
+        title="Zil seslerini aç"
+        className="text-ink-subtle"
         onClick={async () => {
           const ok = await enable(s.sound, s.volume);
           toast[ok ? "success" : "error"](ok ? "Zil sesleri açık" : "Bu tarayıcı ses çalmaya izin vermedi");
         }}
       >
-        <BellOff className="text-ink-muted" />
-        <span className="max-lg:sr-only">Zil seslerini etkinleştir</span>
-        <span className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full border-2 border-page bg-[var(--rose-solid)]" aria-hidden />
+        <BellOff />
       </Button>
     );
   }
@@ -52,7 +55,7 @@ export function BellButton() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="secondary" size="icon" aria-label="Zil">
+        <Button variant="ghost" size="icon" aria-label="Zil">
           <Bell />
         </Button>
       </PopoverTrigger>

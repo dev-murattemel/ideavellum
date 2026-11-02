@@ -53,6 +53,8 @@ export function SyncStatus() {
   }
   if (place === "device") {
     const linked = file.status === "linked";
+    // "Bu cihazda" bilgisi sol alttaki hesap menüsünde zaten var; üst çubukta yalnızca dosya bağlıyken göster
+    if (!linked) return null;
     return (
       <Tooltip>
         <TooltipTrigger asChild>
