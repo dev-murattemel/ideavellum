@@ -81,6 +81,20 @@ export type Attendance = Base & {
   note: string | null;
 };
 
+/** Takvimdeki tek bir günün kontrol maddesi (set, malzeme, adım…) */
+export type EntryCheck = { id: string; label: string; done: boolean };
+
+/** Bir ders saatinin belirli bir güne ait ayrıntısı: "Spor · 2 Kasım" → "Üst göğüs", setler, notlar */
+export type SessionEntry = Base & {
+  class_session_id: string;
+  date: string; // yyyy-MM-dd
+  title: string | null;
+  details: string | null;
+  checklist: EntryCheck[];
+  /** "Notlara kaydet" ile oluşturulan not */
+  note_id: string | null;
+};
+
 export type TaskStatus = "todo" | "in_progress" | "review" | "done";
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
@@ -209,6 +223,7 @@ export type Tables = {
   topics: Topic;
   class_sessions: ClassSession;
   attendance: Attendance;
+  session_entries: SessionEntry;
   tasks: Task;
   task_checklist_items: ChecklistItem;
   notes: Note;
@@ -228,6 +243,7 @@ export const TABLE_NAMES: TableName[] = [
   "topics",
   "class_sessions",
   "attendance",
+  "session_entries",
   "tasks",
   "task_checklist_items",
   "notes",

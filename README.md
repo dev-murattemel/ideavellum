@@ -44,7 +44,8 @@ Supabase anahtarları girilmemişse asıl uygulama da örnek verilerle **önizle
    5. `20261101000500_areas_journal_quotes.sql`
    6. `20261101000600_course_position.sql`
    7. `20261101000700_habits.sql`
-   8. `20261101000200_cron.sql` → bunu en sona bırak (aşağıda 5. adım).
+   8. `20261102000100_session_entries.sql`
+   9. `20261101000200_cron.sql` → bunu en sona bırak (aşağıda 5. adım).
 4. **Project Settings → API Keys**:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - anon / publishable anahtar → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

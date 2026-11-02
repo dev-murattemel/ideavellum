@@ -1,19 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { isSameDay } from "date-fns";
-import { CalendarPlus } from "lucide-react";
+import { addDays, isSameDay, isSameMonth } from "date-fns";
+import { CalendarPlus, ChevronLeft, ChevronRight } from "lucide-react";
 
+import { pasteClip } from "@/components/schedule/clip";
 import { placeLanes } from "@/components/schedule/lanes";
 import { useNow } from "@/components/schedule/use-now";
 import { Button } from "@/components/ui/button";
 import { useCourseMap, useRows } from "@/lib/data/hooks";
 import type { Course } from "@/lib/data/types";
 import { occurrencesOn } from "@/lib/domain/schedule";
-import { fmt, formatDuration, isoWeekday, minutesOfDay, minutesToTime, weekDays, WEEKDAY_NAMES, WEEKDAY_SHORT } from "@/lib/time";
-import { ui } from "@/lib/ui-store";
+import { entryKey } from "@/lib/domain/session-entries";
+import { fmt, formatDuration, isoDate, isoWeekday, minutesOfDay, minutesToTime, weekDays, WEEKDAY_NAMES, WEEKDAY_SHORT } from "@/lib/time";
+import { ui, useUI } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 import { kindOf } from "@/lib/area-kinds";
+import { CourseWeekBlock } from "./course-week-block";
 
 const HOUR_PX = 44;
 const PX = HOUR_PX / 60;
@@ -39,8 +42,13 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
   const sessions = useRows("class_sessions");
   const courseMap = useCourseMap();
   const now = useNow();
-  const days = React.useMemo(() => weekDays(now), [now]);
+  const entryRows = useRows("session_entries");
+  const clip = useUI((s) => s.clip);
+  // Kaç hafta ileri/geri gidildiği (0 = bu hafta)
+  const [offset, setOffset] = React.useState(0);
+  const days = React.useMemo(() => weekDays(addDays(now, offset * 7)), [now, offset]);
   const [hover, setHover] = React.useState<{ day: number; min: number } | null>(null);
+  const entries = React.useMemo(() => new Map(entryRows.map((e) => [entryKey(e.class_session_id, e.date), e])), [entryRows]);
 
   const columns = React.useMemo(() => {
     const map = { ...courseMap, [course.id]: { ...course, status: "active" as const } };
@@ -58,6 +66,8 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
     const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
     return Math.min(to - 60, Math.max(from, Math.floor((from + y / PX) / 30) * 30));
   };
+  const rangeLabel = isSameMonth(days[0], days[6]) ? `${fmt(days[0], "d")}–${fmt(days[6], "d MMMM")}` : `${fmt(days[0], "d MMM")} – ${fmt(days[6], "d MMM")}`;
+  const heading = offset === 0 ? "Bu hafta takvimde" : offset === 1 ? "Gelecek hafta" : offset === -1 ? "Geçen hafta" : rangeLabel;
   const add = (weekday: number, start: number) =>
     ui().open({ type: "session", preset: { course_id: course.id, weekday, start_time: minutesToTime(start), end_time: minutesToTime(Math.min(24 * 60 - 1, start + 90)) } });
 
@@ -65,14 +75,19 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
     <section aria-labelledby="course-week" className="flex flex-col rounded-xl border border-line bg-surface">
       <header className="flex min-h-12 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-line px-4 py-2">
         <div className="flex items-baseline gap-3">
-          <h2 id="course-week" className="text-sm font-semibold">Bu hafta takvimde</h2>
+          <h2 id="course-week" className="text-sm font-semibold first-letter:uppercase" aria-live="polite">{heading}</h2>
           <span className="tabular text-13 text-ink-muted">
-            {weeklyMinutes ? `${formatDuration(weeklyMinutes)} / hafta` : "Henüz takvim saati yok"}
+            {offset !== 0 && heading !== rangeLabel ? rangeLabel : weeklyMinutes ? `${formatDuration(weeklyMinutes)} / hafta` : "Henüz takvim saati yok"}
           </span>
         </div>
-        <Button variant="secondary" size="sm" onClick={() => add(isoWeekday(now), 19 * 60)}>
-          <CalendarPlus /> {kindOf(course).session} ekle
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <Button variant="ghost" size="icon-sm" aria-label="Önceki hafta" onClick={() => setOffset((o) => o - 1)}><ChevronLeft /></Button>
+          <Button variant="ghost" size="sm" disabled={offset === 0} onClick={() => setOffset(0)}>Bu hafta</Button>
+          <Button variant="ghost" size="icon-sm" aria-label="Sonraki hafta" onClick={() => setOffset((o) => o + 1)}><ChevronRight /></Button>
+          <Button variant="secondary" size="sm" className="ml-1.5" onClick={() => add(isoWeekday(now), 19 * 60)}>
+            <CalendarPlus /> {kindOf(course).session} ekle
+          </Button>
+        </div>
       </header>
 
       <div className="relative overflow-x-auto">
@@ -114,46 +129,31 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
                   className={cn("relative cursor-copy border-l border-line", i === todayIndex && "bg-accent-soft/35")}
                   onMouseMove={(e) => e.target === e.currentTarget && setHover({ day: i, min: slotAt(e) })}
                   onMouseLeave={() => setHover(null)}
-                  onClick={(e) => e.target === e.currentTarget && add(isoWeekday(d), slotAt(e))}
+                  onClick={(e) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (clip) pasteClip(d, slotAt(e));
+                    else add(isoWeekday(d), slotAt(e));
+                  }}
                 >
                   {hover?.day === i && (
-                    <div aria-hidden className="pointer-events-none absolute inset-x-1 rounded-md border border-dashed border-primary/50 bg-accent-soft/50 px-1.5 py-1 text-xs font-medium text-accent-text" style={{ top: top(hover.min), height: 90 * PX }}>
-                      + {minutesToTime(hover.min)}
+                    <div aria-hidden className="pointer-events-none absolute inset-x-1 rounded-lg border border-dashed border-primary/50 bg-accent-soft/50 px-1.5 py-1 text-xs font-medium text-accent-text" style={{ top: top(hover.min), height: 90 * PX }}>
+                      {clip ? "Yapıştır · " : "+ "}{minutesToTime(hover.min)}
                     </div>
                   )}
 
-                  {columns[i].map((o) => {
-                    const own = o.course.id === course.id;
-                    const h = (o.end - o.start) * PX;
-                    const label = `${o.course.name}, ${WEEKDAY_NAMES[i]} ${o.session.start_time}–${o.session.end_time}`;
-                    return (
-                      <div
-                        key={o.session.id}
-                        data-course={o.course.color}
-                        className={cn("absolute px-0.5 py-px", own ? "z-[2]" : "z-[1]")}
-                        style={{ top: top(o.start), height: h, left: `${(o.lane / o.lanes) * 100}%`, width: `${100 / o.lanes}%` }}
-                      >
-                        <button
-                          type="button"
-                          aria-label={own ? `${label}, düzenle` : `${label} (başka ders)`}
-                          onClick={() => ui().open({ type: "session", sessionId: o.session.id })}
-                          className={cn(
-                            "flex size-full cursor-pointer flex-col overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left transition-[filter] outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                            own
-                              ? "border-course-solid bg-course text-course-fg hover:brightness-[0.97]"
-                              : "border border-l border-dashed border-line-strong bg-transparent text-ink-subtle hover:bg-sunken/60 hover:text-ink-muted",
-                          )}
-                        >
-                          <span className="tabular text-xs font-semibold leading-tight">
-                            {o.session.start_time}–{o.session.end_time}
-                          </span>
-                          {h >= 44 && (
-                            <span className="truncate text-xs leading-tight opacity-85">{own ? (o.session.location ?? course.name) : o.course.name}</span>
-                          )}
-                        </button>
-                      </div>
-                    );
-                  })}
+                  {columns[i].map((o) => (
+                    <CourseWeekBlock
+                      key={o.session.id}
+                      o={o}
+                      own={o.course.id === course.id}
+                      fallback={course.name}
+                      date={isoDate(d)}
+                      dayName={WEEKDAY_NAMES[i]}
+                      top={top(o.start)}
+                      height={(o.end - o.start) * PX}
+                      entry={entries.get(entryKey(o.session.id, isoDate(d)))}
+                    />
+                  ))}
 
                   {i === todayIndex && nowMin >= from && nowMin < to && (
                     <div aria-hidden className="pointer-events-none absolute inset-x-0 z-[3] flex items-center" style={{ top: top(nowMin) }}>

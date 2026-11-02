@@ -7,10 +7,13 @@ import { useRows } from "@/lib/data/hooks";
 import { moveToWeekday, occurrencesOn } from "@/lib/domain/schedule";
 import { data } from "@/lib/data/store";
 import { fmt, isoDate, isoWeekday, minutesOfDay, minutesToTime, timeToMinutes, WEEKDAY_SHORT } from "@/lib/time";
-import { ui } from "@/lib/ui-store";
+import { ui, useUI } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
+import { entryKey } from "@/lib/domain/session-entries";
+import { pasteClip, usePasteShortcut } from "./clip";
 import { clampMin, DAY_END, DAY_START, HOUR_PX, minToPx, PX_PER_MIN, SNAP } from "./constants";
 import { placeLanes } from "./lanes";
+import { SlotGhost } from "./slot-ghost";
 import { SessionBlock } from "./session-block";
 import { useBlockDrag } from "./use-block-drag";
 import { useNow } from "./use-now";
@@ -21,6 +24,8 @@ export function WeekGrid({ days }: { days: Date[] }) {
   const sessions = useRows("class_sessions");
   const courses = useRows("courses");
   const attendance = useRows("attendance");
+  const entries = useRows("session_entries");
+  const clip = useUI((s) => s.clip);
   const now = useNow();
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const colsRef = React.useRef<HTMLDivElement>(null);
@@ -31,6 +36,10 @@ export function WeekGrid({ days }: { days: Date[] }) {
     () => new Map(attendance.map((a) => [`${a.class_session_id}|${a.date}`, a.status])),
     [attendance],
   );
+  const entryMap = React.useMemo(() => new Map(entries.map((e) => [entryKey(e.class_session_id, e.date), e])), [entries]);
+  const clipSession = clip ? data().class_sessions[clip.sessionId] : undefined;
+  const clipCourse = clipSession ? courseMap[clipSession.course_id] : undefined;
+  const clipLen = clipSession ? timeToMinutes(clipSession.end_time) - timeToMinutes(clipSession.start_time) : 60;
   const columns = React.useMemo(
     () => days.map((d) => placeLanes(occurrencesOn(sessions, courseMap, d))),
     [days, sessions, courseMap],
@@ -45,7 +54,7 @@ export function WeekGrid({ days }: { days: Date[] }) {
         start_time: minutesToTime(start),
         end_time: minutesToTime(end),
       }),
-    onClick: (id) => ui().open({ type: "session", sessionId: id }),
+    onClick: (id, dayIndex) => ui().openOccurrence({ sessionId: id, date: isoDate(days[dayIndex]) }),
   });
 
   // İlk açılışta şu anki saatin biraz öncesine kaydır
@@ -53,6 +62,8 @@ export function WeekGrid({ days }: { days: Date[] }) {
     const target = Math.max(DAY_START, Math.min(minutesOfDay(new Date()) - 60, DAY_END - 6 * 60));
     scrollRef.current?.scrollTo({ top: minToPx(target) });
   }, []);
+
+  usePasteShortcut(!!clip, hover && { date: days[hover.day], min: hover.min });
 
   const slotAt = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -125,20 +136,17 @@ export function WeekGrid({ days }: { days: Date[] }) {
                   <div
                     key={i}
                     role="presentation"
-                    className={cn("relative border-l border-line first:border-l-0", i === todayIndex && "bg-accent-soft/35")}
+                    className={cn("relative border-l border-line first:border-l-0", i === todayIndex && "bg-accent-soft/35", clip && "cursor-copy")}
                     onMouseMove={(e) => e.target === e.currentTarget && setHover({ day: i, min: slotAt(e) })}
                     onMouseLeave={() => setHover(null)}
                     onClick={(e) => {
                       if (e.target !== e.currentTarget) return;
                       const start = slotAt(e);
+                      if (clip) return void pasteClip(d, start);
                       ui().open({ type: "session", preset: { weekday: isoWeekday(d), start_time: minutesToTime(start), end_time: minutesToTime(start + 60) } });
                     }}
                   >
-                    {hover?.day === i && !preview && (
-                      <div aria-hidden className="pointer-events-none absolute inset-x-1 rounded-md border border-dashed border-primary/50 bg-accent-soft/50 px-2 py-1 text-xs font-medium text-accent-text" style={{ top: minToPx(hover.min), height: HOUR_PX }}>
-                        + {minutesToTime(hover.min)}
-                      </div>
-                    )}
+                    {hover?.day === i && !preview && <SlotGhost min={hover.min} clipColor={clip ? clipCourse?.color : undefined} clipLen={clipLen} />}
                     {columns[i].map((item) => {
                       if (preview?.id === item.session.id) return null;
                       const past = isPastDay || (i === todayIndex && timeToMinutes(item.session.end_time) <= nowMin);
@@ -151,9 +159,11 @@ export function WeekGrid({ days }: { days: Date[] }) {
                           dragging={false}
                           past={past}
                           attendance={past ? attMap.get(`${item.session.id}|${date}`) : undefined}
+                          entry={entryMap.get(entryKey(item.session.id, date))}
+                          onCopy={() => ui().setClip({ sessionId: item.session.id, date })}
                           onPointerDown={begin(item.session.id, i, item.start, item.end, "move")}
                           onResizeStart={begin(item.session.id, i, item.start, item.end, "resize")}
-                          onOpen={() => ui().open({ type: "session", sessionId: item.session.id })}
+                          onOpen={() => ui().openOccurrence({ sessionId: item.session.id, date })}
                           onKeyMove={(dd, ds, de) => {
                             const s = clampMin(item.start + ds, item.end - item.start);
                             const e2 = Math.max(s + SNAP, Math.min(DAY_END, de === ds ? s + (item.end - item.start) : item.end + de));
@@ -172,6 +182,7 @@ export function WeekGrid({ days }: { days: Date[] }) {
                       return (
                         <SessionBlock
                           item={{ ...item, lane: 0, lanes: 1 }}
+                          entry={entryMap.get(entryKey(item.session.id, isoDate(days[Math.max(0, columns.findIndex((c) => c.some((x) => x.session.id === preview.id)))])))}
                           start={preview.start}
                           end={preview.end}
                           dragging

@@ -1,6 +1,7 @@
 import { addDays, addWeeks, subDays } from "date-fns";
 
 import { DEFAULT_TIMEZONE } from "@/lib/dates";
+import { entryId } from "@/lib/domain/session-entries";
 import { isoDate, isoWeekday, wallToUtc, zonedNow } from "@/lib/time";
 import { positionAtEnd } from "./position";
 import { createBuilder } from "./seed-builder";
@@ -130,6 +131,19 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
       location, valid_from: term.start_date, valid_until: term.end_date, bell_overrides: {}, repeat: "weekly", anchor_date: null,
     }),
   );
+
+  // Takvimdeki birkaç günün ayrıntısı: başlık, kontrol listesi, not
+  const entry = (i: number, dayOffset: number, title: string, checks: [string, boolean][], details: string | null) => {
+    const sessionId = sessions[i].id;
+    const date = isoDate(addDays(today, dayOffset));
+    add("session_entries", {
+      id: entryId(sessionId, date), class_session_id: sessionId, date, title, details, note_id: null,
+      checklist: checks.map(([label, done], n) => ({ id: `${sessionId.slice(0, 8)}-${n}`, label, done })),
+    });
+  };
+  entry(12, 0, "Tempo koşusu + mobilite", [["Isınma · 10 dk", true], ["Tempo · 3×8 dk", true], ["Kalça mobilitesi · 2 tur", false], ["Esneme · 5 dk", false]], "Nabız 150 civarında kalsın. Sağ diz hafif hassas, yokuşa dikkat.");
+  entry(13, 2, "Uzun koşu · 6 km", [["Isınma · 10 dk", false], ["6 km sakin tempo", false], ["Esneme · 5 dk", false]], null);
+  entry(0, 0, "Present perfect + sunum provası", [["20 kelime tekrar", true], ["Sunumu sesli prova et", false]], null);
 
   seedContent(add, snap, { courses, today, tz });
   seedJournalAndQuotes(add, today);

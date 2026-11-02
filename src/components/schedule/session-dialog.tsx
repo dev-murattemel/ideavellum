@@ -13,11 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TimeSelect } from "@/components/ui/time-select";
 import { useActiveCourses, useActiveTerm, useProfile, useRow } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
-import { minutesToTime, timeToMinutes, WEEKDAY_NAMES } from "@/lib/time";
+import { minutesToTime, timeToMinutes, WEEKDAY_NAMES, WEEKDAY_SHORT } from "@/lib/time";
 import { repeatLabel } from "@/lib/domain/schedule";
 import type { SessionPreset } from "@/lib/ui-store";
 import { BellFields, type BellValue } from "./bell-fields";
 import { RepeatFields } from "./repeat-fields";
+import { WeekdayChips } from "./weekday-chips";
 import { kindOf } from "@/lib/area-kinds";
 import type { SessionRepeat } from "@/lib/data/types";
 import { isoDate, zonedNow } from "@/lib/time";
@@ -31,6 +32,8 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
 
   const [courseId, setCourseId] = React.useState(session?.course_id ?? preset?.course_id ?? courses[0]?.id ?? "");
   const [weekday, setWeekday] = React.useState(String(session?.weekday ?? preset?.weekday ?? 1));
+  // Yeni haftalık saat birden çok güne aynı anda eklenebilir (ör. hafta içi her gün 07:00)
+  const [days, setDays] = React.useState<number[]>([session?.weekday ?? preset?.weekday ?? 1]);
   const [start, setStart] = React.useState(session?.start_time ?? preset?.start_time ?? "19:00");
   const [end, setEnd] = React.useState(session?.end_time ?? preset?.end_time ?? minutesToTime(timeToMinutes(start) + 90));
   const [location, setLocation] = React.useState(session?.location ?? "");
@@ -39,6 +42,7 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
   const [repeat, setRepeat] = React.useState<SessionRepeat>(session?.repeat ?? "weekly");
   const [anchor, setAnchor] = React.useState(session?.anchor_date ?? isoDate(zonedNow(profile.timezone)));
   const vocab = kindOf(courses.find((c) => c.id === courseId));
+  const multi = !session && repeat === "weekly";
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,11 +53,15 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
       location: location.trim() || null, bell_overrides: bell,
       repeat, anchor_date: repeat === "weekly" ? null : anchor,
     };
-    if (session) data().update("class_sessions", session.id, values);
-    else data().insert("class_sessions", { ...values, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null });
     const name = courses.find((c) => c.id === courseId)?.name;
+    if (session) data().update("class_sessions", session.id, values);
+    else if (multi) {
+      days.forEach((d) => data().insert("class_sessions", { ...values, weekday: d, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null }));
+    } else data().insert("class_sessions", { ...values, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null });
     toast.success(session ? `${vocab.session} güncellendi` : `${vocab.session} eklendi`, {
-      description: `${name} · ${repeatLabel({ repeat, anchor_date: anchor, weekday: Number(weekday) }, WEEKDAY_NAMES)} ${start}–${end}`,
+      description: multi && days.length > 1
+        ? `${name} · ${days.length} gün (${days.map((d) => WEEKDAY_SHORT[d - 1]).join(", ")}) ${start}–${end}`
+        : `${name} · ${repeatLabel({ repeat, anchor_date: anchor, weekday: multi ? days[0] : Number(weekday) }, WEEKDAY_NAMES)} ${start}–${end}`,
     });
     onClose();
   };
@@ -83,15 +91,20 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
                   </SelectContent>
                 </Select>
               </Field>
-              <div className="grid grid-cols-[1.3fr_1fr_1fr] gap-3">
-                <Field label="Gün">
+              {multi && (
+                <Field label="Günler">
+                  <WeekdayChips value={days} onChange={setDays} />
+                </Field>
+              )}
+              <div className={multi ? "grid grid-cols-2 gap-3" : "grid grid-cols-[1.3fr_1fr_1fr] gap-3"}>
+                {!multi && <Field label="Gün">
                   <Select value={weekday} onValueChange={setWeekday} disabled={repeat !== "weekly"}>
                     <SelectTrigger aria-label="Gün"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {WEEKDAY_NAMES.map((n, i) => <SelectItem key={n} value={String(i + 1)}>{n}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                </Field>
+                </Field>}
                 <Field label="Başlangıç">
                   <TimeSelect label="Başlangıç" value={start} to={23 * 60 + 45} onChange={(v) => {
                     const dur = timeToMinutes(end) - timeToMinutes(start);
@@ -125,7 +138,7 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
                 ) : <span />}
                 <div className="flex flex-col-reverse gap-2 sm:flex-row">
                   <Button type="button" variant="secondary" onClick={onClose}>Vazgeç</Button>
-                  <Button type="submit">{session ? "Değişiklikleri kaydet" : `${vocab.session} ekle`}</Button>
+                  <Button type="submit">{session ? "Değişiklikleri kaydet" : multi && days.length > 1 ? `${days.length} güne ekle` : `${vocab.session} ekle`}</Button>
                 </div>
               </DialogFooter>
             </form>

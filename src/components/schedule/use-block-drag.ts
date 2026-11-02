@@ -30,7 +30,7 @@ export function useBlockDrag({
   dayCount: number;
   columnWidth: () => number;
   onCommit: (id: string, dayIndex: number, start: number, end: number) => void;
-  onClick: (id: string) => void;
+  onClick: (id: string, dayIndex: number) => void;
 }) {
   const active = React.useRef<Active | null>(null);
   const [preview, setPreview] = React.useState<DragPreview | null>(null);
@@ -64,7 +64,7 @@ export function useBlockDrag({
       if (!a) return;
       active.current = null;
       setPreview(null);
-      if (!a.moved) return a.mode === "move" && onClick(a.id);
+      if (!a.moved) return a.mode === "move" && onClick(a.id, a.dayIndex);
       const p = compute(a, ev);
       if (p.dayIndex !== a.dayIndex || p.start !== a.start || p.end !== a.end) onCommit(a.id, p.dayIndex, p.start, p.end);
     };

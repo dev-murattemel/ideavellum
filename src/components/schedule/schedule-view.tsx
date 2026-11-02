@@ -58,7 +58,7 @@ export function ScheduleView() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title="Takvim"
-        description={sessions.length ? "Boş bir yere tıklayarak saat ekle; blokları sürükleyerek taşı, alt kenardan uzat." : "Takvimde boş bir yere tıklayarak ilk saatini ekle."}
+        description={sessions.length ? "Boş yere tıkla: saat ekle · Bloğa tıkla: o günün ayrıntısı · Sürükle: taşı · Alt kenar: uzat." : "Takvimde boş bir yere tıklayarak ilk saatini ekle."}
         actions={<Button onClick={() => ui().open({ type: "session" })}><Plus />Saat ekle</Button>}
       />
 

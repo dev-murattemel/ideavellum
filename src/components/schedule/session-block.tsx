@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { CircleCheck, CircleX, Clock3, MapPin } from "lucide-react";
+import { CircleCheck, CircleX, Clock3, ListChecks, MapPin } from "lucide-react";
 
-import type { AttendanceStatus } from "@/lib/data/types";
+import type { AttendanceStatus, SessionEntry } from "@/lib/data/types";
 import { minutesToTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { minToPx, PX_PER_MIN } from "./constants";
@@ -18,28 +18,41 @@ export function SessionBlock({
   end,
   dragging,
   attendance,
+  entry,
   past,
   onPointerDown,
   onResizeStart,
   onOpen,
   onKeyMove,
+  onCopy,
 }: {
   item: Placed;
   start: number;
   end: number;
   dragging: boolean;
   attendance?: AttendanceStatus;
+  /** O günün ayrıntısı: başlık ("Üst göğüs") ve liste ilerlemesi kartta görünür */
+  entry?: SessionEntry;
   past: boolean;
   onPointerDown: (e: React.PointerEvent) => void;
   onResizeStart: (e: React.PointerEvent) => void;
   onOpen: () => void;
   onKeyMove: (dDay: number, dStart: number, dEnd: number) => void;
+  /** Ctrl/Cmd + C ile kopyala */
+  onCopy?: () => void;
 }) {
   const pointerType = React.useRef<string>("mouse");
   const height = (end - start) * PX_PER_MIN;
   const compact = height < 44;
   const Icon = attendance ? ATTENDANCE_ICON[attendance] : null;
-  const label = `${item.course.name}, ${minutesToTime(start)}–${minutesToTime(end)}${attendance ? `, ${ATTENDANCE_LABEL[attendance]}` : ""}`;
+  const title = entry?.title;
+  const checks = entry?.checklist ?? [];
+  const doneChecks = checks.filter((c) => c.done).length;
+  // Kartın yüksekliğine kaç satır sığıyorsa öncelik sırasıyla göster: ad, saat, başlık, liste, yer
+  const lines = compact ? 0 : Math.floor((height - 12 + 2) / 18) - 2;
+  const wants = [title ? "title" : null, checks.length ? "checks" : null, item.session.location ? "location" : null].filter(Boolean).slice(0, Math.max(0, lines));
+  const show = { title: wants.includes("title"), checks: wants.includes("checks"), location: wants.includes("location") };
+  const label = `${item.course.name}${title ? `, ${title}` : ""}, ${minutesToTime(start)}–${minutesToTime(end)}${attendance ? `, ${ATTENDANCE_LABEL[attendance]}` : ""}${checks.length ? `, liste ${doneChecks}/${checks.length}` : ""}`;
 
   return (
     <div
@@ -56,7 +69,7 @@ export function SessionBlock({
         type="button"
         aria-label={label}
         aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Shift+ArrowUp Shift+ArrowDown"
-        title="Sürükleyerek taşı, alt kenardan çekerek uzat"
+        title="Tıkla: günün ayrıntısı · Sürükle: taşı · Alt kenar: uzat"
         onPointerDown={(e) => {
           pointerType.current = e.pointerType;
           onPointerDown(e);
@@ -65,6 +78,10 @@ export function SessionBlock({
           if (pointerType.current === "touch" || e.detail === 0) onOpen();
         }}
         onKeyDown={(e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c" && onCopy) {
+            e.preventDefault();
+            return onCopy();
+          }
           const step = 15;
           const map: Record<string, [number, number, number]> = e.shiftKey
             ? { ArrowUp: [0, 0, -step], ArrowDown: [0, 0, step] }
@@ -76,21 +93,29 @@ export function SessionBlock({
           }
         }}
         className={cn(
-          "group relative flex h-full w-full cursor-grab flex-col overflow-hidden rounded-md border-l-[3px] border-course-solid bg-course text-left text-course-fg transition-shadow select-none",
+          "group relative flex h-full w-full cursor-grab flex-col overflow-hidden rounded-lg bg-course text-left text-course-fg ring-1 ring-course-solid/15 ring-inset transition-[box-shadow,filter] select-none hover:brightness-[0.98]",
           "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-          compact ? "flex-row items-center gap-1.5 px-2" : "gap-0.5 px-2 py-1.5",
+          compact ? "flex-row items-center gap-1.5 pr-2 pl-3" : "gap-0.5 py-1.5 pr-2 pl-3",
           dragging && "cursor-grabbing shadow-lift",
           past && !dragging && "opacity-75",
         )}
       >
+        <span aria-hidden className="absolute inset-y-1 left-1 w-[3px] rounded-full bg-course-solid" />
         <span className={cn("truncate font-semibold", compact ? "text-xs" : "text-13 leading-4")}>{item.course.name}</span>
+        {show.title && <span className="truncate text-xs leading-4 font-medium">{title}</span>}
         <span className="tabular truncate text-xs opacity-80">
           {minutesToTime(start)}–{minutesToTime(end)}
         </span>
-        {!compact && height >= 64 && item.session.location && (
+        {show.location && (
           <span className="flex items-center gap-1 truncate text-xs opacity-80">
             <MapPin className="size-3 shrink-0" aria-hidden />
             <span className="truncate">{item.session.location}</span>
+          </span>
+        )}
+        {show.checks && (
+          <span className="tabular mt-auto flex items-center gap-1 text-xs opacity-80">
+            <ListChecks className="size-3 shrink-0" aria-hidden />
+            {doneChecks}/{checks.length}
           </span>
         )}
         {Icon && (
