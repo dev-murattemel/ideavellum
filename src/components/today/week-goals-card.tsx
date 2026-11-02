@@ -7,7 +7,7 @@ import { areaWeeks } from "@/lib/domain/insights";
 import { AppLink } from "@/lib/nav/nav-context";
 import { formatDuration } from "@/lib/time";
 
-/** Bu hafta her alanda ne kadar zaman ayrıldı, hedefe göre */
+/** Bu hafta her derste ne kadar zaman ayrıldı, hedefe göre */
 export function WeekGoalsCard({ now }: { now: Date }) {
   const tz = useProfile().timezone;
   const rows = areaWeeks(useRows("courses"), useRows("study_logs"), now, tz);
@@ -17,14 +17,14 @@ export function WeekGoalsCard({ now }: { now: Date }) {
   return (
     <SectionCard title="Bu hafta" meta={target ? `${formatDuration(total)} / ${formatDuration(target)}` : formatDuration(total)}>
       {rows.length === 0 ? (
-        <p className="text-13 text-ink-muted">Aktif alan yok.</p>
+        <p className="text-13 text-ink-muted">Aktif ders yok.</p>
       ) : (
         <ul className="stagger flex flex-col gap-3">
           {rows.map(({ course, minutes, target: t, pct }) => {
             const Icon = kindOf(course).icon;
             return (
               <li key={course.id} data-course={course.color}>
-                <AppLink href={`/alanlar/${course.id}`} className="group flex flex-col gap-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <AppLink href={`/dersler/${course.id}`} className="group flex flex-col gap-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <span className="flex items-center gap-2 text-13">
                     <Icon className="size-3.5 shrink-0 text-course-solid" strokeWidth={2.2} aria-hidden />
                     <span className="min-w-0 flex-1 truncate font-medium group-hover:underline">{course.name}</span>

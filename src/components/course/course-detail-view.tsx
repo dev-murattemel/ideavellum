@@ -37,11 +37,11 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
     return (
       <EmptyState
         icon={BookOpen}
-        title="Alan bulunamadı"
-        description="Bu alan silinmiş ya da henüz oluşturulmamış olabilir."
+        title="Ders bulunamadı"
+        description="Bu ders silinmiş ya da henüz oluşturulmamış olabilir."
         action={
           <Button asChild variant="secondary">
-            <AppLink href="/alanlar"><ArrowLeft />Alanlara dön</AppLink>
+            <AppLink href="/dersler"><ArrowLeft />Derslere dön</AppLink>
           </Button>
         }
       />
@@ -53,7 +53,7 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
       <CourseHeader course={course} />
       <Tabs value={tab} onValueChange={setTab} className="flex flex-col gap-5">
         <div className="relative -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
-          <TabsList aria-label="Alan bölümleri">
+          <TabsList aria-label="Ders bölümleri">
             {tabsFor(kindOf(course).topics).map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
           </TabsList>
         </div>

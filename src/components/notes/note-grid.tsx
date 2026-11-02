@@ -28,7 +28,7 @@ export function NoteGrid({ courseId, query = "", newCourseId }: { courseId?: str
         compact
         icon={NotebookPen}
         title={query ? "Eşleşen not yok" : "Henüz not yok"}
-        description={query ? "Farklı bir kelimeyle ara." : "Aklına gelenleri buraya yaz; notlar alana ve konuya bağlanır."}
+        description={query ? "Farklı bir kelimeyle ara." : "Aklına gelenleri buraya yaz; notlar derse ve konuya bağlanır."}
         action={!query && <Button onClick={() => createNote(newCourseId)}><Plus /> Not ekle</Button>}
       />
     );

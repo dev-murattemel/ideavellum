@@ -22,7 +22,7 @@ export function useActiveTerm() {
 
 const byCreated = (a: { created_at: string }, b: { created_at: string }) => a.created_at.localeCompare(b.created_at);
 
-/** Alanlar: önce elle verilen sıra, sırası olmayanlar oluşturulma sırasıyla sonda */
+/** Dersler: önce elle verilen sıra, sırası olmayanlar oluşturulma sırasıyla sonda */
 export const byAreaOrder = (a: Course, b: Course) =>
   a.position && b.position ? (a.position < b.position ? -1 : a.position > b.position ? 1 : 0) : a.position ? -1 : b.position ? 1 : byCreated(a, b);
 

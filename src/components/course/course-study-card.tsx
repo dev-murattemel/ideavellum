@@ -41,7 +41,7 @@ export function CourseStudyCard({ course }: { course: Course }) {
     else toast("1 dakikadan kısa sürdüğü için kaydedilmedi");
   };
 
-  const status = mine ? (running ? "Sürüyor" : "Duraklatıldı") : t.courseId ? "Başka bir alanda zamanlayıcı açık" : "Zamanlayıcı kapalı";
+  const status = mine ? (running ? "Sürüyor" : "Duraklatıldı") : t.courseId ? "Başka bir derste zamanlayıcı açık" : "Zamanlayıcı kapalı";
 
   return (
     <SectionCard title={kindOf(course).activity} meta={<span className={cn(running && "font-medium text-course-fg")}>{status}</span>}>

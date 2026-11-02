@@ -20,7 +20,7 @@ export function CourseCard({ course }: { course: Course }) {
 
   return (
     <AppLink
-      href={`/alanlar/${course.id}`}
+      href={`/dersler/${course.id}`}
       data-course={course.color}
       className={cn(
         "group flex h-full min-h-52 flex-col gap-4 rounded-xl bg-course p-4 text-course-fg transition-[transform,box-shadow] outline-none hover:-translate-y-0.5 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",

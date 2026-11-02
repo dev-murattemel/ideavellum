@@ -75,6 +75,6 @@ export async function weeklyReportData(admin: AdminClient, p: Profile, appUrl: s
     completedTasks: tasks.filter((t) => t.completed_at && t.completed_at >= fromUtc && t.completed_at < toUtc).length,
     attendanceRate: a.length ? Math.round((a.filter((x) => x.status === "attended").length / a.length) * 100) : null,
     streak: streak(minutesByDay((allLogs ?? []) as StudyLog[], tz), today),
-    courses: [...byCourse].sort((x, y) => y[1] - x[1]).map(([id, m]) => ({ name: courses[id]?.name ?? "Alan", color: courses[id]?.color ?? "slate", minutesLabel: formatDuration(m), pct: Math.round((m / max) * 100) })),
+    courses: [...byCourse].sort((x, y) => y[1] - x[1]).map(([id, m]) => ({ name: courses[id]?.name ?? "Ders", color: courses[id]?.color ?? "slate", minutesLabel: formatDuration(m), pct: Math.round((m / max) * 100) })),
   };
 }

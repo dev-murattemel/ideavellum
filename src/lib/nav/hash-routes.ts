@@ -1,15 +1,15 @@
 /**
  * Önizleme sürümünde sayfa adresleri #işaret olarak tutulur.
- * "/bugun" ↔ "#bugun", "/alanlar/abc" ↔ "#alan-abc"
+ * "/bugun" ↔ "#bugun", "/dersler/abc" ↔ "#ders-abc"
  */
 export function pathToHash(path: string) {
-  if (path.startsWith("/alanlar/")) return `alan-${path.slice("/alanlar/".length)}`;
+  if (path.startsWith("/dersler/")) return `ders-${path.slice("/dersler/".length)}`;
   return path.replace(/^\//, "") || "bugun";
 }
 
 export function hashToPath(hash: string) {
   const h = hash.replace(/^#/, "");
   if (!h) return "/bugun";
-  if (h.startsWith("alan-")) return `/alanlar/${h.slice(5)}`;
+  if (h.startsWith("ders-")) return `/dersler/${h.slice(5)}`;
   return `/${h}`;
 }

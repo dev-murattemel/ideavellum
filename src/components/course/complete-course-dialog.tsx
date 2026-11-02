@@ -33,9 +33,9 @@ export function CompleteCourseDialog({ courseId, onClose }: { courseId: string; 
       status: "completed", completed_at: new Date().toISOString(),
       final_reflection: reflection.trim(), final_note: note.trim() || null, final_rating: rating,
     });
-    toast.success(`“${course.name}” tamamlandı`, { description: "Arşive eklendi. Tebrikler!" });
+    toast.success(`“${course.name}” tamamlandı`, { description: "Transkriptine eklendi. Tebrikler!" });
     onClose();
-    nav.push("/arsiv");
+    nav.push("/transkript");
   };
 
   return (
@@ -46,7 +46,7 @@ export function CompleteCourseDialog({ courseId, onClose }: { courseId: string; 
             <GraduationCap className="size-6" strokeWidth={1.7} aria-hidden />
           </span>
           <DialogTitle>“{course.name}” tamamla ve arşivle</DialogTitle>
-          <DialogDescription>Kapanış değerlendirmen Arşiv&apos;de bu alanın yanında saklanır.</DialogDescription>
+          <DialogDescription>Kapanış değerlendirmen Transkript&apos;te bu dersin yanında saklanır.</DialogDescription>
         </DialogHeader>
         <CourseSummary courseId={course.id} />
         <form onSubmit={save} className="flex flex-col gap-4" noValidate>

@@ -24,9 +24,9 @@ export function NowCard({ t, now }: { t: T; now: Date }) {
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h2 className="text-base font-semibold">Sırada bir program yok</h2>
-          <p className="text-sm text-ink-muted">Bir alan ekleyip saatini girdiğinde, şu anki program ve geri sayım burada görünecek.</p>
+          <p className="text-sm text-ink-muted">Bir ders ekleyip saatini girdiğinde, şu anki program ve geri sayım burada görünecek.</p>
         </div>
-        <QuickAddButton action="course" label="Alan ekle" />
+        <QuickAddButton action="course" label="Ders ekle" />
       </section>
     );
   }

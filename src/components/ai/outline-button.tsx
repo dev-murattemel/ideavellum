@@ -47,7 +47,7 @@ export function OutlineButton({ course }: { course: Course }) {
           <DialogHeader>
             <AiMark className="mb-1 self-start" />
             <DialogTitle>“{course.name}” için konu taslağı</DialogTitle>
-            <DialogDescription>{course.goal ? `Hedef: ${course.goal}` : "Alanın adına göre hazırlanır. Daha iyi sonuç için bir hedef yaz."}</DialogDescription>
+            <DialogDescription>{course.goal ? `Hedef: ${course.goal}` : "Dersin adına göre hazırlanır. Daha iyi sonuç için bir hedef yaz."}</DialogDescription>
           </DialogHeader>
           {ai.loading && <AiLoading text="Taslak hazırlanıyor…" />}
           {ai.error && <p className="text-13 text-destructive">{ai.error}</p>}

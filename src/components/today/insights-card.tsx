@@ -16,7 +16,7 @@ const TONE = {
   good: { icon: PartyPopper, cls: "bg-[#DFF5EA] text-[#1D6B47] dark:bg-[#34B37A]/16 dark:text-[#7FD8AE]" },
 } as const;
 
-/** Verilerine bakarak çıkarılan kısa öneriler: gecikenler, hedefin gerisindekiler, unutulan alanlar */
+/** Verilerine bakarak çıkarılan kısa öneriler: gecikenler, hedefin gerisindekiler, unutulan dersler */
 export function InsightsCard({ now, streak, studiedToday, hero }: { now: Date; streak: number; studiedToday: number; hero?: boolean }) {
   const tz = useProfile().timezone;
   const courses = useRows("courses");
@@ -32,7 +32,7 @@ export function InsightsCard({ now, streak, studiedToday, hero }: { now: Date; s
     if (a.kind === "start" && a.courseId) startStudy(a.courseId);
     else if (a.kind === "tasks") nav.push("/pano");
     else if (a.kind === "journal") nav.push("/gunluk");
-    else if (a.kind === "area" && a.courseId) nav.push(`/alanlar/${a.courseId}`);
+    else if (a.kind === "area" && a.courseId) nav.push(`/dersler/${a.courseId}`);
   };
 
   return (

@@ -3,19 +3,19 @@ export const GO_SHORTCUTS: { key: string; href: string; label: string }[] = [
   { key: "b", href: "/bugun", label: "Bugün" },
   { key: "t", href: "/takvim", label: "Takvim" },
   { key: "p", href: "/pano", label: "Pano" },
-  { key: "a", href: "/alanlar", label: "Alanlar" },
+  { key: "a", href: "/dersler", label: "Dersler" },
   { key: "n", href: "/notlar", label: "Notlar" },
   { key: "g", href: "/gunluk", label: "Günlük" },
-  { key: "s", href: "/aforizmalar", label: "Aforizmalar" },
+  { key: "s", href: "/aforizmalar", label: "Sözler" },
   { key: "h", href: "/aliskanliklar", label: "Alışkanlıklar" },
   { key: "k", href: "/kaynaklar", label: "Kaynaklar" },
-  { key: "r", href: "/raporlar", label: "Raporlar" },
+  { key: "r", href: "/karne", label: "Karne" },
 ];
 
 export const ACTION_SHORTCUTS: { key: string; label: string }[] = [
   { key: "n", label: "Yeni not" },
   { key: "t", label: "Yeni görev" },
-  { key: "a", label: "Yeni alan" },
+  { key: "a", label: "Yeni ders" },
   { key: "s", label: "Yeni söz" },
   { key: "j", label: "Günlüğe yaz" },
   { key: "f", label: "Odak modu" },

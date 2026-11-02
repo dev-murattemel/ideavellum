@@ -71,7 +71,7 @@ export function NotesView() {
           <div className="flex w-full flex-col items-center justify-center gap-3 p-8 text-center">
             <span className="flex size-12 items-center justify-center rounded-xl bg-sunken text-ink-muted"><NotebookPen className="size-6" strokeWidth={1.7} aria-hidden /></span>
             <p className="text-base font-semibold">Henüz not yok</p>
-            <p className="max-w-xs text-sm text-ink-muted">Düşüncelerini, tariflerini, ders notlarını burada yaz; bir alana bağlayıp etiketleyebilirsin.</p>
+            <p className="max-w-xs text-sm text-ink-muted">Düşüncelerini, tariflerini, ders notlarını burada yaz; bir derse bağlayıp etiketleyebilirsin.</p>
             <Button onClick={create}><Plus /> İlk notunu yaz</Button>
           </div>
         )}

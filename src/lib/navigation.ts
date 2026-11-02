@@ -1,12 +1,11 @@
 import {
-  Archive,
   BookMarked,
   CalendarDays,
   ChartColumn,
   LayoutGrid,
   Library,
   NotebookPen,
-  Quote,
+  GraduationCap,
   Repeat,
   Settings,
   SquareKanban,
@@ -21,6 +20,8 @@ export type NavItem = {
   shortLabel?: string;
   icon: LucideIcon;
   description: string;
+  /** Bu öğeyi aktif gösteren diğer sayfalar */
+  also?: string[];
 };
 
 export type NavGroup = { label: string | null; items: NavItem[] };
@@ -34,23 +35,22 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/takvim", label: "Takvim", icon: CalendarDays, description: "Haftalık ve aylık program" },
       { href: "/pano", label: "Pano", icon: SquareKanban, description: "Görevler sütunlarda" },
       { href: "/aliskanliklar", label: "Alışkanlıklar", icon: Repeat, description: "Her gün işaretlenen küçük rutinler, seriler" },
-      { href: "/alanlar", label: "Alanlar", icon: LayoutGrid, description: "Dersler, spor, mutfak, okuma… tüm alanların" },
+      { href: "/dersler", label: "Dersler", icon: LayoutGrid, description: "Dönemin dersleri: dil, spor, okuma, mutfak…" },
     ],
   },
   {
     label: "Kütüphane",
     items: [
       { href: "/notlar", label: "Notlar", icon: NotebookPen, description: "Etiketli notlar, görseller ve bağlantılar" },
-      { href: "/gunluk", label: "Günlük", icon: BookMarked, description: "Her güne bir sayfa, ruh hali" },
-      { href: "/aforizmalar", label: "Aforizmalar", icon: Quote, description: "Kendi sözlerin ve sevdiğin alıntılar" },
+      { href: "/gunluk", label: "Günlük", icon: BookMarked, description: "Her güne bir sayfa, ruh hali ve kendi sözlerin", also: ["/aforizmalar"] },
       { href: "/kaynaklar", label: "Kaynaklar", icon: Library, description: "Video, kitap, makale ve podcast'ler" },
     ],
   },
   {
     label: "İçgörü",
     items: [
-      { href: "/raporlar", label: "Raporlar", icon: ChartColumn, description: "Haftalık ve aylık ilerleme" },
-      { href: "/arsiv", label: "Arşiv", icon: Archive, description: "Tamamlanan alanlar ve değerlendirmeleri" },
+      { href: "/karne", label: "Karne", icon: ChartColumn, description: "Haftalık ve aylık ilerleme, hedefler" },
+      { href: "/transkript", label: "Transkript", icon: GraduationCap, description: "Tamamlanan dönemler ve dersler" },
     ],
   },
 ];
@@ -65,7 +65,7 @@ export const SETTINGS_NAV: NavItem = {
 };
 
 /** Mobil alt çubukta doğrudan görünenler; kalanı "Daha fazla" altında. */
-export const MOBILE_PRIMARY = ["/bugun", "/takvim", "/pano", "/alanlar"];
+export const MOBILE_PRIMARY = ["/bugun", "/takvim", "/pano", "/dersler"];
 
 export function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);

@@ -17,10 +17,10 @@ export function BoardFilters({ value, onChange }: { value: Filters; onChange: (f
   return (
     <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Süzgeçler">
       <Select value={value.course} onValueChange={(course) => onChange({ ...value, course, topic: "all" })}>
-        <SelectTrigger size="sm" className="w-auto min-w-36" aria-label="Alan"><SelectValue /></SelectTrigger>
+        <SelectTrigger size="sm" className="w-auto min-w-36" aria-label="Ders"><SelectValue /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Tüm alanlar</SelectItem>
-          <SelectItem value="none">Alana bağlı olmayan</SelectItem>
+          <SelectItem value="all">Tüm dersler</SelectItem>
+          <SelectItem value="none">Derse bağlı olmayan</SelectItem>
           <SelectSeparator />
           {courses.map((c) => (
             <SelectItem key={c.id} value={c.id}>

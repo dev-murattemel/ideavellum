@@ -14,6 +14,7 @@ import { isoDate, zonedNow } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
 import { QuoteCard } from "./quote-card";
+import { JournalTabs } from "@/components/journal/journal-tabs";
 
 const FILTERS = [
   { id: "all", label: "Tümü" },
@@ -46,7 +47,8 @@ export function QuotesView() {
   if (!quotes.length) {
     return (
       <div className="flex flex-col gap-6">
-        <PageHeader title="Aforizmalar" description="Kendi sözlerin ve okuduğun, duyduğun güzel cümleler." />
+      <JournalTabs />
+        <PageHeader title="Sözler" description="Kendi sözlerin ve okuduğun, duyduğun güzel cümleler." />
         <EmptyState icon={QuoteIcon} title="Henüz söz yok" description="Aklına gelen bir cümleyi ya da sevdiğin bir alıntıyı kaydet. Her sabah Bugün ekranında biri karşına çıkar." action={add} />
       </div>
     );
@@ -54,7 +56,8 @@ export function QuotesView() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Aforizmalar" description={`${quotes.length} söz · ${quotes.filter((x) => !x.author).length} tanesi senin`} actions={add} />
+      <JournalTabs />
+      <PageHeader title="Sözler" description={`${quotes.length} söz · ${quotes.filter((x) => !x.author).length} tanesi senin`} actions={add} />
 
       {daily && (
         <section aria-label="Günün sözü" className="relative overflow-hidden rounded-2xl bg-[#1D1D21] px-6 py-8 text-white sm:px-10 sm:py-10 dark:bg-surface dark:text-foreground dark:ring-1 dark:ring-line">

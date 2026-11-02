@@ -11,20 +11,20 @@ import { SortableAreas } from "@/components/course/sortable-areas";
 import { verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
-/** Aktif alanlar: tür ikonu alanın renginde (ilham 04'teki renk noktalı liste). */
+/** Aktif dersler: tür ikonu dersin renginde (ilham 04'teki renk noktalı liste). */
 export function TermCourses() {
   const courses = useActiveCourses();
   const { pathname } = useNav();
 
   return (
-    <section aria-label="Aktif alanlar" className="mt-0.5 mb-1 flex flex-col">
+    <section aria-label="Aktif dersler" className="mt-0.5 mb-1 flex flex-col">
       {courses.length === 0 ? (
         <button
           type="button"
           onClick={() => ui().open({ type: "course" })}
           className="ml-[30px] cursor-pointer rounded-md border border-dashed border-line-strong px-2.5 py-2 text-left text-xs leading-[18px] text-ink-muted hover:text-foreground"
         >
-          İlk alanını ekle: ders, spor, mutfak, okuma…
+          İlk dersini ekle: dil, spor, okuma…
         </button>
       ) : (
         <ul className="flex flex-col gap-px">
@@ -33,7 +33,7 @@ export function TermCourses() {
             strategy={verticalListSortingStrategy}
             modifiers={[restrictToVerticalAxis, restrictToParentElement]}
             renderItem={(c) => {
-            const href = `/alanlar/${c.id}`;
+            const href = `/dersler/${c.id}`;
             const active = pathname === href;
             const Icon = kindOf(c).icon;
             return (
@@ -70,7 +70,7 @@ export function TermCourses() {
               onClick={() => ui().open({ type: "course" })}
               className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md pr-2.5 pl-[30px] text-13 text-ink-subtle transition-colors hover:bg-hover hover:text-foreground"
             >
-              <Plus className="size-3.5 shrink-0" aria-hidden /> Alan ekle
+              <Plus className="size-3.5 shrink-0" aria-hidden /> Ders ekle
             </button>
           </li>
         </ul>

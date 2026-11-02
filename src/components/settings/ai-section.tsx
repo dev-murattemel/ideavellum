@@ -10,7 +10,7 @@ import { SettingsRow, SettingsSection } from "./settings-section";
 export function AiSection() {
   const p = useProfile();
   return (
-    <SettingsSection title="AI asistan" description="Haftalık rapora yorum, notlardan konu ve görev önerisi, günlük odak ve yeni alanlar için konu taslağı.">
+    <SettingsSection title="AI asistan" description="Haftalık rapora yorum, notlardan konu ve görev önerisi, günlük odak ve yeni dersler için konu taslağı.">
       <div className="flex flex-col gap-4">
         <SettingsRow label="AI asistanı kullan" hint="Kapalıyken hiçbir veri AI servisine gönderilmez.">
           <Switch checked={p.ai_enabled} onCheckedChange={(v) => data().updateProfile({ ai_enabled: v })} aria-label="AI asistanı kullan" />

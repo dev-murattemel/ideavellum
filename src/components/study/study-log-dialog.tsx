@@ -26,7 +26,7 @@ export function StudyLogDialog({ preset, onClose }: { preset?: { course_id?: str
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
-    if (courseId === NONE) return setError("Süreyi hangi alana eklediğini seç.");
+    if (courseId === NONE) return setError("Süreyi hangi derse eklediğini seç.");
     const startedAt = wallToUtc(date, start);
     const minutes = Number(duration);
     data().insert("study_logs", {
@@ -45,7 +45,7 @@ export function StudyLogDialog({ preset, onClose }: { preset?: { course_id?: str
           <DialogDescription>Zamanlayıcıyı açmayı unuttuğun bir çalışmayı elle kaydet.</DialogDescription>
         </DialogHeader>
         <form onSubmit={save} className="flex flex-col gap-4" noValidate>
-          <Field label="Alan" error={error ?? undefined}><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setError(null); }} /></Field>
+          <Field label="Ders" error={error ?? undefined}><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setError(null); }} /></Field>
           <div className="grid grid-cols-[1.4fr_1fr] gap-3">
             <Field label="Tarih" htmlFor="sl-date"><DatePicker id="sl-date" value={date} max={isoDate(now)} clearable={false} onChange={(v) => v && setDate(v)} /></Field>
             <Field label="Başlangıç"><TimeSelect label="Başlangıç" value={start} onChange={setStart} to={23 * 60 + 45} /></Field>

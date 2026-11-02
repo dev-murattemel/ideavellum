@@ -39,7 +39,7 @@ export function ReportsView() {
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title="Raporlar" description="Haftalık ve aylık ilerlemen." />
+      <PageHeader title="Karne" description="Haftalık ve aylık ilerlemen; hedeflerine göre notun." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="icon-sm" aria-label="Önceki" onClick={() => step(-1)}><ChevronLeft /></Button>
@@ -77,7 +77,7 @@ export function ReportsView() {
               </div>
             )}
             <CourseBars rows={r.perCourse} />
-            <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi alanın haftalık hedefini gösterir.</p>
+            <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi dersin haftalık hedefini gösterir.</p>
           </div>
         </SectionCard>
         <SectionCard title="Günlük süre" meta={`Günde ort. ${formatDuration(Math.round(r.totalMinutes / Math.max(1, r.days.length)))}`}>

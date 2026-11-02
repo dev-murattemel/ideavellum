@@ -135,7 +135,7 @@ export function CourseWeekTimeline({ course, weeklyMinutes }: { course: Course; 
                       >
                         <button
                           type="button"
-                          aria-label={own ? `${label}, düzenle` : `${label} (başka alan)`}
+                          aria-label={own ? `${label}, düzenle` : `${label} (başka ders)`}
                           onClick={() => ui().open({ type: "session", sessionId: o.session.id })}
                           className={cn(
                             "flex size-full cursor-pointer flex-col overflow-hidden rounded-md border-l-[3px] px-1.5 py-1 text-left transition-[filter] outline-none focus-visible:ring-2 focus-visible:ring-ring",

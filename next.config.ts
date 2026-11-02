@@ -5,10 +5,11 @@ const nextConfig: NextConfig = {
   // Eski adresler yeni adlarına yönlenir (yer imleri bozulmasın)
   async redirects() {
     return [
-      { source: "/dersler", destination: "/alanlar", permanent: true },
-      { source: "/dersler/:id", destination: "/alanlar/:id", permanent: true },
+      { source: "/alanlar", destination: "/dersler", permanent: true },
+      { source: "/alanlar/:id", destination: "/dersler/:id", permanent: true },
       { source: "/program", destination: "/takvim", permanent: true },
-      { source: "/transkript", destination: "/arsiv", permanent: true },
+      { source: "/raporlar", destination: "/karne", permanent: true },
+      { source: "/arsiv", destination: "/transkript", permanent: true },
     ];
   },
   turbopack: {

@@ -1,6 +1,6 @@
 import type { CourseColor } from "@/lib/course-colors";
 
-/** Alan adları veritabanı sütunlarıyla birebir aynı (snake_case). */
+/** Ders adları veritabanı sütunlarıyla birebir aynı (snake_case). */
 type Base = {
   id: string;
   user_id: string;
@@ -19,7 +19,7 @@ export type CourseStatus = "active" | "paused" | "completed" | "dropped";
 
 export type AreaKind = "course" | "fitness" | "cooking" | "watching" | "reading" | "spiritual" | "hobby" | "project" | "other";
 
-/** Alan (eski adıyla ders): ders, spor, mutfak, izleme, okuma… her tür düzenli uğraş */
+/** Ders (eski adıyla ders): ders, spor, mutfak, izleme, okuma… her tür düzenli uğraş */
 export type Course = Base & {
   kind: AreaKind;
   /** Sürükle-bırak sırası (fractional index); boşsa oluşturulma sırası */

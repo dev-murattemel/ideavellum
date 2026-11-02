@@ -30,7 +30,7 @@ export function OnboardingCard() {
   });
 
   const steps = [
-    { label: "İlk alanını ekle", hint: "Ders, spor, okuma…", done: courses.length > 0, run: () => ui().open({ type: "course" }) },
+    { label: "İlk dersini ekle", hint: "Dil, spor, okuma…", done: courses.length > 0, run: () => ui().open({ type: "course" }) },
     { label: "Takvime bir saat yerleştir", hint: "Her Salı 19:00 gibi", done: sessions.length > 0, run: () => goTo("/takvim") },
     { label: "Bir alışkanlık başlat", hint: "10 sayfa oku, su iç…", done: habits.length > 0, run: () => ui().open({ type: "habit" }) },
     { label: "Bir görev ekle", hint: "Son tarihiyle", done: tasks.length > 0, run: () => ui().open({ type: "task" }) },

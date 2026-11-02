@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function SidebarNavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const { pathname } = useNav();
-  const active = isActivePath(pathname, item.href);
+  const active = isActivePath(pathname, item.href) || !!item.also?.some((h) => isActivePath(pathname, h));
   const Icon = item.icon;
 
   const link = (

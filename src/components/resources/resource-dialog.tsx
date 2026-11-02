@@ -78,7 +78,7 @@ export function ResourceDialog({ resourceId, preset, onClose }: { resourceId?: s
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Yazar / kanal" htmlFor="r-author"><Input id="r-author" value={author} onChange={(e) => setAuthor(e.target.value)} /></Field>
               <Field label="Bağlantı" htmlFor="r-url"><Input id="r-url" type="url" inputMode="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" /></Field>
-              <Field label="Alan"><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setTopicId(NONE); }} /></Field>
+              <Field label="Ders"><CourseSelect value={courseId} onChange={(v) => { setCourseId(v); setTopicId(NONE); }} /></Field>
               <Field label="Konu"><TopicSelect courseId={courseId} value={topicId} onChange={setTopicId} /></Field>
             </div>
             <div className="grid grid-cols-[1fr_auto_auto_1fr] items-end gap-2">

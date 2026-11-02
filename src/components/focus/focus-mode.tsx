@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 const PHASE_LABEL: Record<Phase, string> = { focus: "Odak", break: "Kısa mola", long: "Uzun mola" };
 const NONE = "none";
 
-/** Tam ekran odak modu (Pomodoro). Odak turu bitince süre seçili alana kaydedilir, zil çalar. */
+/** Tam ekran odak modu (Pomodoro). Odak turu bitince süre seçili derse kaydedilir, zil çalar. */
 export function FocusMode() {
   const open = useUI((s) => s.focusOpen);
   const running = usePomodoro((s) => !!s.endsAt);
@@ -58,7 +58,7 @@ function completePhase(skipped: boolean, bell: { sound: Parameters<typeof playBe
     }
     if (!skipped) {
       done += 1;
-      toast.success(`Odak turu tamam: ${formatDuration(minutes)}`, { description: st.courseId ? "Süre alana kaydedildi. Biraz mola ver." : "Biraz mola ver." });
+      toast.success(`Odak turu tamam: ${formatDuration(minutes)}`, { description: st.courseId ? "Süre derse kaydedildi. Biraz mola ver." : "Biraz mola ver." });
     }
   } else if (!skipped) {
     toast("Mola bitti, yeni tura hazırsın");
@@ -84,7 +84,7 @@ function FocusScreen() {
   const total = phaseMinutes(s) * 60_000;
   const left = remaining(s);
 
-  // Açılınca alan seçili gelsin: çalışan zamanlayıcının alanı ya da ilk aktif alan
+  // Açılınca ders seçili gelsin: çalışan zamanlayıcının dersi ya da ilk aktif ders
   React.useEffect(() => {
     const st = usePomodoro.getState();
     if (!st.courseId && courses.length) st.set({ courseId: useTimer.getState().courseId ?? courses[0].id });
@@ -128,9 +128,9 @@ function FocusScreen() {
       <header className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
         <div className="flex items-center gap-2">
           <Select value={s.courseId ?? NONE} onValueChange={(v) => s.set({ courseId: v === NONE ? null : v })}>
-            <SelectTrigger className="h-9 w-56 bg-surface/80" aria-label="Alan"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-9 w-56 bg-surface/80" aria-label="Ders"><SelectValue /></SelectTrigger>
             <SelectContent className="z-[70]">
-              <SelectItem value={NONE}>Alan seçmeden</SelectItem>
+              <SelectItem value={NONE}>Ders seçmeden</SelectItem>
               {courses.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   <span data-course={c.color} className="size-2 rounded-full bg-course-solid" aria-hidden /> {c.name}

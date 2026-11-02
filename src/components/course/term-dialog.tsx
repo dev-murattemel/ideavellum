@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addMonths, format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -35,7 +35,7 @@ export function TermDialog({ termId, onClose }: { termId?: string; onClose: () =
     defaultValues: {
       name: term?.name ?? `${today.getFullYear()} ${today.getMonth() >= 8 ? "Güz" : "Bahar"}`,
       start_date: term?.start_date ?? format(today, "yyyy-MM-dd"),
-      end_date: term?.end_date ?? format(addMonths(today, 4), "yyyy-MM-dd"),
+      end_date: term?.end_date ?? format(addDays(today, 12 * 7 - 1), "yyyy-MM-dd"), // varsayılan: 12 haftalık dönem
       is_active: term?.is_active ?? true,
     },
   });

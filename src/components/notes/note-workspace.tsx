@@ -67,7 +67,7 @@ export function NoteWorkspace({ note, onBack, onDeleted }: { note: Note; onBack:
             className="field-sizing-content w-full resize-none bg-transparent text-2xl leading-8 font-semibold tracking-[-0.02em] outline-none placeholder:text-ink-subtle sm:text-3xl sm:leading-10"
           />
           <dl className="mt-4 grid grid-cols-[88px_minmax(0,1fr)] items-center gap-x-3 gap-y-2 text-13 sm:grid-cols-[88px_minmax(0,16rem)_88px_minmax(0,16rem)]">
-            <dt className="text-ink-muted">Alan</dt>
+            <dt className="text-ink-muted">Ders</dt>
             <dd><CourseSelect size="sm" value={note.course_id ?? NONE} onChange={(v) => set({ course_id: v === NONE ? null : v, topic_id: null })} /></dd>
             <dt className="text-ink-muted">Konu</dt>
             <dd><TopicSelect size="sm" courseId={note.course_id ?? NONE} value={note.topic_id ?? NONE} onChange={(v) => set({ topic_id: v === NONE ? null : v })} /></dd>

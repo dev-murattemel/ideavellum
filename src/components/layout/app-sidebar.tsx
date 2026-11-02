@@ -11,6 +11,7 @@ import { BrandMark, BrandWordmark } from "./brand";
 import { SidebarNavLink } from "./nav-link";
 import { useSidebar } from "./sidebar-context";
 import { TermCourses } from "./term-courses";
+import { TermBadge } from "./term-badge";
 import { UserMenu } from "./user-menu";
 import { useModifierKey } from "./use-platform";
 
@@ -61,6 +62,7 @@ export function AppSidebar() {
         )}
       </div>
 
+      {!collapsed && <TermBadge />}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden [scrollbar-width:thin]">
         {NAV_GROUPS.map((group, gi) => (
           <nav key={gi} aria-label={group.label ?? "Sayfalar"} className={cn("flex flex-col gap-0.5 px-3", gi === 0 ? "pt-2" : "pt-5")}>

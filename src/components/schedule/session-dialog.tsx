@@ -42,7 +42,7 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courseId) return setError("Önce bir alan seç.");
+    if (!courseId) return setError("Önce bir ders seç.");
     if (timeToMinutes(end) <= timeToMinutes(start)) return setError("Bitiş saati başlangıçtan sonra olmalı.");
     const values = {
       course_id: courseId, weekday: Number(weekday), start_time: start, end_time: end,
@@ -67,12 +67,12 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
             <DialogDescription>Takvimde tekrar eden zaman: örneğin her Salı 19:00–20:30 ya da her ayın ilk Cumartesisi.</DialogDescription>
           </DialogHeader>
           {courses.length === 0 ? (
-            <p className="rounded-lg bg-sunken p-4 text-sm text-ink-muted">Takvime saat eklemek için önce bir alan oluştur.</p>
+            <p className="rounded-lg bg-sunken p-4 text-sm text-ink-muted">Takvime saat eklemek için önce bir ders oluştur.</p>
           ) : (
             <form onSubmit={save} className="flex flex-col gap-5" noValidate>
-              <Field label="Alan">
+              <Field label="Ders">
                 <Select value={courseId} onValueChange={setCourseId}>
-                  <SelectTrigger aria-label="Alan"><SelectValue placeholder="Alan seç" /></SelectTrigger>
+                  <SelectTrigger aria-label="Ders"><SelectValue placeholder="Ders seç" /></SelectTrigger>
                   <SelectContent>
                     {courses.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
@@ -136,7 +136,7 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
         open={confirm}
         onOpenChange={setConfirm}
         title={`${vocab.session} silinsin mi?`}
-        description="Bu saatin geçmiş yoklama kayıtları da silinir. Alan ve içeriği etkilenmez."
+        description="Bu saatin geçmiş yoklama kayıtları da silinir. Ders ve içeriği etkilenmez."
         confirmLabel="Sil"
         onConfirm={() => {
           if (session) data().remove("class_sessions", session.id);

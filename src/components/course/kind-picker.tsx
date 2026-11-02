@@ -4,10 +4,10 @@ import { AREA_KINDS } from "@/lib/area-kinds";
 import type { AreaKind } from "@/lib/data/types";
 import { cn } from "@/lib/utils";
 
-/** Alan türü seçici: ikonlu küçük kutular, klavyeyle radyo grubu gibi çalışır */
+/** Ders türü seçici: ikonlu küçük kutular, klavyeyle radyo grubu gibi çalışır */
 export function KindPicker({ value, onChange }: { value: AreaKind; onChange: (v: AreaKind) => void }) {
   return (
-    <div role="radiogroup" aria-label="Alan türü" className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+    <div role="radiogroup" aria-label="Ders türü" className="grid grid-cols-3 gap-2 sm:grid-cols-5">
       {AREA_KINDS.map((k) => {
         const Icon = k.icon;
         const on = k.key === value;

@@ -43,12 +43,12 @@ export function ScheduleView() {
   if (courses.length === 0) {
     return (
       <div className="flex flex-col gap-6">
-        <PageHeader title="Takvim" description="Tüm alanlarının tekrar eden saatleri; hafta Pazartesi başlar." />
+        <PageHeader title="Takvim" description="Tüm derslerinin tekrar eden saatleri; hafta Pazartesi başlar." />
         <EmptyState
           icon={CalendarDays}
-          title="Henüz alan yok"
-          description="Önce bir alan ekle (ders, spor, okuma…), sonra saatlerini takvime yerleştir. Örneğin “Koşu” için her Salı 07:00–07:45."
-          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Alan ekle</Button>}
+          title="Henüz ders yok"
+          description="Önce bir ders ekle (ders, spor, okuma…), sonra saatlerini takvime yerleştir. Örneğin “Koşu” için her Salı 07:00–07:45."
+          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Ders ekle</Button>}
         />
       </div>
     );

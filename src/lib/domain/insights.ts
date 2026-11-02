@@ -15,7 +15,7 @@ export type Insight = {
 
 export type AreaWeek = { course: Course; minutes: number; target: number; pct: number };
 
-/** Aktif alanların bu haftaki süreleri, hedefe göre */
+/** Aktif derslerin bu haftaki süreleri, hedefe göre */
 export function areaWeeks(courses: Course[], logs: StudyLog[], now: Date, tz?: string): AreaWeek[] {
   const week = thisWeekLogs(logs, now, tz);
   return courses
@@ -58,7 +58,7 @@ export function buildInsights(input: {
     out.push({ id: "streak", tone: "warn", score: 85, title: `${streak} günlük serin tehlikede`, detail: "Bugün henüz süre kaydetmedin; 15 dakika bile seriyi korur." });
   }
 
-  // 3) Haftalık hedefin gerisindeki alanlar
+  // 3) Haftalık hedefin gerisindeki dersler
   areaWeeks(courses, logs, now, tz)
     .filter((a) => a.target && a.pct < 100)
     .forEach((a) => {
@@ -74,7 +74,7 @@ export function buildInsights(input: {
       });
     });
 
-  // 4) Uzun süredir dokunulmayan alanlar
+  // 4) Uzun süredir dokunulmayan dersler
   courses
     .filter((c) => c.status === "active")
     .forEach((c) => {
@@ -82,7 +82,7 @@ export function buildInsights(input: {
       if (!last) return;
       const days = differenceInCalendarDays(now, utcToWall(last, tz));
       if (days >= 7) {
-        out.push({ id: `idle-${c.id}`, tone: "info", score: 50 + days, title: `${c.name} ${days} gündür bekliyor`, detail: "Kısa bir oturumla geri dön ya da alana ara ver.", action: { label: "Alana git", kind: "area", courseId: c.id } });
+        out.push({ id: `idle-${c.id}`, tone: "info", score: 50 + days, title: `${c.name} ${days} gündür bekliyor`, detail: "Kısa bir oturumla geri dön ya da derse ara ver.", action: { label: "Derse git", kind: "area", courseId: c.id } });
       }
     });
 
@@ -94,7 +94,7 @@ export function buildInsights(input: {
   // 6) İyi giden şeyler
   if (studiedToday >= 60) out.push({ id: "good-today", tone: "good", score: 30, title: `Bugün ${formatDuration(studiedToday)} ayırdın`, detail: "Güzel bir gün. Kısa bir mola hak ettin." });
   const done = areaWeeks(courses, logs, now, tz).filter((a) => a.target && a.pct >= 100);
-  if (done.length) out.push({ id: "good-week", tone: "good", score: 25, title: `${done.map((a) => a.course.name).join(", ")}: haftalık hedef tamam`, detail: "Bu hafta bu alan(lar)da hedefine ulaştın." });
+  if (done.length) out.push({ id: "good-week", tone: "good", score: 25, title: `${done.map((a) => a.course.name).join(", ")}: haftalık hedef tamam`, detail: "Bu hafta bu ders(lar)da hedefine ulaştın." });
 
   return out.sort((a, b) => b.score - a.score).slice(0, 4);
 }

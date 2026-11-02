@@ -10,7 +10,7 @@ import { startStudy } from "@/lib/timer/start-study";
 import { ui } from "@/lib/ui-store";
 import { kindOf } from "@/lib/area-kinds";
 
-/** Komut paletinde verilerde arama: alanlar, görevler, notlar, sözler, kaynaklar */
+/** Komut paletinde verilerde arama: dersler, görevler, notlar, sözler, kaynaklar */
 export function CommandSearchGroups({ run }: { run: (fn: () => void) => void }) {
   const nav = useNav();
   const courses = useActiveCourses();
@@ -21,12 +21,12 @@ export function CommandSearchGroups({ run }: { run: (fn: () => void) => void }) 
 
   return (
     <>
-      <CommandGroup heading="Alanlar">
+      <CommandGroup heading="Dersler">
         {courses.map((c) => {
           const k = kindOf(c);
           const Icon = k.icon;
           return (
-            <CommandItem key={c.id} value={`alan ders ${k.label} ${c.name} ${c.code ?? ""}`} onSelect={() => run(() => nav.push(`/alanlar/${c.id}`))}>
+            <CommandItem key={c.id} value={`ders ders ${k.label} ${c.name} ${c.code ?? ""}`} onSelect={() => run(() => nav.push(`/dersler/${c.id}`))}>
               <Icon data-course={c.color} className="text-course-solid" />
               {c.name}
               <span className="ml-auto text-xs text-ink-subtle">{k.label}</span>

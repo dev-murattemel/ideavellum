@@ -4,7 +4,7 @@ import { data } from "@/lib/data/store";
 import type { Course } from "@/lib/data/types";
 
 /**
- * Alanı listede başka bir alanın yerine taşır. Liste küçük olduğu için tüm sıra yeniden
+ * Dersi listede başka bir dersin yerine taşır. Liste küçük olduğu için tüm sıra yeniden
  * hesaplanır; sadece sırası değişen kayıtlar kaydedilir.
  */
 export function reorderAreas(list: Course[], activeId: string, overId: string) {

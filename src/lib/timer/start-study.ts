@@ -7,7 +7,7 @@ import { useTimer } from "./store";
 /** Bugün kartından ya da ders sayfasından çalışmayı başlatır. */
 export function startStudy(courseId: string, source: StudySource = "timer") {
   const t = useTimer.getState();
-  const name = data().courses[courseId]?.name ?? "Alan";
+  const name = data().courses[courseId]?.name ?? "Ders";
   if (t.courseId && t.courseId !== courseId) {
     const prev = t.stop();
     if (prev && prev.minutes >= 1) toast(`Önceki çalışma kaydedildi (${prev.minutes} dk)`);

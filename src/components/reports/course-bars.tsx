@@ -12,16 +12,16 @@ type Rows = ReturnType<typeof useReport>["perCourse"];
  */
 export function CourseBars({ rows }: { rows: Rows }) {
   const max = Math.max(1, ...rows.map((r) => Math.max(r.minutes, r.target)));
-  if (!rows.length) return <p className="text-13 text-ink-muted">Aktif alan yok.</p>;
+  if (!rows.length) return <p className="text-13 text-ink-muted">Aktif ders yok.</p>;
   return (
-    <ul className="flex flex-col gap-3.5" aria-label="Alan bazında süre">
+    <ul className="flex flex-col gap-3.5" aria-label="Ders bazında süre">
       {rows.map((r) => {
         const pct = (r.minutes / max) * 100;
         const targetPct = r.target ? (r.target / max) * 100 : null;
         const reached = r.target > 0 && r.minutes >= r.target;
         return (
           <li key={r.course.id} data-course={r.course.color} className="grid grid-cols-[minmax(0,8rem)_1fr] items-center gap-x-3 gap-y-1 sm:grid-cols-[minmax(0,11rem)_1fr_8.5rem]">
-            <AppLink href={`/alanlar/${r.course.id}`} className="flex min-w-0 items-center gap-2 text-13 font-medium hover:underline">
+            <AppLink href={`/dersler/${r.course.id}`} className="flex min-w-0 items-center gap-2 text-13 font-medium hover:underline">
               <span className="size-2 shrink-0 rounded-full bg-course-solid" aria-hidden />
               <span className="truncate">{r.course.name}</span>
             </AppLink>

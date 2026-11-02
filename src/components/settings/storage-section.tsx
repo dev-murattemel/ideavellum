@@ -108,7 +108,7 @@ export function StorageSection() {
         open={confirmWipe}
         onOpenChange={setConfirmWipe}
         title="Bu cihazdaki tüm veriler silinsin mi?"
-        description="Alanlar, notlar, günlük, sözler ve alışkanlıklar kalıcı olarak silinir. Yedeğin yoksa geri getirilemez."
+        description="Dersler, notlar, günlük, sözler ve alışkanlıklar kalıcı olarak silinir. Yedeğin yoksa geri getirilemez."
         confirmLabel="Her şeyi sil"
         onConfirm={() => void wipeDevice()}
       />

@@ -15,6 +15,7 @@ import type { JournalEntry } from "@/lib/data/types";
 import { fmt, isoDate, parseDay, zonedNow } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { JournalCalendar } from "./journal-calendar";
+import { JournalTabs } from "./journal-tabs";
 import { MoodPicker } from "./mood-picker";
 import { moodOf, promptFor } from "./moods";
 
@@ -42,6 +43,7 @@ export function JournalView() {
 
   return (
     <div className="flex flex-col gap-6">
+      <JournalTabs />
       <PageHeader
         title="Günlük"
         description="Her güne bir sayfa. Kısa da olsa yazmak, günü kapatmanın en iyi yolu."
