@@ -170,9 +170,14 @@ export type StickyNote = Base & {
   x: number;
   y: number;
   z: number;
-  /** Toparlandıysa (arşivlendiyse) zamanı */
+  /** Arşivlendiyse zamanı (yalnızca kullanıcı isteyince) */
   archived_at: string | null;
+  /** Eski sürümden kalan alan; artık bağlantılar aşağıda */
   converted_to: "task" | "note" | null;
+  /** Aktarıldığı yerler: not panoda kalır, buralara bağlanır */
+  task_id: string | null;
+  note_id: string | null;
+  journal_date: string | null;
 };
 
 export type Quote = Base & {

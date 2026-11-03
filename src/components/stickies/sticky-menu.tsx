@@ -1,18 +1,44 @@
 "use client";
 
-import { Archive, ListTodo, MoreHorizontal, NotebookPen, Pencil, Trash2 } from "lucide-react";
+import { Archive, BookMarked, ListTodo, MoreHorizontal, NotebookPen, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useProfile } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
 import type { StickyNote } from "@/lib/data/types";
-import { archiveSticky, restoreSticky, stickyToNote, stickyToTask } from "@/lib/domain/stickies";
+import { archiveSticky, restoreSticky, stickyToJournal, stickyToNote, stickyToTask } from "@/lib/domain/stickies";
+import { goTo } from "@/lib/nav/nav-context";
+import { isoDate, zonedNow } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 
-/** Notun eylemleri: düzenle, göreve / nota çevir, toparlandı, sil */
+/**
+ * Notun eylemleri. Aktarımlar notu panodan kaldırmaz; not, sen silene ya da
+ * arşivleyene kadar panoda kalır ve aktarıldığı yerlere bağlanır.
+ */
 export function StickyMenu({ s, onEdit }: { s: StickyNote; onEdit: () => void }) {
-  const undo = { label: "Geri al", onClick: () => restoreSticky(s) };
+  const tz = useProfile().timezone;
+  const hasTask = !!(s.task_id && data().tasks[s.task_id]);
+  const hasNote = !!(s.note_id && data().notes[s.note_id]);
+  const today = isoDate(zonedNow(tz));
+
+  const toTask = () => {
+    const { task, created } = stickyToTask(s);
+    if (!created) return ui().openTask(task.id);
+    toast.success("Göreve aktarıldı", { description: "Not panoda kalıyor; görev Pano'da Yapılacak sütununda.", action: { label: "Görevi aç", onClick: () => ui().openTask(task.id) } });
+  };
+  const toNote = () => {
+    const { note, created } = stickyToNote(s);
+    if (!created) return ui().openNote(note.id);
+    toast.success("Nota aktarıldı", { description: "Not panoda kalıyor.", action: { label: "Notu aç", onClick: () => ui().openNote(note.id) } });
+  };
+  const toJournal = () => {
+    if (s.journal_date === today) return goTo("/gunluk");
+    stickyToJournal(s, today);
+    toast.success("Bugünün günlüğüne eklendi", { action: { label: "Günlüğü aç", onClick: () => goTo("/gunluk") } });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,29 +52,17 @@ export function StickyMenu({ s, onEdit }: { s: StickyNote; onEdit: () => void })
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuItem onSelect={onEdit}><Pencil /> Düzenle</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={() => {
-            const t = stickyToTask(s);
-            toast.success("Göreve çevrildi", { description: "Pano'da Yapılacak sütununda.", action: { label: "Görevi aç", onClick: () => ui().openTask(t.id) } });
-          }}
-        >
-          <ListTodo /> Göreve çevir
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => {
-            const n = stickyToNote(s);
-            toast.success("Nota çevrildi", { action: { label: "Notu aç", onClick: () => ui().openNote(n.id) } });
-          }}
-        >
-          <NotebookPen /> Nota çevir
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => { archiveSticky(s); toast("Toparlandı", { action: undo }); }}>
-          <Archive /> Toparlandı, kaldır
-        </DropdownMenuItem>
+        <DropdownMenuLabel className="text-xs font-medium text-ink-subtle">Aktar · not panoda kalır</DropdownMenuLabel>
+        <DropdownMenuItem onSelect={toTask}><ListTodo /> {hasTask ? "Görevi aç" : "Göreve aktar"}</DropdownMenuItem>
+        <DropdownMenuItem onSelect={toNote}><NotebookPen /> {hasNote ? "Notu aç" : "Nota aktar"}</DropdownMenuItem>
+        <DropdownMenuItem onSelect={toJournal}><BookMarked /> {s.journal_date === today ? "Günlüğü aç" : "Bugünün günlüğüne ekle"}</DropdownMenuItem>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => { archiveSticky(s); toast("Arşive kaldırıldı", { action: { label: "Geri al", onClick: () => restoreSticky(s) } }); }}>
+          <Archive /> Arşive kaldır
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"
           onSelect={() => {

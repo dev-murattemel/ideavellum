@@ -32,7 +32,9 @@ export function nextSpot(boardWidth: number) {
 
 export function createSticky(text: string, color: CourseColor, tags: string[], boardWidth: number) {
   const spot = nextSpot(boardWidth);
-  return data().insert("sticky_notes", { text, color, tags, ...spot, z: topZ() + 1, archived_at: null, converted_to: null });
+  return data().insert("sticky_notes", {
+    text, color, tags, ...spot, z: topZ() + 1, archived_at: null, converted_to: null, task_id: null, note_id: null, journal_date: null,
+  });
 }
 
 /** "Hizala": tüm notları oluşturulma sırasıyla düzgün bir ızgaraya dizer */
@@ -49,33 +51,53 @@ const split = (text: string) => {
   return { title: first.trim().slice(0, 120) || "Yapışkan not", body: rest.join("\n").trim() };
 };
 
-const archive = (s: StickyNote, converted_to: StickyNote["converted_to"]) =>
-  data().update("sticky_notes", s.id, { archived_at: new Date().toISOString(), converted_to });
+const paragraphs = (text: string) =>
+  text.split("\n").map((l) => ({ type: "paragraph", content: l ? [{ type: "text", text: l }] : undefined }));
 
-/** Göreve çevirir (Pano'da "Yapılacak" sütununa) ve notu toparlar */
+/**
+ * Göreve aktarır (Pano'da "Yapılacak" sütununa). Not panoda kalır, göreve bağlanır;
+ * daha önce aktarıldıysa yeni görev açılmaz, var olan döner.
+ */
 export function stickyToTask(s: StickyNote) {
+  const existing = s.task_id ? data().tasks[s.task_id] : undefined;
+  if (existing) return { task: existing, created: false };
   const { title, body } = split(s.text);
   const todo = Object.values(data().tasks).filter((t) => t.status === "todo");
   const task = data().insert("tasks", {
     course_id: null, topic_id: null, title, description: body || null, status: "todo", priority: "medium",
     due_at: null, position: positionAtEnd(todo), completed_at: null,
   });
-  archive(s, "task");
-  return task;
+  data().update("sticky_notes", s.id, { task_id: task.id });
+  return { task, created: true };
 }
 
-/** Nota çevirir (etiketler korunur) ve notu toparlar */
+/** Nota aktarır (etiketler korunur). Not panoda kalır, nota bağlanır. */
 export function stickyToNote(s: StickyNote) {
+  const existing = s.note_id ? data().notes[s.note_id] : undefined;
+  if (existing) return { note: existing, created: false };
   const { title, body } = split(s.text);
-  const content: TiptapDoc = {
-    type: "doc",
-    content: body ? body.split("\n").map((l) => ({ type: "paragraph", content: l ? [{ type: "text", text: l }] : undefined })) : [],
-  };
+  const content: TiptapDoc = { type: "doc", content: body ? paragraphs(body) : [] };
   const note = data().insert("notes", { course_id: null, topic_id: null, title, content, is_pinned: false, tags: s.tags });
-  archive(s, "note");
-  return note;
+  data().update("sticky_notes", s.id, { note_id: note.id });
+  return { note, created: true };
 }
 
-export const archiveSticky = (s: StickyNote) => archive(s, null);
+/** Bugünün günlük sayfasının sonuna ekler. Not panoda kalır. */
+export function stickyToJournal(s: StickyNote, today: string) {
+  const entry = Object.values(data().journal_entries).find((j) => j.date === today);
+  const add = paragraphs(s.text.trim());
+  if (entry) {
+    data().update("journal_entries", entry.id, {
+      content: { type: "doc", content: [...(entry.content.content ?? []), ...add] },
+      tags: [...new Set([...entry.tags, ...s.tags])],
+    });
+  } else {
+    data().insert("journal_entries", { date: today, content: { type: "doc", content: add }, mood: null, tags: s.tags });
+  }
+  data().update("sticky_notes", s.id, { journal_date: today });
+}
+
+/** Arşiv yalnızca kullanıcı isteyince: notu panodan kaldırır ama silmez */
+export const archiveSticky = (s: StickyNote) => data().update("sticky_notes", s.id, { archived_at: new Date().toISOString() });
 export const restoreSticky = (s: StickyNote) =>
-  data().update("sticky_notes", s.id, { archived_at: null, converted_to: null, z: topZ() + 1 });
+  data().update("sticky_notes", s.id, { archived_at: null, z: topZ() + 1 });

@@ -65,12 +65,12 @@ export function StickiesView() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-[-0.015em]">Mantar pano</h1>
-          <p className="text-sm text-ink-muted">Aklına geleni hemen as; uygun bir zamanda göreve ya da nota çevirerek toparla.</p>
+          <p className="text-sm text-ink-muted">Aklına geleni hemen as; uygun bir zamanda göreve, nota ya da günlüğe aktar. Not sen silene kadar panoda kalır.</p>
         </div>
         <Tabs value={tab} onValueChange={(v) => { setTab(v as Tab); setEditingId(null); }}>
           <TabsList aria-label="Mantar pano">
             <TabsTrigger value="board" className="gap-1.5">Panoda <span className="tabular text-xs text-ink-subtle">{live.length}</span></TabsTrigger>
-            <TabsTrigger value="done" className="gap-1.5">Toparlananlar <span className="tabular text-xs text-ink-subtle">{done.length}</span></TabsTrigger>
+            <TabsTrigger value="done" className="gap-1.5">Arşiv <span className="tabular text-xs text-ink-subtle">{done.length}</span></TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -111,11 +111,11 @@ export function StickiesView() {
         )
       ) : done.length ? (
         <>
-          <p className="text-13 text-ink-muted">Göreve ya da nota çevirdiğin ve “toparlandı” dediğin notlar. Gerekirse panoya geri asabilirsin.</p>
+          <p className="text-13 text-ink-muted">Panodan arşive kaldırdığın notlar. İstersen panoya geri asabilir ya da kalıcı silebilirsin.</p>
           <StickyGrid stickies={done} editingId={null} setEditingId={() => {}} actions={archiveActions} />
         </>
       ) : (
-        <p className="rounded-xl border border-dashed border-line-strong p-8 text-center text-13 text-ink-muted">Henüz toparlanan not yok.</p>
+        <p className="rounded-xl border border-dashed border-line-strong p-8 text-center text-13 text-ink-muted">Arşiv boş. Panodaki bir notu menüden “Arşive kaldır” ile buraya alabilirsin.</p>
       )}
     </div>
   );

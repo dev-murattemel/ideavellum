@@ -8,6 +8,7 @@ import { tilt } from "@/lib/domain/stickies";
 import { timeAgo } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { StickyEditor } from "./sticky-editor";
+import { StickyLinks } from "./sticky-links";
 import { StickyMenu } from "./sticky-menu";
 
 /**
@@ -57,10 +58,10 @@ export function StickyCard({ s, editing, onEdit, onDone, dragging, dimmed, class
           <div className="flex flex-wrap items-center gap-1">
             {s.tags.map((t) => <TagChip key={t} tag={t} className="bg-surface/60" />)}
           </div>
+          <StickyLinks s={s} />
           <div className="flex items-center justify-between gap-2">
             <p className="tabular text-xs opacity-60">
               {timeAgo(s.created_at)}
-              {s.converted_to && ` · ${s.converted_to === "task" ? "göreve" : "nota"} çevrildi`}
             </p>
             {actions}
           </div>

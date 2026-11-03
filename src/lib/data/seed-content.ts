@@ -151,6 +151,6 @@ export function seedStickies(add: Add) {
     ["Koşu ayakkabısı tabanı aşınmış, yenisine bak", "lavender", ["spor"], 268, 244],
   ];
   notes.forEach(([text, color, tags, x, y], i) =>
-    add("sticky_notes", { text, color, tags, x, y, z: i + 1, archived_at: null, converted_to: null }),
+    add("sticky_notes", { text, color, tags, x, y, z: i + 1, archived_at: null, converted_to: null, task_id: null, note_id: null, journal_date: null }),
   );
 }
