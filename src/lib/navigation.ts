@@ -1,6 +1,7 @@
 import {
   BookMarked,
   Compass,
+  StickyNote,
   CalendarDays,
   ChartColumn,
   LayoutGrid,
@@ -42,6 +43,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Kütüphane",
     items: [
+      { href: "/mantar-pano", label: "Mantar pano", icon: StickyNote, description: "Aklına geleni hızla as, sonra toparla" },
       { href: "/notlar", label: "Notlar", icon: NotebookPen, description: "Etiketli notlar, görseller ve bağlantılar" },
       { href: "/gunluk", label: "Günlük", icon: BookMarked, description: "Her güne bir sayfa, ruh hali ve kendi sözlerin", also: ["/aforizmalar"] },
       { href: "/kaynaklar", label: "Kaynaklar", icon: Library, description: "Video, kitap, makale ve podcast'ler" },

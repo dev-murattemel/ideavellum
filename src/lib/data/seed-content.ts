@@ -1,5 +1,6 @@
 import { addDays } from "date-fns";
 
+import type { CourseColor } from "@/lib/course-colors";
 import { isoDate, wallToUtc } from "@/lib/time";
 import { positionAtEnd } from "./position";
 import type { createBuilder } from "./seed-builder";
@@ -137,4 +138,19 @@ export function seedHabits(add: Add, today: Date) {
       if (i < 5 - hi || v < rate) add("habit_checks", { habit_id: h.id, date: isoDate(addDays(today, -i)) });
     }
   });
+}
+
+/** Mantar panoda birkaç yapışkan not */
+export function seedStickies(add: Add) {
+  const notes: [string, CourseColor, string[], number, number][] = [
+    ["Sapiens'i bitirince Homo Deus'a geç", "butter", ["okuma"], 24, 24],
+    ["Piyano: sol el arpejleri için metronom 60'tan başla", "mint", ["piyano"], 252, 40],
+    ["Sunum fikri:\nVeriyle hikâye anlatmanın 3 kuralı", "sky", ["fikir", "iş"], 480, 22],
+    ["Annemi ara, hafta sonu kahvaltı planı", "rose", [], 708, 36],
+    ["Mercimek ve bulgur bitti, markete yaz", "peach", ["alışveriş"], 40, 230],
+    ["Koşu ayakkabısı tabanı aşınmış, yenisine bak", "lavender", ["spor"], 268, 244],
+  ];
+  notes.forEach(([text, color, tags, x, y], i) =>
+    add("sticky_notes", { text, color, tags, x, y, z: i + 1, archived_at: null, converted_to: null }),
+  );
 }

@@ -161,6 +161,20 @@ export type HabitCheck = Base & {
   date: string; // yyyy-MM-dd
 };
 
+/** Mantar panodaki yapışkan not: hızla yazılır, sonra toparlanır */
+export type StickyNote = Base & {
+  text: string;
+  color: CourseColor;
+  tags: string[];
+  /** Panodaki konum (px) ve üst üste binme sırası */
+  x: number;
+  y: number;
+  z: number;
+  /** Toparlandıysa (arşivlendiyse) zamanı */
+  archived_at: string | null;
+  converted_to: "task" | "note" | null;
+};
+
 export type Quote = Base & {
   text: string;
   author: string | null;
@@ -246,6 +260,7 @@ export type Tables = {
   quotes: Quote;
   habits: Habit;
   habit_checks: HabitCheck;
+  sticky_notes: StickyNote;
 };
 
 export type TableName = keyof Tables;
@@ -266,6 +281,7 @@ export const TABLE_NAMES: TableName[] = [
   "quotes",
   "habits",
   "habit_checks",
+  "sticky_notes",
 ];
 
 /** Yeni kayıt: id, user_id ve zaman damgaları depo tarafından doldurulur. */

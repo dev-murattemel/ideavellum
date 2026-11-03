@@ -1,4 +1,4 @@
-import { Repeat, BookMarked, LayoutGrid, Library, ListTodo, NotebookPen, Quote, Timer, type LucideIcon } from "lucide-react";
+import { Repeat, BookMarked, LayoutGrid, Library, ListTodo, NotebookPen, Quote, StickyNote, Timer, type LucideIcon } from "lucide-react";
 
 import { createNote } from "@/components/notes/create-note";
 import { goTo } from "@/lib/nav/nav-context";
@@ -13,6 +13,7 @@ export type QuickAddAction = {
 
 /** Hızlı ekle menüsü ve komut paletinin paylaştığı eylemler. */
 export const QUICK_ADD_ACTIONS: QuickAddAction[] = [
+  { id: "sticky", label: "Yapışkan not as", icon: StickyNote, run: () => { ui().setStickyFocus(true); goTo("/mantar-pano"); } },
   { id: "task", label: "Görev ekle", icon: ListTodo, run: () => ui().open({ type: "task" }) },
   { id: "note", label: "Not ekle", icon: NotebookPen, run: () => createNote() },
   { id: "habit", label: "Alışkanlık ekle", icon: Repeat, run: () => ui().open({ type: "habit" }) },

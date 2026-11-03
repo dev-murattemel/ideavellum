@@ -42,6 +42,9 @@ type UIState = {
   /** Rehber sayfasında açık sekme (gün panelinden "rehbere git" ile değişir) */
   guideTab: GuideTab;
   setGuideTab: (t: GuideTab) => void;
+  /** Mantar panoya gelince hızlı yazma kutusuna odaklan */
+  stickyFocus: boolean;
+  setStickyFocus: (v: boolean) => void;
   setClip: (o: OccurrenceRef | null) => void;
   /** Tam ekran odak modu */
   focusOpen: boolean;
@@ -66,6 +69,8 @@ export const useUI = create<UIState>()((set) => ({
   guide: null,
   openGuide: (guide) => set({ guide }),
   guideTab: "recipes",
+  stickyFocus: false,
+  setStickyFocus: (stickyFocus) => set({ stickyFocus }),
   setGuideTab: (guideTab) => set({ guideTab }),
   setClip: (clip) => set({ clip }),
   focusOpen: false,

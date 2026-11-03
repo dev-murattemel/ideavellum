@@ -9,12 +9,13 @@ import { normalizeTag, tagCounts } from "@/lib/tags";
 import { cn } from "@/lib/utils";
 import { TagChip } from "./tag-chip";
 
-/** Tüm notlar, günlük ve aforizmalardaki etiketler (öneri için) */
+/** Tüm notlar, günlük, aforizmalar ve yapışkan notlardaki etiketler (öneri için) */
 export function useAllTags() {
   const notes = useRows("notes");
   const journal = useRows("journal_entries");
   const quotes = useRows("quotes");
-  return React.useMemo(() => tagCounts([...notes, ...journal, ...quotes]).map(([t]) => t), [notes, journal, quotes]);
+  const stickies = useRows("sticky_notes");
+  return React.useMemo(() => tagCounts([...notes, ...journal, ...quotes, ...stickies]).map(([t]) => t), [notes, journal, quotes, stickies]);
 }
 
 /**

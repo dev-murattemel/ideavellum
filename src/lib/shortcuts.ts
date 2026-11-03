@@ -10,6 +10,7 @@ export const GO_SHORTCUTS: { key: string; href: string; label: string }[] = [
   { key: "h", href: "/aliskanliklar", label: "Alışkanlıklar" },
   { key: "k", href: "/kaynaklar", label: "Kaynaklar" },
   { key: "r", href: "/karne", label: "Karne" },
+  { key: "m", href: "/mantar-pano", label: "Mantar pano" },
 ];
 
 export const ACTION_SHORTCUTS: { key: string; label: string }[] = [
@@ -19,6 +20,7 @@ export const ACTION_SHORTCUTS: { key: string; label: string }[] = [
   { key: "s", label: "Yeni söz" },
   { key: "j", label: "Günlüğe yaz" },
   { key: "f", label: "Odak modu" },
+  { key: "m", label: "Yapışkan not as" },
   { key: "/", label: "Ara" },
   { key: "?", label: "Kısayollar" },
 ];

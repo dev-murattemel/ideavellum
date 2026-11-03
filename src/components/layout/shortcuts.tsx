@@ -39,6 +39,7 @@ export function Shortcuts() {
         s: () => ui().open({ type: "quote" }),
         j: () => nav.push("/gunluk"),
         f: () => ui().setFocus(true),
+        m: () => { ui().setStickyFocus(true); nav.push("/mantar-pano"); },
         "/": () => setOpen(true),
         "?": () => ui().setShortcuts(true),
       };
