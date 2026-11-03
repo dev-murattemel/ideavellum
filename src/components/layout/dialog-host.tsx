@@ -5,6 +5,8 @@ import { CompleteCourseDialog } from "@/components/course/complete-course-dialog
 import { CourseDialog } from "@/components/course/course-dialog";
 import { TermDialog } from "@/components/course/term-dialog";
 import { HabitDialog } from "@/components/habits/habit-dialog";
+import { AddToDayDialog } from "@/components/guides/add-to-day-dialog";
+import { RecipePickerDialog } from "@/components/guides/recipe-picker-dialog";
 import { QuoteDialog } from "@/components/quotes/quote-dialog";
 import { ResourceDialog } from "@/components/resources/resource-dialog";
 import { SessionDialog } from "@/components/schedule/session-dialog";
@@ -36,6 +38,10 @@ export function DialogHost() {
       return <HabitDialog key={dialog.habitId ?? "new"} habitId={dialog.habitId} onClose={close} />;
     case "quote":
       return <QuoteDialog key={dialog.quoteId ?? "new"} quoteId={dialog.quoteId} onClose={close} />;
+    case "add-to-day":
+      return <AddToDayDialog payload={dialog.payload} onClose={close} />;
+    case "recipe-picker":
+      return <RecipePickerDialog sessionId={dialog.sessionId} date={dialog.date} onClose={close} />;
     default:
       return null;
   }

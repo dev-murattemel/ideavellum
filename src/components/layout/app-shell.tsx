@@ -3,6 +3,7 @@
 import { TaskSheet } from "@/components/board/task-sheet";
 import { NotePanel } from "@/components/notes/note-panel";
 import { ClipBar } from "@/components/schedule/clip-bar";
+import { GuideSheetHost } from "@/components/guides/guide-sheet-host";
 import { OccurrencePanel } from "@/components/schedule/occurrence-panel";
 import { BellRunner } from "@/components/notifications/bell-runner";
 import { DataProvider } from "@/components/providers/data-provider";
@@ -58,6 +59,7 @@ export function AppShell({
             <NotePanel />
             <OccurrencePanel />
             <ClipBar />
+            <GuideSheetHost />
             <BellRunner />
             <ReminderSync />
           </CommandMenuProvider>

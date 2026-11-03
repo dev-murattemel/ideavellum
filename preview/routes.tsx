@@ -2,6 +2,7 @@ import { BoardView } from "@/components/board/board-view";
 import { CourseDetailView } from "@/components/course/course-detail-view";
 import { CoursesView } from "@/components/course/courses-view";
 import { HabitsView } from "@/components/habits/habits-view";
+import { GuideView } from "@/components/guides/guide-view";
 import { JournalView } from "@/components/journal/journal-view";
 import { NotesView } from "@/components/notes/notes-view";
 import { QuotesView } from "@/components/quotes/quotes-view";
@@ -25,6 +26,7 @@ const TITLES: Record<string, string> = {
   "/karne": "Karne",
   "/transkript": "Transkript",
   "/ayarlar": "Ayarlar",
+  "/rehber": "Rehber",
 };
 
 export function titleFor(pathname: string) {
@@ -47,6 +49,8 @@ export function resolveView(pathname: string) {
       return <NotesView />;
     case "/aliskanliklar":
       return <HabitsView />;
+    case "/rehber":
+      return <GuideView />;
     case "/gunluk":
       return <JournalView />;
     case "/aforizmalar":

@@ -3,6 +3,7 @@
 import { create } from "zustand";
 
 import type { ResourceType, TaskStatus } from "@/lib/data/types";
+import type { DayPayload } from "@/lib/domain/add-to-day";
 
 export type SessionPreset = { weekday?: number; start_time?: string; end_time?: string; course_id?: string };
 
@@ -19,7 +20,13 @@ export type DialogState =
   | { type: "study-log"; preset?: { course_id?: string } }
   | { type: "complete-course"; courseId: string }
   | { type: "quote"; quoteId?: string }
-  | { type: "habit"; habitId?: string };
+  | { type: "habit"; habitId?: string }
+  | { type: "add-to-day"; payload: DayPayload }
+  | { type: "recipe-picker"; sessionId: string; date: string };
+
+/** Rehberde açılan ayrıntı paneli: tarif, hareket ya da yöntem yazısı */
+export type GuideRef = { type: "recipe" | "exercise" | "article"; id: string };
+export type GuideTab = "recipes" | "exercises" | "articles";
 
 type UIState = {
   dialog: DialogState | null;
@@ -30,6 +37,11 @@ type UIState = {
   /** Kopyalanan ders saati: takvimde boş yere tıklayınca oraya yapıştırılır */
   clip: OccurrenceRef | null;
   openOccurrence: (o: OccurrenceRef | null) => void;
+  guide: GuideRef | null;
+  openGuide: (g: GuideRef | null) => void;
+  /** Rehber sayfasında açık sekme (gün panelinden "rehbere git" ile değişir) */
+  guideTab: GuideTab;
+  setGuideTab: (t: GuideTab) => void;
   setClip: (o: OccurrenceRef | null) => void;
   /** Tam ekran odak modu */
   focusOpen: boolean;
@@ -51,6 +63,10 @@ export const useUI = create<UIState>()((set) => ({
   occurrence: null,
   clip: null,
   openOccurrence: (occurrence) => set({ occurrence }),
+  guide: null,
+  openGuide: (guide) => set({ guide }),
+  guideTab: "recipes",
+  setGuideTab: (guideTab) => set({ guideTab }),
   setClip: (clip) => set({ clip }),
   focusOpen: false,
   shortcutsOpen: false,

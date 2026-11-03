@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { parseISO } from "date-fns";
-import { History, MapPin, Pencil } from "lucide-react";
+import { ChefHat, History, MapPin, Pencil } from "lucide-react";
 
 import { AttendanceButtons } from "@/components/today/attendance-buttons";
 import { Button } from "@/components/ui/button";
@@ -159,6 +159,15 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
           )}
 
           <EntryChecklist items={checklist} onChange={setChecklist} placeholder={hints.list} title={hints.listTitle} kind={course?.kind} used={used} />
+          {course?.kind === "cooking" && (
+            <button
+              type="button"
+              onClick={() => ui().open({ type: "recipe-picker", sessionId, date })}
+              className="-mt-3 flex w-fit cursor-pointer items-center gap-1.5 rounded-md text-13 font-medium text-ink-muted transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <ChefHat className="size-4" aria-hidden /> Rehberden tarif seç
+            </button>
+          )}
 
           <label className="flex flex-col gap-1.5">
             <span className="text-13 font-semibold">Ayrıntılar</span>

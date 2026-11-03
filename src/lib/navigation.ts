@@ -1,5 +1,6 @@
 import {
   BookMarked,
+  Compass,
   CalendarDays,
   ChartColumn,
   LayoutGrid,
@@ -44,6 +45,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/notlar", label: "Notlar", icon: NotebookPen, description: "Etiketli notlar, görseller ve bağlantılar" },
       { href: "/gunluk", label: "Günlük", icon: BookMarked, description: "Her güne bir sayfa, ruh hali ve kendi sözlerin", also: ["/aforizmalar"] },
       { href: "/kaynaklar", label: "Kaynaklar", icon: Library, description: "Video, kitap, makale ve podcast'ler" },
+      { href: "/rehber", label: "Rehber", icon: Compass, description: "Tarifler, hareketlerin doğru yapılışı ve çalışma yöntemleri" },
     ],
   },
   {
