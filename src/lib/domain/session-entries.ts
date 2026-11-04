@@ -30,9 +30,15 @@ export const getEntry = (sessionId: string, date: string): SessionEntry | undefi
 export const templateChecks = (session?: Pick<ClassSession, "checklist"> | null): EntryCheck[] =>
   (session?.checklist ?? []).map((c) => ({ ...c, done: false }));
 
-/** O günün listesi: gün kaydı varsa onunki, yoksa saatin şablonu */
+/** O günün listesi: gün kaydında madde varsa onlar, yoksa saatin şablonu */
 export const dayChecks = (entry: SessionEntry | undefined, session?: Pick<ClassSession, "checklist"> | null) =>
-  entry ? entry.checklist : templateChecks(session);
+  entry?.checklist.length ? entry.checklist : templateChecks(session);
+
+/** Gün listesi saatin şablonuyla aynı mı (aynı maddeler, aynı sıra) */
+export const sameAsTemplate = (items: EntryCheck[], session?: Pick<ClassSession, "checklist"> | null) => {
+  const t = session?.checklist ?? [];
+  return t.length === items.length && t.every((c, i) => c.label === items[i].label);
+};
 
 /** O günün ayrıntısını yazar; yoksa oluşturur (liste verilmezse saatin şablonu kopyalanır) */
 export function saveEntry(sessionId: string, date: string, patch: Partial<Pick<SessionEntry, "title" | "details" | "checklist" | "note_id">>) {

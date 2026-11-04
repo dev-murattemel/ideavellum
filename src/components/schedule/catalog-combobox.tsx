@@ -23,7 +23,7 @@ const STRENGTH_DEFAULT = { sets: 3, reps: 10, weight: null };
  * Listede yoksa yazılan ad olduğu gibi eklenir. Daha önce kullanılan bir madde
  * son girilen ölçüleriyle gelir (ör. Bench press 4×10 · 60 kg).
  */
-export function CatalogCombobox({ items, used, fallback, unit, placeholder, onPick, onPasteLines }: {
+export function CatalogCombobox({ items, used, fallback, unit, placeholder, onPick, onPasteLines, onQueryChange }: {
   items: CatalogItem[];
   used: EntryCheck[];
   fallback: Metric;
@@ -32,8 +32,14 @@ export function CatalogCombobox({ items, used, fallback, unit, placeholder, onPi
   onPick: (p: Pick) => void;
   /** Birden çok satır yapıştırılınca her satır ayrı madde olur */
   onPasteLines?: (lines: string[]) => void;
+  /** Yazılıp henüz eklenmemiş metin (kaydederken kaybolmasın diye) */
+  onQueryChange?: (q: string) => void;
 }) {
-  const [query, setQuery] = React.useState("");
+  const [query, setQueryState] = React.useState("");
+  const setQuery = (q: string) => {
+    setQueryState(q);
+    onQueryChange?.(q);
+  };
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);

@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { CourseColor } from "@/lib/course-colors";
 import { WeekdayChips } from "./weekday-chips";
 import { EntryChecklist } from "./entry-checklist";
+import { newCheck } from "@/lib/domain/session-entries";
 import { kindOf } from "@/lib/area-kinds";
 import type { EntryCheck, SessionRepeat } from "@/lib/data/types";
 import { isoDate, zonedNow } from "@/lib/time";
@@ -43,6 +44,8 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
   const [notes, setNotes] = React.useState(session?.notes ?? "");
   // Her seferki liste: ör. "Sabah rutini" → yüz yıkama, yürüyüş, cilt bakımı; her gün işaretsiz gelir
   const [checklist, setChecklist] = React.useState<EntryCheck[]>(session?.checklist ?? []);
+  // Kutuda yazılı kalan madde (Enter'a basılmadan kaydedilirse de eklenir)
+  const [draft, setDraft] = React.useState("");
   const [weekday, setWeekday] = React.useState(String(session?.weekday ?? preset?.weekday ?? 1));
   // Yeni haftalık saat birden çok güne aynı anda eklenebilir (ör. hafta içi her gün 07:00)
   const [days, setDays] = React.useState<number[]>([session?.weekday ?? preset?.weekday ?? 1]);
@@ -65,7 +68,7 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
       course_id: area ? area.id : null,
       title: title.trim() || null,
       notes: notes.trim() || null,
-      checklist: checklist.map((c) => ({ ...c, done: false })),
+      checklist: [...checklist, ...(draft.trim() ? [newCheck(draft.trim())] : [])].map((c) => ({ ...c, done: false })),
       color: area ? null : color, weekday: Number(weekday), start_time: start, end_time: end,
       location: location.trim() || null, bell_overrides: bell,
       repeat, anchor_date: repeat === "weekly" ? null : anchor,
@@ -162,6 +165,7 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
                   placeholder="Madde yaz, Enter: yüz yıkama, yürüyüş…"
                   kind={area?.kind}
                   used={[]}
+                  onDraftChange={setDraft}
                 />
                 <p className="text-xs text-ink-muted">Her gün bu maddelerle boş başlar; o günün panelinde işaretlersin. Birden çok satırı yapıştırabilirsin.</p>
               </div>

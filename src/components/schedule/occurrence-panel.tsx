@@ -19,6 +19,8 @@ import { ui, useUI, type OccurrenceRef } from "@/lib/ui-store";
 import { EntryChecklist } from "./entry-checklist";
 import { entryHints } from "./entry-hints";
 import { OccurrenceActions } from "./occurrence-actions";
+import { RepeatListButton, SeriesNotes } from "./series-fields";
+import { useAutosave } from "./use-autosave";
 
 /** Takvimde bir karta tıklayınca sağdan açılan gün paneli */
 export function OccurrencePanel() {
@@ -33,28 +35,6 @@ export function OccurrencePanel() {
       </SheetContent>
     </Sheet>
   );
-}
-
-/** Yazdıkça kısa gecikmeyle kaydeder; panel kapanırken bekleyeni hemen yazar */
-function useAutosave<T>(value: T, save: (v: T) => void) {
-  const latest = React.useRef({ value, save, dirty: false });
-  React.useEffect(() => {
-    latest.current = { value, save, dirty: latest.current.dirty };
-  });
-  React.useEffect(() => () => {
-    if (latest.current.dirty) latest.current.save(latest.current.value);
-  }, []);
-  React.useEffect(() => {
-    if (!latest.current.dirty) return;
-    const t = setTimeout(() => {
-      latest.current.dirty = false;
-      latest.current.save(latest.current.value);
-    }, 500);
-    return () => clearTimeout(t);
-  }, [value]);
-  return () => {
-    latest.current.dirty = true;
-  };
 }
 
 function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
@@ -129,12 +109,12 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
                 <span className="flex items-center gap-1"><MapPin className="size-3.5" aria-hidden />{session.location}</span>
               )}
             </p>
-            {session.notes && <p className="mt-1 text-13 leading-5 whitespace-pre-line opacity-90">{session.notes}</p>}
           </div>
           {isPastOrToday && <div><AttendanceButtons sessionId={sessionId} date={date} value={attendance?.status} /></div>}
         </header>
 
         <div className="flex flex-col gap-6 p-5">
+          <SeriesNotes session={session} />
           <label className="flex flex-col gap-1.5">
             <span className="text-13 font-semibold">Bu günün başlığı</span>
             <input
@@ -162,7 +142,10 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
             </button>
           )}
 
-          <EntryChecklist items={checklist} onChange={setChecklist} placeholder={hints.list} title={hints.listTitle} kind={course?.kind} used={used} />
+          <div className="flex flex-col gap-1.5">
+            <EntryChecklist items={checklist} onChange={setChecklist} placeholder={hints.list} title={hints.listTitle} kind={course?.kind} used={used} />
+            <RepeatListButton session={session} items={checklist} />
+          </div>
           {course?.kind === "cooking" && (
             <button
               type="button"

@@ -13,7 +13,7 @@ import { EntryItemRow } from "./entry-item-row";
  * O güne ait liste: spor için hareketler (set · tekrar · kg), mutfak için malzemeler
  * (miktar · birim), Kuran için sureler. Hazır listeden aranır ya da yeni ad yazılır.
  */
-export function EntryChecklist({ items, onChange, placeholder, title, kind, used, template }: {
+export function EntryChecklist({ items, onChange, placeholder, title, kind, used, template, onDraftChange }: {
   items: EntryCheck[];
   onChange: (v: EntryCheck[]) => void;
   placeholder: string;
@@ -23,6 +23,7 @@ export function EntryChecklist({ items, onChange, placeholder, title, kind, used
   used: EntryCheck[];
   /** Şablon: işaret kutusu ve ilerleme yok (saatin her seferki listesi) */
   template?: boolean;
+  onDraftChange?: (q: string) => void;
 }) {
   const catalog = React.useMemo(() => catalogFor(kind), [kind]);
   const done = items.filter((i) => i.done).length;
@@ -54,6 +55,7 @@ export function EntryChecklist({ items, onChange, placeholder, title, kind, used
         unit={catalog.unit}
         placeholder={placeholder}
         onPick={({ label, ...extra }) => onChange([...items, newCheck(label, extra)])}
+        onQueryChange={onDraftChange}
         onPasteLines={(lines) => onChange([...items, ...lines.map((l) => newCheck(l, { metric: catalog.fallback, unit: catalog.unit ?? null }))])}
       />
     </div>
