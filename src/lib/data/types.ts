@@ -162,11 +162,29 @@ export type Habit = Base & {
   target_per_week: number; // 1–7
   position: string | null;
   archived: boolean;
+  /** Günlük miktar hedefi (2 litre, 20 sayfa); boşsa tek dokunuşla işaretlenir */
+  target_amount?: number | null;
+  unit?: string | null;
+  /** Bağlı kaynak (ör. okunan kitap): sayfa girince kitabın ilerlemesi de artar */
+  resource_id?: string | null;
 };
 
 export type HabitCheck = Base & {
   habit_id: string;
   date: string; // yyyy-MM-dd
+  /** O gün yapılan miktar (1,5 litre, 15 sayfa); boşsa tam yapıldı sayılır */
+  amount?: number | null;
+  note?: string | null;
+};
+
+/** Kitap defteri: bir kaynaktan alıntı / vurgu ve kişisel not */
+export type Highlight = Base & {
+  resource_id: string;
+  text: string;
+  note: string | null;
+  page: number | null;
+  color: CourseColor;
+  tags: string[];
 };
 
 /** Mantar panodaki yapışkan not: hızla yazılır, sonra toparlanır */
@@ -274,6 +292,7 @@ export type Tables = {
   habits: Habit;
   habit_checks: HabitCheck;
   sticky_notes: StickyNote;
+  highlights: Highlight;
 };
 
 export type TableName = keyof Tables;
@@ -295,6 +314,7 @@ export const TABLE_NAMES: TableName[] = [
   "habits",
   "habit_checks",
   "sticky_notes",
+  "highlights",
 ];
 
 /** Yeni kayıt: id, user_id ve zaman damgaları depo tarafından doldurulur. */

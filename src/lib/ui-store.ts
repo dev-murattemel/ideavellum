@@ -22,7 +22,8 @@ export type DialogState =
   | { type: "quote"; quoteId?: string }
   | { type: "habit"; habitId?: string }
   | { type: "add-to-day"; payload: DayPayload }
-  | { type: "recipe-picker"; sessionId: string; date: string };
+  | { type: "recipe-picker"; sessionId: string; date: string }
+  | { type: "highlight"; resourceId: string; highlightId?: string; page?: number };
 
 /** Rehberde açılan ayrıntı paneli: tarif, hareket ya da yöntem yazısı */
 export type GuideRef = { type: "recipe" | "exercise" | "article"; id: string };
@@ -38,6 +39,9 @@ type UIState = {
   clip: OccurrenceRef | null;
   openOccurrence: (o: OccurrenceRef | null) => void;
   guide: GuideRef | null;
+  /** Kaynağın defteri (alıntılar, okuma günlüğü) sağdan açılır */
+  resourceSheet: string | null;
+  openResource: (id: string | null) => void;
   openGuide: (g: GuideRef | null) => void;
   /** Rehber sayfasında açık sekme (gün panelinden "rehbere git" ile değişir) */
   guideTab: GuideTab;
@@ -68,6 +72,8 @@ export const useUI = create<UIState>()((set) => ({
   openOccurrence: (occurrence) => set({ occurrence }),
   guide: null,
   openGuide: (guide) => set({ guide }),
+  resourceSheet: null,
+  openResource: (resourceSheet) => set({ resourceSheet }),
   guideTab: "recipes",
   stickyFocus: false,
   setStickyFocus: (stickyFocus) => set({ stickyFocus }),

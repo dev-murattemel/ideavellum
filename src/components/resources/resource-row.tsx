@@ -1,9 +1,10 @@
 "use client";
 
-import { ExternalLink, Minus, Pencil, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, Minus, NotebookText, Pencil, Plus, Quote, Trash2 } from "lucide-react";
 
 import { SuggestFromTextButton } from "@/components/ai/suggest-dialog";
 import { Progress } from "@/components/ui/progress";
+import { useRows } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
 import type { Course, Resource } from "@/lib/data/types";
 import { ui } from "@/lib/ui-store";
@@ -27,6 +28,7 @@ function bump(r: Resource, delta: number) {
 export function ResourceRow({ r, course }: { r: Resource; course?: Course }) {
   const meta = TYPE_META[r.type];
   const Icon = meta.icon;
+  const quotes = useRows("highlights").filter((h) => h.resource_id === r.id).length;
   const pct = r.progress_total ? ((r.progress_current ?? 0) / r.progress_total) * 100 : r.status === "done" ? 100 : 0;
 
   return (
@@ -34,6 +36,8 @@ export function ResourceRow({ r, course }: { r: Resource; course?: Course }) {
       <RowActions
         className="absolute top-3 right-3 z-10"
         actions={[
+          { label: "Defteri aç", icon: NotebookText, onClick: () => ui().openResource(r.id) },
+          { label: "Alıntı ekle", icon: Quote, onClick: () => ui().open({ type: "highlight", resourceId: r.id, page: r.progress_current ?? undefined }) },
           { label: "Düzenle", icon: Pencil, onClick: () => ui().open({ type: "resource", resourceId: r.id }) },
           ...(r.url ? [{ label: "Bağlantıyı aç", icon: ExternalLink, onClick: () => window.open(r.url!, "_blank", "noopener") }] : []),
           { label: "Sil", icon: Trash2, danger: true, onClick: () => removeWithUndo("resources", r, `“${r.title}” silindi`) },
@@ -44,13 +48,14 @@ export function ResourceRow({ r, course }: { r: Resource; course?: Course }) {
           <Icon className="size-5" strokeWidth={1.8} aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <button type="button" onClick={() => ui().open({ type: "resource", resourceId: r.id })} className="max-w-full cursor-pointer truncate text-left text-sm font-semibold outline-none hover:underline focus-visible:underline">
+          <button type="button" onClick={() => ui().openResource(r.id)} className="max-w-full cursor-pointer truncate text-left text-sm font-semibold outline-none hover:underline focus-visible:underline">
             {r.title}
           </button>
           <p className="flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
             <span>{meta.label}</span>
             {r.author && <span>· {r.author}</span>}
             {course && <span>· {course.name}</span>}
+            {quotes > 0 && <span className="inline-flex items-center gap-0.5">· <Quote className="size-3" aria-hidden /> {quotes} alıntı</span>}
             {r.url && (
               <a href={r.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-accent-text hover:underline">
                 · Aç <ExternalLink className="size-3" aria-hidden />

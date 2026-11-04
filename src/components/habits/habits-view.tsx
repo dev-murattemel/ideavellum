@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { useNow } from "@/components/schedule/use-now";
 import { Button } from "@/components/ui/button";
 import { useRows } from "@/lib/data/hooks";
-import { byHabitOrder, checkedDays } from "@/lib/domain/habits";
+import { byHabitOrder, doneDays } from "@/lib/domain/habits";
 import { isoDate } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 import { HabitRow } from "./habit-row";
@@ -18,7 +18,7 @@ export function HabitsView() {
   const checks = useRows("habit_checks");
   const now = useNow();
   const today = isoDate(now);
-  const doneToday = habits.filter((h) => checkedDays(h.id, checks).has(today)).length;
+  const doneToday = habits.filter((h) => doneDays(h, checks).has(today)).length;
   const add = <Button onClick={() => ui().open({ type: "habit" })}><Plus /> Alışkanlık ekle</Button>;
 
   return (

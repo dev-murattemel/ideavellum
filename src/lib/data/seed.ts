@@ -159,7 +159,7 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
 
   seedContent(add, snap, { courses, today, tz });
   seedJournalAndQuotes(add, today);
-  seedHabits(add, today);
+  seedHabits(add, today, snap);
   seedStickies(add);
   seedHistory(add, { courses, sessions, today, tz, termStart, prevTerm });
   return snap;

@@ -8,6 +8,7 @@ import { HabitDialog } from "@/components/habits/habit-dialog";
 import { AddToDayDialog } from "@/components/guides/add-to-day-dialog";
 import { RecipePickerDialog } from "@/components/guides/recipe-picker-dialog";
 import { QuoteDialog } from "@/components/quotes/quote-dialog";
+import { HighlightDialog } from "@/components/resources/highlight-dialog";
 import { ResourceDialog } from "@/components/resources/resource-dialog";
 import { SessionDialog } from "@/components/schedule/session-dialog";
 import { StudyLogDialog } from "@/components/study/study-log-dialog";
@@ -42,6 +43,8 @@ export function DialogHost() {
       return <AddToDayDialog payload={dialog.payload} onClose={close} />;
     case "recipe-picker":
       return <RecipePickerDialog sessionId={dialog.sessionId} date={dialog.date} onClose={close} />;
+    case "highlight":
+      return <HighlightDialog key={dialog.highlightId ?? "new"} resourceId={dialog.resourceId} highlightId={dialog.highlightId} page={dialog.page} onClose={close} />;
     default:
       return null;
   }

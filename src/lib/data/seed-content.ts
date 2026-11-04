@@ -40,7 +40,7 @@ const RESOURCES: [string, ResourceType, string, string | null, ResourceStatus, n
   ["Lacan: A Very Short Introduction", "book", "lacan", "Lionel Bailly", "done", 168, 168, "page", 5, "Kavramları sade dille anlatıyor; başlangıç için ideal."],
   ["Žižek — Lacan ve sinema (konuşma)", "video", "lacan", "Slavoj Žižek", "queued", 0, 52, "minute", null, null],
   ["Microcopy: The Complete Guide", "book", "ux", "Kinneret Yifrah", "in_progress", 3, 11, "chapter", null, null],
-  ["Writing is Designing", "book", "ux", "Metts & Welfle", "queued", 0, 200, "page", null, null],
+  ["Writing is Designing", "book", "ux", "Metts & Welfle", "in_progress", 86, 200, "page", null, null],
   ["Gymnopédie No.1 — yavaş eğitim videosu", "video", "piano", "Pianote", "in_progress", 12, 34, "minute", null, null],
   ["Fundamentals of Data Visualization", "book", "dataviz", "Claus O. Wilke", "in_progress", 9, 29, "chapter", 4, null],
   ["Datawrapper blog: renk rehberi", "article", "dataviz", "Lisa C. Rost", "done", null, null, null, 5, "Renk paletleri için en iyi pratik kaynak."],
@@ -122,22 +122,38 @@ export function seedJournalAndQuotes(add: Add, today: Date) {
   );
 }
 
-/** Önizleme için örnek alışkanlıklar ve son 70 günün işaretleri */
-export function seedHabits(add: Add, today: Date) {
-  const habits: [string, "sky" | "sage" | "peach" | "lavender", number, number][] = [
-    ["2 litre su iç", "sky", 7, 0.85],
-    ["10 sayfa kitap oku", "lavender", 5, 0.7],
-    ["Kuran oku", "sage", 7, 0.9],
-    ["Şekersiz gün", "peach", 4, 0.5],
+/** Önizleme için örnek alışkanlıklar, son 70 günün kayıtları; okuma alışkanlığı bir kitaba bağlı */
+export function seedHabits(add: Add, today: Date, snap: DataSnapshot) {
+  const book = Object.values(snap.resources).find((r) => r.title === "Writing is Designing");
+  if (book) addBook(add, book.id);
+  const habits: [string, "sky" | "sage" | "peach" | "lavender", number, number, number | null, string | null, string | null][] = [
+    ["Su iç", "sky", 7, 0.85, 2, "litre", null],
+    ["Kitap oku", "lavender", 5, 0.7, 20, "sayfa", book?.id ?? null],
+    ["Kuran oku", "sage", 7, 0.9, null, null, null],
+    ["Şekersiz gün", "peach", 4, 0.5, null, null, null],
   ];
-  habits.forEach(([name, color, target, rate], hi) => {
-    const h = add("habits", { name, color, target_per_week: target, position: null, archived: false });
+  habits.forEach(([name, color, target, rate, amount, unit, resource_id], hi) => {
+    const h = add("habits", { name, color, target_per_week: target, position: null, archived: false, target_amount: amount, unit, resource_id });
     for (let i = 0; i < 70; i++) {
-      // Sabit ama doğal görünen bir dağılım; son günlerde seri olsun
+      // Sabit ama doğal görünen bir dağılım; son günlerde seri olsun. Miktarlı olanlarda bazı günler kısmi.
       const v = Math.abs(Math.sin((i + 1) * (hi + 3) * 12.9898)) % 1;
-      if (i < 5 - hi || v < rate) add("habit_checks", { habit_id: h.id, date: isoDate(addDays(today, -i)) });
+      if (!(i < 5 - hi || v < rate)) continue;
+      const q = amount && amount >= 8 ? 1 : 4;
+      const partial = amount && v > rate * 0.8 ? Math.round(amount * (0.5 + v * 0.4) * q) / q : amount;
+      const note = resource_id && i === 1 ? "3. bölüm: arayüz metni tasarımın parçası; boş durum metinlerine dikkat." : null;
+      add("habit_checks", { habit_id: h.id, date: isoDate(addDays(today, -i)), amount: amount ? partial : null, note });
     }
   });
+}
+
+/** Kitap defteri için birkaç alıntı (kısa, örnek cümleler) */
+function addBook(add: Add, resource_id: string) {
+  const items: [string, string | null, number, CourseColor, string[]][] = [
+    ["Kelimeler arayüzün kendisidir; düğmedeki fiil kullanıcıya ne olacağını söyler.", "Uygulamadaki buton metinlerini bu gözle tekrar oku.", 24, "butter", ["ilke"]],
+    ["Boş durum, kullanıcının ilk karşılaştığı ekran olabilir; ona bir sonraki adımı göster.", null, 58, "mint", ["boş durum"]],
+    ["Hata mesajı suçlamaz, çözüm önerir.", "Kayıt hatası toast'larını gözden geçir.", 71, "rose", ["hata", "tekrar oku"]],
+  ];
+  items.forEach(([text, note, page, color, tags]) => add("highlights", { resource_id, text, note, page, color, tags }));
 }
 
 /** Mantar panoda birkaç yapışkan not */

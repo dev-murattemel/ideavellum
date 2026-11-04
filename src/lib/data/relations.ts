@@ -17,6 +17,7 @@ export const CASCADE: Partial<Record<TableName, { table: TableName; fk: string }
   ],
   tasks: [{ table: "task_checklist_items", fk: "task_id" }],
   habits: [{ table: "habit_checks", fk: "habit_id" }],
+  resources: [{ table: "highlights", fk: "resource_id" }],
 };
 
 export const SET_NULL: Partial<Record<TableName, { table: TableName; fk: string }[]>> = {
@@ -25,6 +26,7 @@ export const SET_NULL: Partial<Record<TableName, { table: TableName; fk: string 
     { table: "sticky_notes", fk: "note_id" },
   ],
   tasks: [{ table: "sticky_notes", fk: "task_id" }],
+  resources: [{ table: "habits", fk: "resource_id" }],
   terms: [{ table: "courses", fk: "term_id" }],
   topics: [
     { table: "tasks", fk: "topic_id" },
