@@ -5,6 +5,7 @@ import { ListChecks } from "lucide-react";
 import type { Placed } from "@/components/schedule/lanes";
 import type { SessionEntry } from "@/lib/data/types";
 import { ui } from "@/lib/ui-store";
+import { dayChecks } from "@/lib/domain/session-entries";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,7 +22,7 @@ export function CourseWeekBlock({ o, own, fallback, date, dayName, top, height: 
   height: number;
   entry?: SessionEntry;
 }) {
-  const checks = entry?.checklist ?? [];
+  const checks = dayChecks(entry, o.session);
   const label = `${o.course.name}${entry?.title ? `, ${entry.title}` : ""}, ${dayName} ${o.session.start_time}–${o.session.end_time}`;
   return (
     <div

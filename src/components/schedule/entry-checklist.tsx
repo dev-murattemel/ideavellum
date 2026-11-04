@@ -13,7 +13,7 @@ import { EntryItemRow } from "./entry-item-row";
  * O güne ait liste: spor için hareketler (set · tekrar · kg), mutfak için malzemeler
  * (miktar · birim), Kuran için sureler. Hazır listeden aranır ya da yeni ad yazılır.
  */
-export function EntryChecklist({ items, onChange, placeholder, title, kind, used }: {
+export function EntryChecklist({ items, onChange, placeholder, title, kind, used, template }: {
   items: EntryCheck[];
   onChange: (v: EntryCheck[]) => void;
   placeholder: string;
@@ -21,6 +21,8 @@ export function EntryChecklist({ items, onChange, placeholder, title, kind, used
   kind: AreaKind | undefined;
   /** Daha önce kullanılan maddeler (son ölçüleriyle) */
   used: EntryCheck[];
+  /** Şablon: işaret kutusu ve ilerleme yok (saatin her seferki listesi) */
+  template?: boolean;
 }) {
   const catalog = React.useMemo(() => catalogFor(kind), [kind]);
   const done = items.filter((i) => i.done).length;
@@ -33,15 +35,15 @@ export function EntryChecklist({ items, onChange, placeholder, title, kind, used
         <h3 className="text-13 font-semibold">{title}</h3>
         {items.length > 0 && (
           <span className="tabular text-xs text-ink-muted">
-            {sets > 0 && `${sets} set · `}{done}/{items.length} tamam
+            {sets > 0 && `${sets} set · `}{template ? `${items.length} madde` : `${done}/${items.length} tamam`}
           </span>
         )}
       </div>
-      {items.length > 0 && <Progress value={(done / items.length) * 100} label={`${title} ilerlemesi`} />}
+      {items.length > 0 && !template && <Progress value={(done / items.length) * 100} label={`${title} ilerlemesi`} />}
       {items.length > 0 && (
         <ul className="-mx-1.5 flex flex-col">
           {items.map((c) => (
-            <EntryItemRow key={c.id} c={c} onChange={(p) => patch(c.id, p)} onRemove={() => onChange(items.filter((x) => x.id !== c.id))} />
+            <EntryItemRow key={c.id} c={c} template={template} onChange={(p) => patch(c.id, p)} onRemove={() => onChange(items.filter((x) => x.id !== c.id))} />
           ))}
         </ul>
       )}
@@ -52,6 +54,7 @@ export function EntryChecklist({ items, onChange, placeholder, title, kind, used
         unit={catalog.unit}
         placeholder={placeholder}
         onPick={({ label, ...extra }) => onChange([...items, newCheck(label, extra)])}
+        onPasteLines={(lines) => onChange([...items, ...lines.map((l) => newCheck(l, { metric: catalog.fallback, unit: catalog.unit ?? null }))])}
       />
     </div>
   );

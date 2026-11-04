@@ -19,13 +19,15 @@ import type { SessionPreset } from "@/lib/ui-store";
 import { BellFields, type BellValue } from "./bell-fields";
 import { RepeatFields } from "./repeat-fields";
 import { StickyColors } from "@/components/stickies/sticky-colors";
+import { Textarea } from "@/components/ui/textarea";
 import type { CourseColor } from "@/lib/course-colors";
+import { WeekdayChips } from "./weekday-chips";
+import { EntryChecklist } from "./entry-checklist";
+import { kindOf } from "@/lib/area-kinds";
+import type { EntryCheck, SessionRepeat } from "@/lib/data/types";
+import { isoDate, zonedNow } from "@/lib/time";
 
 const NONE = "none";
-import { WeekdayChips } from "./weekday-chips";
-import { kindOf } from "@/lib/area-kinds";
-import type { SessionRepeat } from "@/lib/data/types";
-import { isoDate, zonedNow } from "@/lib/time";
 
 export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: string; preset?: SessionPreset; onClose: () => void }) {
   const session = useRow("class_sessions", sessionId);
@@ -38,6 +40,9 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
   const [courseId, setCourseId] = React.useState<string>(session ? (session.course_id ?? NONE) : (preset?.course_id ?? NONE));
   const [title, setTitle] = React.useState(session?.title ?? "");
   const [color, setColor] = React.useState<CourseColor>(session?.color ?? "sky");
+  const [notes, setNotes] = React.useState(session?.notes ?? "");
+  // Her seferki liste: ör. "Sabah rutini" → yüz yıkama, yürüyüş, cilt bakımı; her gün işaretsiz gelir
+  const [checklist, setChecklist] = React.useState<EntryCheck[]>(session?.checklist ?? []);
   const [weekday, setWeekday] = React.useState(String(session?.weekday ?? preset?.weekday ?? 1));
   // Yeni haftalık saat birden çok güne aynı anda eklenebilir (ör. hafta içi her gün 07:00)
   const [days, setDays] = React.useState<number[]>([session?.weekday ?? preset?.weekday ?? 1]);
@@ -59,6 +64,8 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
     const values = {
       course_id: area ? area.id : null,
       title: title.trim() || null,
+      notes: notes.trim() || null,
+      checklist: checklist.map((c) => ({ ...c, done: false })),
       color: area ? null : color, weekday: Number(weekday), start_time: start, end_time: end,
       location: location.trim() || null, bell_overrides: bell,
       repeat, anchor_date: repeat === "weekly" ? null : anchor,
@@ -87,6 +94,9 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
           <form onSubmit={save} className="flex flex-col gap-5" noValidate>
               <Field label="Başlık" htmlFor="s-title" hint={area ? "Boş bırakırsan alanın adı görünür." : undefined}>
                 <Input id="s-title" autoFocus={!session} placeholder="Ör. Diş hekimi, Annemle kahvaltı, Koşu" value={title} onChange={(e) => setTitle(e.target.value)} />
+              </Field>
+              <Field label="Açıklama (isteğe bağlı)" htmlFor="s-notes" hint="Kartta başlığın altında görünür.">
+                <Textarea id="s-notes" rows={2} className="min-h-16" placeholder="Ör. Güne sakin başla: cilt bakımı, kısa yürüyüş, haberler" value={notes} onChange={(e) => setNotes(e.target.value)} />
               </Field>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                 <Field label="Alan (isteğe bağlı)">
@@ -143,6 +153,18 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
                   if (v.weekday) setWeekday(String(v.weekday));
                 }}
               />
+              <div className="flex flex-col gap-1.5 rounded-xl border border-line p-3">
+                <EntryChecklist
+                  template
+                  items={checklist}
+                  onChange={setChecklist}
+                  title="Her seferki liste"
+                  placeholder="Madde yaz, Enter: yüz yıkama, yürüyüş…"
+                  kind={area?.kind}
+                  used={[]}
+                />
+                <p className="text-xs text-ink-muted">Her gün bu maddelerle boş başlar; o günün panelinde işaretlersin. Birden çok satırı yapıştırabilirsin.</p>
+              </div>
               <Field label="Yer (isteğe bağlı)" htmlFor="s-loc">
                 <Input id="s-loc" placeholder="Kütüphane, online, çalışma odası…" value={location} onChange={(e) => setLocation(e.target.value)} />
               </Field>

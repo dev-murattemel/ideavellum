@@ -26,7 +26,15 @@ export const entryKey = (sessionId: string, date: string) => `${sessionId}|${dat
 export const getEntry = (sessionId: string, date: string): SessionEntry | undefined =>
   data().session_entries[entryId(sessionId, date)];
 
-/** O günün ayrıntısını yazar; yoksa oluşturur */
+/** Saatin her seferki listesi, o gün için işaretsiz kopya */
+export const templateChecks = (session?: Pick<ClassSession, "checklist"> | null): EntryCheck[] =>
+  (session?.checklist ?? []).map((c) => ({ ...c, done: false }));
+
+/** O günün listesi: gün kaydı varsa onunki, yoksa saatin şablonu */
+export const dayChecks = (entry: SessionEntry | undefined, session?: Pick<ClassSession, "checklist"> | null) =>
+  entry ? entry.checklist : templateChecks(session);
+
+/** O günün ayrıntısını yazar; yoksa oluşturur (liste verilmezse saatin şablonu kopyalanır) */
 export function saveEntry(sessionId: string, date: string, patch: Partial<Pick<SessionEntry, "title" | "details" | "checklist" | "note_id">>) {
   const current = getEntry(sessionId, date);
   if (current) return data().update("session_entries", current.id, patch);
@@ -36,7 +44,7 @@ export function saveEntry(sessionId: string, date: string, patch: Partial<Pick<S
     date,
     title: null,
     details: null,
-    checklist: [],
+    checklist: templateChecks(data().class_sessions[sessionId]),
     note_id: null,
     ...patch,
   });
@@ -117,6 +125,8 @@ export function copySession(source: ClassSession, target: CopyTarget, fromDate?:
     course_id: source.course_id,
     title: source.title ?? null,
     color: source.color ?? null,
+    notes: source.notes ?? null,
+    checklist: (source.checklist ?? []).map((c) => ({ ...c, id: newId() })),
     weekday: isoWeekday(target.date),
     repeat,
     anchor_date: repeat === "weekly" ? null : isoDate(target.date),

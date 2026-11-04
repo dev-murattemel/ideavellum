@@ -64,6 +64,10 @@ export type ClassSession = Base & {
   /** Serbest etkinliğin adı ya da alan saatine özel başlık ("Bacak günü") */
   title?: string | null;
   color?: CourseColor | null;
+  /** Alt başlık / açıklama ("Sabah rutini: cilt bakımı ve yürüyüş") */
+  notes?: string | null;
+  /** Her seferki kontrol listesi şablonu; her gün işaretsiz olarak kopyalanır */
+  checklist?: EntryCheck[];
   weekday: number; // 1 = Pazartesi … 7 = Pazar
   repeat: SessionRepeat;
   /** 2 haftada bir / aylık / tek seferlik için başlangıç günü (yyyy-MM-dd) */

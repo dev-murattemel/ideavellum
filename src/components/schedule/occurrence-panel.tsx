@@ -13,7 +13,7 @@ import { useProfile, useRow, useRows } from "@/lib/data/hooks";
 import type { EntryCheck } from "@/lib/data/types";
 import { eventCourse, repeatLabel } from "@/lib/domain/schedule";
 import { newId } from "@/lib/data/ids";
-import { entryId, previousEntry, saveEntry, usedChecks } from "@/lib/domain/session-entries";
+import { dayChecks, entryId, previousEntry, saveEntry, usedChecks } from "@/lib/domain/session-entries";
 import { fmt, isoDate, WEEKDAY_NAMES, zonedNow } from "@/lib/time";
 import { ui, useUI, type OccurrenceRef } from "@/lib/ui-store";
 import { EntryChecklist } from "./entry-checklist";
@@ -77,9 +77,10 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
   const markTitle = useAutosave(title, (v) => v.trim() !== (entry?.title ?? "") && saveEntry(sessionId, date, { title: v.trim() || null }));
   const markDetails = useAutosave(details, (v) => v !== (entry?.details ?? "") && saveEntry(sessionId, date, { details: v || null }));
 
-  const checklist = entry?.checklist ?? [];
+  // Gün kaydı yoksa saatin her seferki listesi işaretsiz gelir; ilk işarette o güne yazılır
+  const checklist = dayChecks(entry, session);
   const setChecklist = (v: EntryCheck[]) => saveEntry(sessionId, date, { checklist: v });
-  const prev = !entry?.checklist.length && !entry?.title ? previousEntry(sessionId, date, entries) : undefined;
+  const prev = !checklist.length && !entry?.title ? previousEntry(sessionId, date, entries) : undefined;
   const isPastOrToday = date <= isoDate(zonedNow(profile.timezone));
   const day = parseISO(date);
 
@@ -128,6 +129,7 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
                 <span className="flex items-center gap-1"><MapPin className="size-3.5" aria-hidden />{session.location}</span>
               )}
             </p>
+            {session.notes && <p className="mt-1 text-13 leading-5 whitespace-pre-line opacity-90">{session.notes}</p>}
           </div>
           {isPastOrToday && <div><AttendanceButtons sessionId={sessionId} date={date} value={attendance?.status} /></div>}
         </header>

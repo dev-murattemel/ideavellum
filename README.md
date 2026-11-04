@@ -48,7 +48,8 @@ Supabase anahtarları girilmemişse asıl uygulama da örnek verilerle **önizle
    9. `20261103000100_sticky_notes.sql`
   10. `20261103000200_sticky_links.sql`
   11. `20261104000100_free_events.sql`
-  12. `20261101000200_cron.sql` → bunu en sona bırak (aşağıda 5. adım).
+  12. `20261104000200_session_template.sql`
+  13. `20261101000200_cron.sql` → bunu en sona bırak (aşağıda 5. adım).
 4. **Project Settings → API Keys**:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - anon / publishable anahtar → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

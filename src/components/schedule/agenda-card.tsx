@@ -10,6 +10,7 @@ import type { AttendanceStatus, SessionEntry } from "@/lib/data/types";
 import type { Occurrence } from "@/lib/domain/schedule";
 import { isoDate, minutesToTime, relativeDay } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
+import { dayChecks } from "@/lib/domain/session-entries";
 
 /** Gündem panelindeki tek kart: ders, gün ve saat, o günün başlığı, eylemler */
 export function AgendaCard({ o, today, entry, attendance, askAttendance }: {
@@ -22,7 +23,7 @@ export function AgendaCard({ o, today, entry, attendance, askAttendance }: {
 }) {
   const vocab = kindOf(o.course);
   const date = isoDate(o.date);
-  const checks = entry?.checklist ?? [];
+  const checks = dayChecks(entry, o.session);
   const open = () => ui().openOccurrence({ sessionId: o.session.id, date });
 
   return (
@@ -30,7 +31,7 @@ export function AgendaCard({ o, today, entry, attendance, askAttendance }: {
       <header className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-sm font-semibold">{o.course.name}</h3>
-          <p className="truncate text-xs text-ink-muted">{entry?.title ?? vocab.label}</p>
+          <p className="truncate text-xs text-ink-muted">{entry?.title || o.session.notes || vocab.label}</p>
         </div>
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-course text-course-fg" aria-hidden>
           <vocab.icon className="size-4" />

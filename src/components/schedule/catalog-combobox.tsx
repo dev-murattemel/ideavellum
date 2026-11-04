@@ -23,13 +23,15 @@ const STRENGTH_DEFAULT = { sets: 3, reps: 10, weight: null };
  * Listede yoksa yazılan ad olduğu gibi eklenir. Daha önce kullanılan bir madde
  * son girilen ölçüleriyle gelir (ör. Bench press 4×10 · 60 kg).
  */
-export function CatalogCombobox({ items, used, fallback, unit, placeholder, onPick }: {
+export function CatalogCombobox({ items, used, fallback, unit, placeholder, onPick, onPasteLines }: {
   items: CatalogItem[];
   used: EntryCheck[];
   fallback: Metric;
   unit?: string;
   placeholder: string;
   onPick: (p: Pick) => void;
+  /** Birden çok satır yapıştırılınca her satır ayrı madde olur */
+  onPasteLines?: (lines: string[]) => void;
 }) {
   const [query, setQuery] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -106,6 +108,13 @@ export function CatalogCombobox({ items, used, fallback, unit, placeholder, onPi
             onFocus={() => setOpen(true)}
             onClick={() => setOpen(true)}
             onKeyDown={onKeyDown}
+            onPaste={(e) => {
+              const lines = e.clipboardData.getData("text").split(/\r?\n/).map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim()).filter(Boolean);
+              if (!onPasteLines || lines.length < 2) return;
+              e.preventDefault();
+              onPasteLines(lines);
+              setQuery("");
+            }}
             placeholder={placeholder}
             className="h-10 flex-1 bg-transparent text-sm outline-none placeholder:text-ink-subtle"
           />

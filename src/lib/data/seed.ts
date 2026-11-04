@@ -132,6 +132,16 @@ export function buildDemoData(userId: string, now: Date = new Date()): DataSnaps
     }),
   );
 
+  // Alana bağlı olmayan günlük rutin: açıklama + her seferki liste
+  [1, 2, 3, 4, 5].forEach((weekday) =>
+    add("class_sessions", {
+      course_id: null, title: "Sabah rutini", color: "butter", notes: "Güne sakin başla: telefonsuz ilk yarım saat.",
+      checklist: ["Yüz yıkama", "Cilt bakımı", "15 dk yürüyüş", "Haber okuma"].map((label, n) => ({ id: `routine-${n}`, label, done: false })),
+      weekday, start_time: "07:00", end_time: "07:45", location: null, valid_from: term.start_date, valid_until: term.end_date,
+      bell_overrides: {}, repeat: "weekly", anchor_date: null,
+    }),
+  );
+
   // Takvimdeki birkaç günün ayrıntısı: başlık, kontrol listesi, not
   const entry = (i: number, dayOffset: number, title: string, checks: [string, boolean, Partial<EntryCheck>?][], details: string | null) => {
     const sessionId = sessions[i].id;

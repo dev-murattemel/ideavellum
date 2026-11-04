@@ -11,14 +11,18 @@ import { cn } from "@/lib/utils";
 import { MeasureFields } from "./measure-fields";
 
 /** Listedeki tek madde: işaret, ad (çift tıkla düzenle), ölçü kutuları, sil */
-export function EntryItemRow({ c, onChange, onRemove }: { c: EntryCheck; onChange: (p: Partial<EntryCheck>) => void; onRemove: () => void }) {
+export function EntryItemRow({ c, onChange, onRemove, template }: { c: EntryCheck; onChange: (p: Partial<EntryCheck>) => void; onRemove: () => void; template?: boolean }) {
   const [editing, setEditing] = React.useState(false);
   const hasFields = !!c.metric && c.metric !== "plain";
   const guide = exerciseGuide(c.label);
 
   return (
     <li className="group flex flex-wrap items-center gap-x-2.5 gap-y-1.5 rounded-lg px-1.5 py-1.5 hover:bg-hover/60">
-      <Checkbox checked={c.done} onCheckedChange={(v) => onChange({ done: v === true })} aria-label={`${c.label} tamamlandı`} />
+      {template ? (
+        <span className="flex size-4 shrink-0 items-center justify-center" aria-hidden><span className="size-1.5 rounded-full bg-ink-subtle" /></span>
+      ) : (
+        <Checkbox checked={c.done} onCheckedChange={(v) => onChange({ done: v === true })} aria-label={`${c.label} tamamlandı`} />
+      )}
       <div className="min-w-[120px] flex-1">
         {editing ? (
           <input

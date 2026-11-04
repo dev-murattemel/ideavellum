@@ -7,7 +7,7 @@ import { DueChip } from "@/components/board/due-chip";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCourseMap, useRows } from "@/lib/data/hooks";
-import { entryKey } from "@/lib/domain/session-entries";
+import { dayChecks, entryKey } from "@/lib/domain/session-entries";
 import { PRIORITY_RANK, setTaskDone } from "@/lib/domain/tasks";
 import { goTo } from "@/lib/nav/nav-context";
 import { isoDate, minutesOfDay, minutesToTime, utcToWall } from "@/lib/time";
@@ -67,7 +67,8 @@ function Program({ t, now }: { t: T; now: Date }) {
             const entry = byKey.get(entryKey(o.session.id, date));
             const att = t.attendanceToday.get(o.session.id);
             const Icon = att ? ATT[att] : null;
-            const checks = entry?.checklist ?? [];
+            const checks = dayChecks(entry, o.session);
+            const sub = entry?.title || o.session.notes;
             return (
               <li key={o.session.id}>
                 <button
@@ -80,9 +81,9 @@ function Program({ t, now }: { t: T; now: Date }) {
                   <span className="h-8 w-[3px] shrink-0 rounded-full bg-course-solid" aria-hidden />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">{o.course.name}</span>
-                    {(entry?.title || checks.length > 0) && (
+                    {(sub || checks.length > 0) && (
                       <span className="tabular block truncate text-xs text-ink-muted">
-                        {entry?.title}{entry?.title && checks.length ? " · " : ""}{checks.length ? `${checks.filter((c) => c.done).length}/${checks.length} madde` : ""}
+                        {sub}{sub && checks.length ? " · " : ""}{checks.length ? `${checks.filter((c) => c.done).length}/${checks.length} madde` : ""}
                       </span>
                     )}
                   </span>

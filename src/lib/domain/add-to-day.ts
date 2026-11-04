@@ -3,7 +3,7 @@ import { parseISO } from "date-fns";
 import { data } from "@/lib/data/store";
 import type { AreaKind, Course, EntryCheck } from "@/lib/data/types";
 import { isoWeekday } from "@/lib/time";
-import { getEntry, saveEntry } from "./session-entries";
+import { dayChecks, getEntry, saveEntry } from "./session-entries";
 
 /** Rehberden takvime eklenecek şey: bir tarif ya da bir hareket */
 export type DayPayload = {
@@ -73,7 +73,7 @@ export function addToDay(p: DayPayload, opts: { courseId: string; date: string; 
   const current = getEntry(sessionId, opts.date);
   saveEntry(sessionId, opts.date, {
     title: current?.title || p.title || null,
-    checklist: [...(current?.checklist ?? []), ...p.checks],
+    checklist: [...dayChecks(current, data().class_sessions[sessionId]), ...p.checks],
     details: [current?.details, p.details].filter(Boolean).join("\n\n") || null,
   });
   return { sessionId, date: opts.date };

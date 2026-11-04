@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { searchKey } from "@/lib/catalog";
 import { DIET_STYLES, RECIPES, recipeChecks, recipeDetails, recipeStyles, styleInfo, type Recipe } from "@/lib/guides";
-import { getEntry, saveEntry } from "@/lib/domain/session-entries";
+import { data } from "@/lib/data/store";
+import { dayChecks, getEntry, saveEntry } from "@/lib/domain/session-entries";
 import { FilterChips } from "./filter-chips";
 import { RecipeCover } from "./recipe-cover";
 import { SearchBox } from "./search-box";
@@ -22,7 +23,7 @@ export function RecipePickerDialog({ sessionId, date, onClose }: { sessionId: st
     const e = getEntry(sessionId, date);
     saveEntry(sessionId, date, {
       title: e?.title || r.name,
-      checklist: [...(e?.checklist ?? []), ...recipeChecks(r)],
+      checklist: [...dayChecks(e, data().class_sessions[sessionId]), ...recipeChecks(r)],
       details: [e?.details, recipeDetails(r)].filter(Boolean).join("\n\n"),
     });
     toast.success(`${r.name} bu güne eklendi`, { description: `${r.ingredients.length} malzeme listeye, yapılışı ayrıntılara yazıldı.` });

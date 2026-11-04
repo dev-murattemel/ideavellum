@@ -6,6 +6,7 @@ import { CircleCheck, CircleX, Clock3, ListChecks, MapPin } from "lucide-react";
 import type { AttendanceStatus, SessionEntry } from "@/lib/data/types";
 import { minutesToTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
+import { dayChecks } from "@/lib/domain/session-entries";
 import { minToPx, PX_PER_MIN } from "./constants";
 import type { Placed } from "./lanes";
 
@@ -45,8 +46,8 @@ export function SessionBlock({
   const height = (end - start) * PX_PER_MIN;
   const compact = height < 44;
   const Icon = attendance ? ATTENDANCE_ICON[attendance] : null;
-  const title = entry?.title;
-  const checks = entry?.checklist ?? [];
+  const title = entry?.title || item.session.notes;
+  const checks = dayChecks(entry, item.session);
   const doneChecks = checks.filter((c) => c.done).length;
   // İlk satır her zaman saat + ad; kalan satırlara öncelik sırasıyla başlık, liste, yer
   // Dar sütunda saat ve ad iki satıra bölünür; bir satır daha az yer kalır
