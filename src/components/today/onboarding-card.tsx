@@ -21,6 +21,7 @@ export function OnboardingCard() {
   const habits = useRows("habits");
   const journal = useRows("journal_entries");
   const quotes = useRows("quotes");
+  const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(() => {
     try {
       return localStorage.getItem(KEY) === "1";
@@ -40,6 +41,7 @@ export function OnboardingCard() {
   ];
   const done = steps.filter((s) => s.done).length;
   if (hidden || done === steps.length) return null;
+  const next = steps.find((s) => !s.done)!;
 
   const hide = () => {
     setHidden(true);
@@ -49,18 +51,22 @@ export function OnboardingCard() {
   };
 
   return (
-    <section aria-labelledby="onb-title" className="relative overflow-hidden rounded-xl border border-line bg-surface">
-      <div className="flex items-start justify-between gap-3 px-5 pt-4">
-        <div>
-          <h2 id="onb-title" className="text-sm font-semibold">ideavellum&apos;a hoş geldin</h2>
-          <p className="text-13 text-ink-muted">Birkaç adımda düzenini kur. {done}/{steps.length} tamam.</p>
-        </div>
-        <Button variant="ghost" size="icon-sm" aria-label="Başlangıç listesini gizle" onClick={hide}><X /></Button>
+    <section aria-labelledby="onb-title" className="overflow-hidden rounded-xl border border-line bg-surface">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5">
+        <h2 id="onb-title" className="text-13 font-semibold">Kurulum</h2>
+        <span className="tabular text-13 text-ink-muted">{done}/{steps.length}</span>
+        <span className="h-1 w-20 overflow-hidden rounded-full bg-sunken" aria-hidden>
+          <span className="block h-full rounded-full bg-foreground" style={{ width: `${(done / steps.length) * 100}%` }} />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-13 text-ink-muted">Sıradaki: <span className="font-medium text-foreground">{next.label}</span></span>
+        <Button size="sm" variant="secondary" onClick={next.run}>Yap</Button>
+        <Button variant="ghost" size="icon-sm" aria-label={open ? "Adımları gizle" : "Tüm adımlar"} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          <ChevronRight className={cn("transition-transform", open && "rotate-90")} />
+        </Button>
+        <Button variant="ghost" size="icon-sm" aria-label="Kurulum listesini gizle" onClick={hide}><X /></Button>
       </div>
-      <div className="mx-5 mt-3 h-1 overflow-hidden rounded-full bg-sunken">
-        <div className="h-full rounded-full bg-foreground transition-[width] duration-500" style={{ width: `${(done / steps.length) * 100}%` }} />
-      </div>
-      <ol className="grid grid-cols-1 gap-px p-2 sm:grid-cols-2 xl:grid-cols-4">
+      {open && (
+      <ol className="grid grid-cols-1 gap-px border-t border-line p-2 sm:grid-cols-2 xl:grid-cols-4">
         {steps.map((s, i) => (
           <li key={s.label}>
             <button
@@ -81,6 +87,7 @@ export function OnboardingCard() {
           </li>
         ))}
       </ol>
+      )}
     </section>
   );
 }

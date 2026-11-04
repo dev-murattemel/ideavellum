@@ -17,7 +17,7 @@ const TONE = {
 } as const;
 
 /** Verilerine bakarak çıkarılan kısa öneriler: gecikenler, hedefin gerisindekiler, unutulan dersler */
-export function InsightsCard({ now, streak, studiedToday, hero }: { now: Date; streak: number; studiedToday: number; hero?: boolean }) {
+export function InsightsCard({ now, streak, studiedToday }: { now: Date; streak: number; studiedToday: number }) {
   const tz = useProfile().timezone;
   const courses = useRows("courses");
   const logs = useRows("study_logs");
@@ -26,20 +26,21 @@ export function InsightsCard({ now, streak, studiedToday, hero }: { now: Date; s
   const nav = useNav();
   const items = buildInsights({ now, tz, courses, logs, tasks, journal, streak, studiedToday });
 
-  if (!courses.some((c) => c.status === "active") && items.length === 0) return null;
+  if (items.length === 0) return null;
 
   const act = (a: NonNullable<Insight["action"]>) => {
     if (a.kind === "start" && a.courseId) startStudy(a.courseId);
     else if (a.kind === "tasks") nav.push("/pano");
     else if (a.kind === "journal") nav.push("/gunluk");
     else if (a.kind === "area" && a.courseId) nav.push(`/dersler/${a.courseId}`);
+    else if (a.kind === "schedule") nav.push("/takvim");
   };
 
   return (
     <SectionCard
-      title={hero ? "Bugün için önerilerim" : "Öneriler"}
+      title="Öneriler"
       meta={<span className="flex items-center gap-1"><Sparkles className="size-3.5" aria-hidden /> verilerine göre</span>}
-      className={hero ? "ring-1 ring-foreground/[0.06] shadow-[0_8px_24px_-16px_rgb(28_25_23/0.25)]" : undefined}
+      dense
     >
       {items.length === 0 ? (
         <p className="text-13 text-ink-muted">Her şey yolunda görünüyor. Programına devam et.</p>
@@ -49,8 +50,8 @@ export function InsightsCard({ now, streak, studiedToday, hero }: { now: Date; s
             const t = TONE[i.tone];
             const Icon = t.icon;
             return (
-              <li key={i.id} className="flex items-start gap-3 py-3">
-                <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg", t.cls)}>
+              <li key={i.id} className="flex items-center gap-3 py-2.5">
+                <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-lg", t.cls)}>
                   <Icon className="size-4" aria-hidden />
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">

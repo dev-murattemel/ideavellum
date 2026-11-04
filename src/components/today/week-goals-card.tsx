@@ -19,8 +19,8 @@ export function WeekGoalsCard({ now }: { now: Date }) {
       {rows.length === 0 ? (
         <p className="text-13 text-ink-muted">Aktif ders yok.</p>
       ) : (
-        <ul className="stagger flex flex-col gap-3">
-          {rows.map(({ course, minutes, target: t, pct }) => {
+        <ul className="stagger flex flex-col gap-2.5">
+          {[...rows].sort((a, b) => (a.target ? a.pct : 999) - (b.target ? b.pct : 999)).slice(0, 5).map(({ course, minutes, target: t, pct }) => {
             const Icon = kindOf(course).icon;
             return (
               <li key={course.id} data-course={course.color}>
@@ -38,6 +38,9 @@ export function WeekGoalsCard({ now }: { now: Date }) {
             );
           })}
         </ul>
+      )}
+      {rows.length > 5 && (
+        <AppLink href="/karne" className="mt-3 text-13 text-ink-muted hover:text-foreground">Tüm dersler ({rows.length}) Karne’de →</AppLink>
       )}
     </SectionCard>
   );

@@ -10,7 +10,7 @@ export type Insight = {
   tone: "warn" | "info" | "good";
   title: string;
   detail: string;
-  action?: { label: string; kind: "start" | "tasks" | "journal" | "area"; courseId?: string };
+  action?: { label: string; kind: "start" | "tasks" | "journal" | "area" | "schedule"; courseId?: string };
 };
 
 export type AreaWeek = { course: Course; minutes: number; target: number; pct: number };
@@ -58,21 +58,32 @@ export function buildInsights(input: {
     out.push({ id: "streak", tone: "warn", score: 85, title: `${streak} günlük serin tehlikede`, detail: "Bugün henüz süre kaydetmedin; 15 dakika bile seriyi korur." });
   }
 
-  // 3) Haftalık hedefin gerisindeki dersler
-  areaWeeks(courses, logs, now, tz)
-    .filter((a) => a.target && a.pct < 100)
-    .forEach((a) => {
-      const remaining = a.target - a.minutes;
-      const expected = (a.target * (7 - daysLeft + 1)) / 7;
-      if (a.minutes >= expected * 0.8) return; // yolunda
-      const perDay = Math.ceil(remaining / Math.max(1, daysLeft) / 5) * 5;
-      out.push({
-        id: `behind-${a.course.id}`, tone: "info", score: 60 + (100 - a.pct) / 4,
-        title: `${a.course.name}: haftalık hedefin gerisinde`,
-        detail: `${formatDuration(a.minutes)} / ${formatDuration(a.target)}. ${daysLeft > 1 ? `Hafta bitmeden ${formatDuration(remaining)} daha; günde yaklaşık ${formatDuration(perDay)} yeter.` : `Bugün ${formatDuration(remaining)} ayırırsan hedef tamam.`}`,
-        action: { label: `${kindOf(a.course).activity} başlat`, kind: "start", courseId: a.course.id },
-      });
+  // 3) Haftalık hedefin gerisindeki dersler (birden fazlaysa tek satırda toplanır)
+  const behind = areaWeeks(courses, logs, now, tz).filter((a) => {
+    if (!a.target || a.pct >= 100) return false;
+    const expected = (a.target * (7 - daysLeft + 1)) / 7;
+    return a.minutes < expected * 0.8;
+  });
+  if (behind.length === 1) {
+    const a = behind[0];
+    const remaining = a.target - a.minutes;
+    const perDay = Math.ceil(remaining / Math.max(1, daysLeft) / 5) * 5;
+    out.push({
+      id: `behind-${a.course.id}`, tone: "info", score: 60 + (100 - a.pct) / 4,
+      title: `${a.course.name}: haftalık hedefin gerisinde`,
+      detail: `${formatDuration(a.minutes)} / ${formatDuration(a.target)}. ${daysLeft > 1 ? `Günde yaklaşık ${formatDuration(perDay)} yeter.` : `Bugün ${formatDuration(remaining)} ayırırsan hedef tamam.`}`,
+      action: { label: `${kindOf(a.course).activity} başlat`, kind: "start", courseId: a.course.id },
     });
+  } else if (behind.length > 1) {
+    const remaining = behind.reduce((n, a) => n + a.target - a.minutes, 0);
+    const names = behind.map((a) => a.course.name);
+    out.push({
+      id: "behind", tone: "info", score: 70,
+      title: `${behind.length} ders haftalık hedefin gerisinde`,
+      detail: `${names.slice(0, 3).join(", ")}${names.length > 3 ? ` ve ${names.length - 3} ders daha` : ""}. Hafta bitmeden toplam ${formatDuration(remaining)}; takvimde saat ayır.`,
+      action: { label: "Takvimde planla", kind: "schedule" },
+    });
+  }
 
   // 4) Uzun süredir dokunulmayan dersler
   courses
@@ -96,5 +107,5 @@ export function buildInsights(input: {
   const done = areaWeeks(courses, logs, now, tz).filter((a) => a.target && a.pct >= 100);
   if (done.length) out.push({ id: "good-week", tone: "good", score: 25, title: `${done.map((a) => a.course.name).join(", ")}: haftalık hedef tamam`, detail: "Bu hafta bu ders(lar)da hedefine ulaştın." });
 
-  return out.sort((a, b) => b.score - a.score).slice(0, 4);
+  return out.sort((a, b) => b.score - a.score).slice(0, 3);
 }
