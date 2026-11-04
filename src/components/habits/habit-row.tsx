@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
-import { BookOpen, Check, Flame, MessageSquareText, Pencil } from "lucide-react";
+import { parseISO } from "date-fns";
+import { BookOpen, Check, Flame, History, MessageSquareText, Pencil } from "lucide-react";
 
 import { RowActions } from "@/components/ui/row-actions";
 import { useRow } from "@/lib/data/hooks";
 import type { Habit, HabitCheck } from "@/lib/data/types";
-import { checksOf, dayRatio, doneDays, fmtAmount, habitStreak, hasTarget, loggedDays, targetLabel, toggleHabit, weekCount } from "@/lib/domain/habits";
+import { checksOf, dayRatio, doneDays, fmtAmount, habitStreak, hasTarget, loggedDays, targetLabel, weekCount } from "@/lib/domain/habits";
 import { fmt, isoDate, weekDays, WEEKDAY_SHORT } from "@/lib/time";
 import { ui } from "@/lib/ui-store";
 import { cn } from "@/lib/utils";
@@ -27,20 +27,27 @@ export function HabitRow({ habit, checks, today }: { habit: Habit; checks: Habit
   const target = targetLabel(habit);
   const resource = useRow("resources", habit.resource_id ?? undefined);
   const todayCheck = byDate.get(todayKey);
-  // Miktarsız alışkanlıkta dokunuş işaretler; bugünün notu menüden açılır
-  const [noteOpen, setNoteOpen] = React.useState(false);
+  // Satırda en son yazılan not görünür
+  const lastNote = [...byDate.values()].filter((c) => c.note).sort((a, b) => b.date.localeCompare(a.date))[0];
 
   return (
     <li data-course={habit.color} className="group relative flex flex-col gap-4 border-b border-line px-4 py-4 transition-colors last:border-b-0 hover:bg-hover/40 lg:flex-row lg:items-center lg:gap-6">
       <div className="flex min-w-0 items-center gap-3 pr-8 lg:w-72 lg:pr-0">
         <span className="size-2.5 shrink-0 rounded-full bg-course-solid" aria-hidden />
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{habit.name}</p>
+          <button type="button" onClick={() => ui().openHabit(habit.id)} className="block max-w-full cursor-pointer truncate text-left text-sm font-semibold outline-none hover:underline focus-visible:underline">{habit.name}</button>
           <p className="tabular flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
             <span className={cn(reached && "font-medium text-course-fg")}>Bu hafta {week}/{habit.target_per_week}</span>
             {target && <span>· Bugün {fmtAmount(todayCheck ? (todayCheck.amount ?? habit.target_amount!) : 0)}/{target}</span>}
             {streak > 0 && <span className="flex items-center gap-0.5"><Flame className="size-3 text-[#F08A3C]" aria-hidden /> {streak} gün</span>}
           </p>
+          {lastNote && (
+            <button type="button" onClick={() => ui().openHabit(habit.id)} className="mt-0.5 flex max-w-full cursor-pointer items-center gap-1 text-left text-xs text-ink-muted outline-none hover:text-foreground focus-visible:underline">
+              <MessageSquareText className="size-3 shrink-0" aria-hidden />
+              <span className="shrink-0">{fmt(parseISO(lastNote.date), "d MMM")}:</span>
+              <span className="truncate">{lastNote.note}</span>
+            </button>
+          )}
           {resource && (
             <button type="button" onClick={() => ui().openResource(resource.id)} className="mt-0.5 flex max-w-full cursor-pointer items-center gap-1 text-xs text-ink-muted outline-none hover:text-foreground focus-visible:underline">
               <BookOpen className="size-3 shrink-0" aria-hidden /><span className="truncate">{resource.title}</span>
@@ -64,7 +71,6 @@ export function HabitRow({ habit, checks, today }: { habit: Habit; checks: Habit
               aria-pressed={ratio >= 1}
               aria-label={label}
               title={check?.note ?? undefined}
-              onClick={hasTarget(habit) ? undefined : () => toggleHabit(habit, key)}
               className={cn(
                 "relative flex size-10 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border text-[11px] font-medium transition-[background-color,border-color,transform] active:scale-95 disabled:cursor-default disabled:opacity-35",
                 ratio >= 1 ? "border-transparent bg-course-solid text-white" : ratio > 0 ? "border-course-solid/40 text-course-fg" : "border-line text-ink-muted hover:border-line-strong",
@@ -82,12 +88,7 @@ export function HabitRow({ habit, checks, today }: { habit: Habit; checks: Habit
               {check?.note && <span className={cn("absolute top-1 right-1 size-1.5 rounded-full", ratio >= 1 ? "bg-white" : "bg-course-solid")} aria-hidden />}
             </button>
           );
-          if (hasTarget(habit) && !future) return <HabitDayPopover key={key} habit={habit} date={key} check={check}>{cell}</HabitDayPopover>;
-          return key === todayKey ? (
-            <HabitDayPopover key={key} habit={habit} date={key} check={check} open={noteOpen} onOpenChange={setNoteOpen}>{cell}</HabitDayPopover>
-          ) : (
-            <span key={key} className="contents">{cell}</span>
-          );
+          return future ? <span key={key} className="contents">{cell}</span> : <HabitDayPopover key={key} habit={habit} date={key} check={check}>{cell}</HabitDayPopover>;
         })}
       </div>
 
@@ -97,7 +98,7 @@ export function HabitRow({ habit, checks, today }: { habit: Habit; checks: Habit
 
       <RowActions
         actions={[
-          ...(hasTarget(habit) ? [] : [{ label: "Bugüne not yaz", icon: MessageSquareText, onClick: () => setNoteOpen(true) }]),
+          { label: "Geçmiş ve notlar", icon: History, onClick: () => ui().openHabit(habit.id) },
           { label: "Düzenle", icon: Pencil, onClick: () => ui().open({ type: "habit", habitId: habit.id }) },
         ]}
         className="absolute top-3 right-3"

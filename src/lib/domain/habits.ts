@@ -7,6 +7,19 @@ import { isoDate, weekStart } from "@/lib/time";
 /** Miktarlı alışkanlıklarda seçilebilen birimler */
 export const HABIT_UNITS = ["litre", "bardak", "sayfa", "dakika", "saat", "km", "adım", "tekrar", "bölüm"] as const;
 
+/** Addaki miktarı yakalar: "20 Sayfa Kitap Oku" → 20 sayfa, "2 litre su iç" → 2 litre */
+const UNIT_ALIASES: Record<string, string> = {
+  litre: "litre", lt: "litre", l: "litre", bardak: "bardak", sayfa: "sayfa", sf: "sayfa",
+  dakika: "dakika", dk: "dakika", saat: "saat", km: "km", adım: "adım", tekrar: "tekrar", bölüm: "bölüm",
+};
+export function parseTarget(name: string): { amount: number; unit: string } | null {
+  const m = name.toLocaleLowerCase("tr").match(/(\d+(?:[.,]\d+)?)\s*([a-zçğıöşü]+)/);
+  if (!m) return null;
+  const unit = UNIT_ALIASES[m[2]];
+  const amount = Number(m[1].replace(",", "."));
+  return unit && amount > 0 ? { amount, unit } : null;
+}
+
 /** Alışkanlık birimi ile kaynak birimi eşleşirse kaynağın ilerlemesi de güncellenir */
 const UNIT_TO_RESOURCE: Record<string, ResourceUnit> = { sayfa: "page", dakika: "minute", bölüm: "chapter" };
 
@@ -19,12 +32,15 @@ export const fmtAmount = (n: number) => n.toLocaleString("tr-TR", { maximumFract
 export const targetLabel = (h: Pick<Habit, "target_amount" | "unit">) =>
   hasTarget(h) ? `${fmtAmount(h.target_amount!)}${h.unit ? ` ${h.unit}` : ""}` : null;
 
-/** O gün yapılan miktar; miktar yazılmamış kayıt tam yapılmış sayılır */
+/**
+ * O gün yapılan miktar; miktar yazılmamış kayıt tam yapılmış sayılır.
+ * Miktarı 0 olan kayıt "yapılmadı ama not var" demektir.
+ */
 export const amountOf = (h: Habit, c?: HabitCheck) => (!c ? 0 : c.amount ?? h.target_amount ?? 1);
 
 /** Günün tamamlanma oranı (0–1) */
 export const dayRatio = (h: Habit, c?: HabitCheck) =>
-  !c ? 0 : !hasTarget(h) ? 1 : Math.min(1, amountOf(h, c) / h.target_amount!);
+  !c ? 0 : !hasTarget(h) ? (c.amount === 0 ? 0 : 1) : Math.min(1, amountOf(h, c) / h.target_amount!);
 
 /** Alışkanlığın günlük kayıtları (tarih → kayıt) */
 export function checksOf(habitId: string, checks: HabitCheck[]) {
@@ -73,15 +89,27 @@ function syncResource(h: Habit, delta: number) {
   data().update("resources", r.id, { progress_current: next, status: next >= total ? "done" : next > 0 ? "in_progress" : "queued" });
 }
 
-/** Bir günü miktar ve notla kaydeder (varsa günceller) */
-export function logHabit(h: Habit, date: string, v: { amount?: number | null; note?: string | null }) {
+/**
+ * Bir günü miktar ve notla kaydeder (varsa günceller).
+ * Miktarsız alışkanlıkta `done: false` notu saklar ama günü yapılmış saymaz.
+ */
+export function logHabit(h: Habit, date: string, v: { amount?: number | null; note?: string | null; done?: boolean }) {
   const existing = findCheck(h.id, date);
   const before = amountOf(h, existing);
-  const amount = hasTarget(h) ? Math.max(0, v.amount ?? h.target_amount!) : null;
+  const amount = hasTarget(h) ? Math.max(0, v.amount ?? h.target_amount!) : v.done === false ? 0 : null;
   const note = v.note?.trim() || null;
+  if (!note && amount === 0 && !hasTarget(h)) return clearHabit(h, date);
   if (existing) data().update("habit_checks", existing.id, { amount, note });
   else data().insert("habit_checks", { habit_id: h.id, date, amount, note });
   syncResource(h, (amount ?? 1) - (existing ? before : 0));
+}
+
+/** Alışkanlığın notlu ya da kayıtlı günleri, yeniden eskiye */
+export function habitHistory(h: Habit, checks: HabitCheck[]) {
+  return checks
+    .filter((c) => c.habit_id === h.id)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((c) => ({ check: c, ratio: dayRatio(h, c), amount: amountOf(h, c) }));
 }
 
 /** Günün kaydını siler */
@@ -94,7 +122,10 @@ export function clearHabit(h: Habit, date: string) {
 
 /** Tek dokunuş: kayıt yoksa tam olarak işaretler, varsa kaldırır */
 export function toggleHabit(h: Habit, date: string) {
-  if (findCheck(h.id, date)) clearHabit(h, date);
+  const existing = findCheck(h.id, date);
+  // "Yapmadım" diye not bırakılmış gün: notu koruyarak yapıldı yap
+  if (existing && !hasTarget(h) && existing.amount === 0) return logHabit(h, date, { note: existing.note, done: true });
+  if (existing) clearHabit(h, date);
   else logHabit(h, date, { amount: h.target_amount ?? null });
 }
 

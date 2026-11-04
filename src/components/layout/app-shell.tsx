@@ -5,6 +5,7 @@ import { NotePanel } from "@/components/notes/note-panel";
 import { ClipBar } from "@/components/schedule/clip-bar";
 import { GuideSheetHost } from "@/components/guides/guide-sheet-host";
 import { ResourceSheetHost } from "@/components/resources/resource-sheet";
+import { HabitSheetHost } from "@/components/habits/habit-sheet";
 import { OccurrencePanel } from "@/components/schedule/occurrence-panel";
 import { BellRunner } from "@/components/notifications/bell-runner";
 import { DataProvider } from "@/components/providers/data-provider";
@@ -62,6 +63,7 @@ export function AppShell({
             <ClipBar />
             <GuideSheetHost />
             <ResourceSheetHost />
+            <HabitSheetHost />
             <BellRunner />
             <ReminderSync />
           </CommandMenuProvider>

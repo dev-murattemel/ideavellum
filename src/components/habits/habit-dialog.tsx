@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { fmtAmount, HABIT_UNITS } from "@/lib/domain/habits";
+import { fmtAmount, HABIT_UNITS, parseTarget } from "@/lib/domain/habits";
 import { COURSE_COLOR_KEYS, type CourseColor } from "@/lib/course-colors";
 import { useRow, useRows } from "@/lib/data/hooks";
 import { data } from "@/lib/data/store";
@@ -41,8 +41,10 @@ export function HabitDialog({ habitId, onClose }: { habitId?: string; onClose: (
   const [color, setColor] = React.useState<CourseColor>(habit?.color ?? free);
   const [target, setTarget] = React.useState(habit?.target_per_week ?? 7);
   // Günlük miktar hedefi (isteğe bağlı): 2 litre, 20 sayfa
-  const [amount, setAmount] = React.useState(habit?.target_amount ? fmtAmount(habit.target_amount) : "");
-  const [unit, setUnit] = React.useState(habit?.unit ?? "sayfa");
+  // Hedefi olmayan eski alışkanlıkta addaki miktar önerilir ("20 Sayfa Kitap Oku" → 20 sayfa)
+  const guess = habit && !habit.target_amount ? parseTarget(habit.name) : null;
+  const [amount, setAmount] = React.useState(habit?.target_amount ? fmtAmount(habit.target_amount) : guess ? fmtAmount(guess.amount) : "");
+  const [unit, setUnit] = React.useState(habit?.unit ?? guess?.unit ?? "sayfa");
   const resources = useRows("resources").filter((r) => r.status !== "done" || r.id === habit?.resource_id);
   const [resourceId, setResourceId] = React.useState(habit?.resource_id ?? NONE);
   const [error, setError] = React.useState<string | null>(null);
@@ -68,11 +70,23 @@ export function HabitDialog({ habitId, onClose }: { habitId?: string; onClose: (
       <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-md overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{habit ? "Alışkanlığı düzenle" : "Yeni alışkanlık"}</DialogTitle>
-          <DialogDescription>Her gün tek dokunuşla işaretlediğin küçük bir rutin.</DialogDescription>
+          <DialogDescription>Her gün işaretlediğin küçük bir rutin; istersen miktarını ve o güne notunu da yazarsın.</DialogDescription>
         </DialogHeader>
         <form onSubmit={save} className="flex flex-col gap-5" noValidate>
           <Field label="Ad" htmlFor="h-name" error={error ?? undefined}>
-            <Input id="h-name" autoFocus value={name} onChange={(e) => { setName(e.target.value); setError(null); }} placeholder="Kitap oku" />
+            <Input
+              id="h-name"
+              autoFocus
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setError(null);
+                // "20 sayfa kitap oku" yazınca hedef kendiliğinden dolar (hedef boşsa)
+                const t = parseTarget(e.target.value);
+                if (t && !amount.trim()) { setAmount(fmtAmount(t.amount)); setUnit(t.unit); }
+              }}
+              placeholder="Kitap oku"
+            />
           </Field>
           {!habit && (
             <div className="-mt-3 flex flex-wrap gap-1.5">

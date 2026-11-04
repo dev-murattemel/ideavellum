@@ -42,6 +42,9 @@ type UIState = {
   /** Kaynağın defteri (alıntılar, okuma günlüğü) sağdan açılır */
   resourceSheet: string | null;
   openResource: (id: string | null) => void;
+  /** Alışkanlığın geçmişi ve notları sağdan açılır */
+  habitSheet: string | null;
+  openHabit: (id: string | null) => void;
   openGuide: (g: GuideRef | null) => void;
   /** Rehber sayfasında açık sekme (gün panelinden "rehbere git" ile değişir) */
   guideTab: GuideTab;
@@ -74,6 +77,8 @@ export const useUI = create<UIState>()((set) => ({
   openGuide: (guide) => set({ guide }),
   resourceSheet: null,
   openResource: (resourceSheet) => set({ resourceSheet }),
+  habitSheet: null,
+  openHabit: (habitSheet) => set({ habitSheet }),
   guideTab: "recipes",
   stickyFocus: false,
   setStickyFocus: (stickyFocus) => set({ stickyFocus }),
