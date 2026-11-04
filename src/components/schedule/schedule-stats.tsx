@@ -5,6 +5,7 @@ import { CalendarClock, CircleCheck, CircleX, Info } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRows } from "@/lib/data/hooks";
+import { matchFilter } from "@/lib/domain/schedule";
 import { change, weekCompare } from "@/lib/domain/schedule-stats";
 import { formatDuration } from "@/lib/time";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,7 @@ export function ScheduleStats({ days, filter }: { days: Date[]; filter: string |
   const now = useNow(60_000);
   const { current: c, previous: p } = React.useMemo(() => {
     const map = Object.fromEntries(courses.map((x) => [x.id, x]));
-    const shown = filter ? sessions.filter((s) => s.course_id === filter) : sessions;
+    const shown = sessions.filter((s) => matchFilter(s, filter));
     return weekCompare(shown, map, attendance, days, now);
   }, [sessions, courses, attendance, days, now, filter]);
 
@@ -29,23 +30,23 @@ export function ScheduleStats({ days, filter }: { days: Date[]; filter: string |
         title="Planlanan süre"
         hint="Takvimdeki saatlerin toplamı"
         value={formatDuration(c.planned)}
-        sub={`${c.count} ders saati`}
+        sub={`${c.count} etkinlik`}
         delta={change(c.planned, p.planned)}
         unit="%"
       />
       <Stat
         icon={CircleCheck}
         title="Katılım"
-        hint="Geçmiş saatlerden katıldıklarının oranı (yoklamaya göre)"
+        hint="Geçmiş saatlerden katıldıklarının oranı (işaretlediklerine göre)"
         value={c.rate === null ? "–" : `%${c.rate}`}
-        sub={c.pending ? `${c.pending} saatin yoklaması bekliyor` : "Tüm yoklamalar girildi"}
+        sub={c.pending ? `${c.pending} saat işaretlenmeyi bekliyor` : "Hepsi işaretlendi"}
         delta={c.rate !== null && p.rate !== null ? c.rate - p.rate : null}
         unit=" puan"
       />
       <Stat
         icon={CircleX}
         title="Kaçırılan"
-        hint="Yoklamada “Kaçırdım” işaretlenen saatler"
+        hint="“Kaçırdım” işaretlenen saatler"
         value={String(c.missed)}
         sub={c.missed ? "Telafi için takvimde boş bir yer seç" : "Bu hafta kaçırılan yok"}
         delta={c.missed - p.missed || (p.missed ? 0 : null)}

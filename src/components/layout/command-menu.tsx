@@ -37,7 +37,7 @@ export function CommandMenu() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Sayfa, ders, görev, not, söz ya da kaynak ara…" />
+      <CommandInput placeholder="Sayfa, alan, görev, not, söz ya da kaynak ara…" />
       <CommandList>
         <CommandEmpty>Sonuç bulunamadı.</CommandEmpty>
         <CommandGroup heading="Git">

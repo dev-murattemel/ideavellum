@@ -3,13 +3,13 @@ export const GO_SHORTCUTS: { key: string; href: string; label: string }[] = [
   { key: "b", href: "/bugun", label: "Bugün" },
   { key: "t", href: "/takvim", label: "Takvim" },
   { key: "p", href: "/pano", label: "Pano" },
-  { key: "a", href: "/dersler", label: "Müfredat" },
+  { key: "a", href: "/alanlar", label: "Alanlar" },
   { key: "n", href: "/notlar", label: "Notlar" },
   { key: "g", href: "/gunluk", label: "Günlük" },
   { key: "s", href: "/aforizmalar", label: "Sözler" },
   { key: "h", href: "/aliskanliklar", label: "Alışkanlıklar" },
   { key: "k", href: "/kaynaklar", label: "Kaynaklar" },
-  { key: "r", href: "/karne", label: "Karne" },
+  { key: "r", href: "/ilerleme", label: "İlerleme" },
   { key: "m", href: "/mantar-pano", label: "Mantar pano" },
 ];
 

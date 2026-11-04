@@ -13,10 +13,10 @@ export type DigestProps = {
 /** Sabah özeti: bugünün dersleri ve görevleri */
 export default function MorningDigest({ appUrl, dateLabel, name, sessions, tasks }: DigestProps) {
   return (
-    <EmailLayout appUrl={appUrl} preview={`${sessions.length} ders, ${tasks.length} görev`} title={`Günaydın${name ? `, ${name}` : ""}`}>
+    <EmailLayout appUrl={appUrl} preview={`${sessions.length} etkinlik, ${tasks.length} görev`} title={`Günaydın${name ? `, ${name}` : ""}`}>
       <Text style={{ fontSize: "14px", color: "#6b6b73", margin: "0 0 16px" }}>{dateLabel}</Text>
       <Text style={{ fontSize: "15px", fontWeight: 600, margin: "0 0 10px" }}>Bugünün programı</Text>
-      {sessions.length ? sessions.map((s, i) => <Row key={i} color={s.color} title={s.course} meta={`${s.time}${s.location ? ` · ${s.location}` : ""}`} />) : <Text style={{ fontSize: "14px", color: "#6b6b73" }}>Bugün ders saati yok.</Text>}
+      {sessions.length ? sessions.map((s, i) => <Row key={i} color={s.color} title={s.course} meta={`${s.time}${s.location ? ` · ${s.location}` : ""}`} />) : <Text style={{ fontSize: "14px", color: "#6b6b73" }}>Bugün takvimde bir şey yok.</Text>}
       <Text style={{ fontSize: "15px", fontWeight: 600, margin: "20px 0 10px" }}>Bugünün görevleri</Text>
       {tasks.length ? tasks.map((t, i) => <Row key={i} color={t.color ?? undefined} title={t.title} meta={`${t.overdue ? "Gecikti · " : ""}${t.due}${t.course ? ` · ${t.course}` : ""}`} />) : <Text style={{ fontSize: "14px", color: "#6b6b73" }}>Bugün için görev yok.</Text>}
     </EmailLayout>

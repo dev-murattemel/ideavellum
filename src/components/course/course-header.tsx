@@ -47,8 +47,8 @@ export function CourseHeader({ course }: { course: Course }) {
       </svg>
 
       <div className="relative flex items-start justify-between gap-3">
-        <AppLink href="/dersler" className="-ml-1 inline-flex items-center gap-1.5 rounded-md px-1 text-13 font-medium opacity-80 hover:opacity-100">
-          <ArrowLeft className="size-4" aria-hidden /> Müfredat
+        <AppLink href="/alanlar" className="-ml-1 inline-flex items-center gap-1.5 rounded-md px-1 text-13 font-medium opacity-80 hover:opacity-100">
+          <ArrowLeft className="size-4" aria-hidden /> Alanlar
         </AppLink>
         <div className="flex items-center gap-2">
           {course.status === "active" && (
@@ -74,13 +74,13 @@ export function CourseHeader({ course }: { course: Course }) {
                 </DropdownMenuItem>
               )}
               {course.status === "completed" && (
-                <DropdownMenuItem onSelect={() => { data().update("courses", course.id, { status: "active", completed_at: null }); toast("Ders yeniden açıldı"); }}>
+                <DropdownMenuItem onSelect={() => { data().update("courses", course.id, { status: "active", completed_at: null }); toast("Alan yeniden açıldı"); }}>
                   <RotateCcw /> Yeniden aç
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onSelect={() => setConfirm(true)}>
-                <Trash2 /> Dersi sil
+                <Trash2 /> Alanı sil
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -108,12 +108,12 @@ export function CourseHeader({ course }: { course: Course }) {
         open={confirm}
         onOpenChange={setConfirm}
         title={`“${course.name}” silinsin mi?`}
-        description="Dersin konuları, takvim saatleri, görevleri, notları, kaynakları ve süre kayıtları da silinir. Bu işlem geri alınamaz."
-        confirmLabel="Dersi sil"
+        description="Alanın konuları, takvim saatleri, görevleri, notları, kaynakları ve süre kayıtları da silinir. Bu işlem geri alınamaz."
+        confirmLabel="Alanı sil"
         onConfirm={() => {
           data().remove("courses", course.id);
           toast(`“${course.name}” silindi`);
-          nav.push("/dersler");
+          nav.push("/alanlar");
         }}
       />
     </header>

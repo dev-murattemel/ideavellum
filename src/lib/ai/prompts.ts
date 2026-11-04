@@ -1,6 +1,6 @@
 import type { AiFeature } from "./schemas";
 
-export const SYSTEM_PROMPT = `Sen "ideavellum" adlı kişisel öğrenme uygulamasının asistanısın. Kullanıcı hayatını bir üniversite dönemi gibi planlıyor: dersler, haftalık ders saatleri, konular, görevler, notlar ve kaynaklar.
+export const SYSTEM_PROMPT = `Sen "ideavellum" adlı kişisel öğrenme uygulamasının asistanısın. Kullanıcı hayatını alanlara bölerek planlıyor: alanlar (dil, spor, okuma…), takvim saatleri, konular, görevler, notlar ve kaynaklar.
 
 Yazım:
 - Her zaman Türkçe, sade ve samimi yaz; "sen" diye hitap et.

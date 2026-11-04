@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { CalendarRange, GraduationCap, ChevronDown, LayoutGrid, Pencil, Plus } from "lucide-react";
+import { Archive, CalendarRange, ChevronDown, LayoutGrid, Pencil, Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
@@ -41,7 +41,7 @@ export function CoursesView() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Müfredat"
+        title="Alanlar"
         description={termLabel}
         actions={
           <>
@@ -62,14 +62,14 @@ export function CoursesView() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <AppLink href="/transkript">
-                    <GraduationCap /> Transkript ({completed})
+                  <AppLink href="/arsiv">
+                    <Archive /> Arşiv ({completed})
                   </AppLink>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <Button onClick={() => ui().open({ type: "course" })}>
-              <Plus /> Ders ekle
+              <Plus /> Alan ekle
             </Button>
           </>
         }
@@ -78,9 +78,9 @@ export function CoursesView() {
       {courses.length === 0 ? (
         <EmptyState
           icon={LayoutGrid}
-          title="Henüz ders yok"
-          description="Kendi programını kur: dil, spor, okuma, mutfak… ilk dersini ekleyerek döneme başla."
-          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Ders ekle</Button>}
+          title="Henüz alan yok"
+          description="Düzenli zaman ayırmak istediğin her şey bir alan: dil, spor, okuma, mutfak, yan proje… İlkini ekleyerek başla."
+          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Alan ekle</Button>}
         />
       ) : (
         <>
@@ -122,7 +122,7 @@ export function CoursesView() {
               className="flex min-h-52 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong text-sm font-medium text-ink-muted transition-colors hover:border-primary/50 hover:bg-surface hover:text-foreground"
             >
               <Plus className="size-5" aria-hidden />
-              Ders ekle
+              Alan ekle
             </button>
           </div>
             )}

@@ -11,7 +11,7 @@ const EVENTS: { id: NotificationEvent; label: string; hint: string }[] = [
   { id: "task_due", label: "Görev son tarihi", hint: "Saatliyse 1 saat önce, değilse o sabah" },
   { id: "overdue", label: "Geciken görevler", hint: "Günde bir kez" },
   { id: "daily_digest", label: "Sabah özeti", hint: "Günün programı ve görevleri" },
-  { id: "weekly_report", label: "Haftalık rapor", hint: "Süre, görev, yoklama" },
+  { id: "weekly_report", label: "Haftalık rapor", hint: "Süre, görev, katılım" },
 ];
 const CHANNELS: { id: NotificationChannel; label: string }[] = [
   { id: "in_app", label: "Uygulama" },

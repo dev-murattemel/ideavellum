@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     default: "ideavellum",
     template: "%s · ideavellum",
   },
-  description: "Hayatını bir dönem gibi programla: dersler, spor, mutfak, okuma, günlük, aforizmalar ve görevler tek yerde.",
+  description: "Hayatını planla: dil, spor, mutfak, okuma, günlük, aforizmalar ve görevler tek yerde.",
   applicationName: "ideavellum",
   appleWebApp: { capable: true, title: "ideavellum", statusBarStyle: "default" },
   icons: { icon: "/icons/icon.svg", apple: "/icons/apple-touch-icon.png" },

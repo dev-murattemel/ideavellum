@@ -29,7 +29,7 @@ export function CourseFilterChips({ value, onChange }: { value: string; onChange
     );
   };
   return (
-    <div role="radiogroup" aria-label="Derse göre süz" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
+    <div role="radiogroup" aria-label="Alana göre süz" className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
       {chip("all", "Tümü")}
       {courses.map((c) => chip(c.id, c.name, c.color))}
       {chip("none", "Kişisel")}

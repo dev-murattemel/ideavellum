@@ -21,12 +21,12 @@ export function CommandSearchGroups({ run }: { run: (fn: () => void) => void }) 
 
   return (
     <>
-      <CommandGroup heading="Müfredat">
+      <CommandGroup heading="Alanlar">
         {courses.map((c) => {
           const k = kindOf(c);
           const Icon = k.icon;
           return (
-            <CommandItem key={c.id} value={`ders ders ${k.label} ${c.name} ${c.code ?? ""}`} onSelect={() => run(() => nav.push(`/dersler/${c.id}`))}>
+            <CommandItem key={c.id} value={`alan ${k.label} ${c.name} ${c.code ?? ""}`} onSelect={() => run(() => nav.push(`/alanlar/${c.id}`))}>
               <Icon data-course={c.color} className="text-course-solid" />
               {c.name}
               <span className="ml-auto text-xs text-ink-subtle">{k.label}</span>

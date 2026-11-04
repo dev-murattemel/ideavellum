@@ -6,13 +6,13 @@ type Rows = ReturnType<typeof useReport>["perCourse"];
 
 export function AttendanceTable({ rows }: { rows: Rows }) {
   const list = rows.filter((r) => r.attended + r.missed + r.postponed > 0);
-  if (!list.length) return <p className="text-13 text-ink-muted">Bu dönemde yoklama kaydı yok.</p>;
+  if (!list.length) return <p className="text-13 text-ink-muted">Bu dönemde katılım kaydı yok.</p>;
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[420px] text-13">
         <thead>
           <tr className="text-xs text-ink-muted">
-            <th className="pb-2 text-left font-medium">Ders</th>
+            <th className="pb-2 text-left font-medium">Alan</th>
             <th className="pb-2 text-right font-medium">Katıldı</th>
             <th className="pb-2 text-right font-medium">Kaçırdı</th>
             <th className="pb-2 text-right font-medium">Ertelendi</th>

@@ -18,26 +18,26 @@ const TITLES: Record<string, string> = {
   "/bugun": "Bugün",
   "/takvim": "Takvim",
   "/pano": "Pano",
-  "/dersler": "Müfredat",
+  "/alanlar": "Alanlar",
   "/notlar": "Notlar",
   "/kaynaklar": "Kaynaklar",
   "/gunluk": "Günlük",
   "/aliskanliklar": "Alışkanlıklar",
   "/aforizmalar": "Aforizmalar",
-  "/karne": "Karne",
-  "/transkript": "Transkript",
+  "/ilerleme": "İlerleme",
+  "/arsiv": "Arşiv",
   "/ayarlar": "Ayarlar",
   "/rehber": "Rehber",
   "/mantar-pano": "Mantar pano",
 };
 
 export function titleFor(pathname: string) {
-  return pathname.startsWith("/dersler/") ? "Ders" : (TITLES[pathname] ?? "Bugün");
+  return pathname.startsWith("/alanlar/") ? "Alan" : (TITLES[pathname] ?? "Bugün");
 }
 
 export function resolveView(pathname: string) {
-  if (pathname.startsWith("/dersler/")) {
-    const id = pathname.slice("/dersler/".length);
+  if (pathname.startsWith("/alanlar/")) {
+    const id = pathname.slice("/alanlar/".length);
     return <CourseDetailView key={id} courseId={id} />;
   }
   switch (pathname) {
@@ -45,7 +45,7 @@ export function resolveView(pathname: string) {
       return <ScheduleView />;
     case "/pano":
       return <BoardView />;
-    case "/dersler":
+    case "/alanlar":
       return <CoursesView />;
     case "/notlar":
       return <NotesView />;
@@ -61,9 +61,9 @@ export function resolveView(pathname: string) {
       return <QuotesView />;
     case "/kaynaklar":
       return <ResourcesView />;
-    case "/karne":
+    case "/ilerleme":
       return <ReportsView />;
-    case "/transkript":
+    case "/arsiv":
       return <TranscriptView />;
     case "/ayarlar":
       return <SettingsView />;

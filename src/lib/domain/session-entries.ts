@@ -88,7 +88,7 @@ function entryToDoc(e: Pick<SessionEntry, "details" | "checklist">): TiptapDoc {
  * "Notlara kaydet": günün ayrıntısını dersin notlarına ekler. Daha önce kaydedildiyse
  * aynı not güncellenir; böylece not ile takvim aynı kalır.
  */
-export function saveEntryToNote(entry: SessionEntry, courseId: string, courseName: string) {
+export function saveEntryToNote(entry: SessionEntry, courseId: string | null, courseName: string) {
   const title = [courseName, fmt(parseISO(entry.date), "d MMMM"), entry.title].filter(Boolean).join(" · ");
   const content = entryToDoc(entry);
   const existing = entry.note_id ? data().notes[entry.note_id] : undefined;
@@ -115,6 +115,8 @@ export function copySession(source: ClassSession, target: CopyTarget, fromDate?:
   const repeat = source.repeat ?? "weekly";
   const created = data().insert("class_sessions", {
     course_id: source.course_id,
+    title: source.title ?? null,
+    color: source.color ?? null,
     weekday: isoWeekday(target.date),
     repeat,
     anchor_date: repeat === "weekly" ? null : isoDate(target.date),

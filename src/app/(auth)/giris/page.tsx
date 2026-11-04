@@ -66,7 +66,7 @@ export default async function LoginPage({
         </div>
 
         <p className="mt-6 text-center text-13 text-ink-muted">
-          Dersler, spor, okuma, günlük ve notların tek yerde.
+          Dil, spor, okuma, mutfak, günlük ve notların tek yerde.
         </p>
       </div>
     </main>

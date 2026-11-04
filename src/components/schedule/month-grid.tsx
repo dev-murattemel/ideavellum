@@ -4,14 +4,14 @@ import * as React from "react";
 import { addDays, endOfMonth, isSameDay, isSameMonth, startOfMonth } from "date-fns";
 
 import { useRows } from "@/lib/data/hooks";
-import { occurrencesOn } from "@/lib/domain/schedule";
+import { matchFilter, occurrencesOn } from "@/lib/domain/schedule";
 import { fmt, minutesToTime, weekStart, WEEKDAY_SHORT } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { useNow } from "./use-now";
 
 export function MonthGrid({ anchor, onPickDay, filter = null }: { anchor: Date; onPickDay: (d: Date) => void; filter?: string | null }) {
   const allSessions = useRows("class_sessions");
-  const sessions = React.useMemo(() => (filter ? allSessions.filter((s) => s.course_id === filter) : allSessions), [allSessions, filter]);
+  const sessions = React.useMemo(() => allSessions.filter((s) => matchFilter(s, filter)), [allSessions, filter]);
   const courses = useRows("courses");
   const now = useNow();
   const courseMap = React.useMemo(() => Object.fromEntries(courses.map((c) => [c.id, c])), [courses]);

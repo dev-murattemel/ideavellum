@@ -17,14 +17,14 @@ export function WeekGoalsCard({ now }: { now: Date }) {
   return (
     <SectionCard title="Bu hafta" meta={target ? `${formatDuration(total)} / ${formatDuration(target)}` : formatDuration(total)}>
       {rows.length === 0 ? (
-        <p className="text-13 text-ink-muted">Aktif ders yok.</p>
+        <p className="text-13 text-ink-muted">Aktif alan yok.</p>
       ) : (
         <ul className="stagger flex flex-col gap-2.5">
           {[...rows].sort((a, b) => (a.target ? a.pct : 999) - (b.target ? b.pct : 999)).slice(0, 5).map(({ course, minutes, target: t, pct }) => {
             const Icon = kindOf(course).icon;
             return (
               <li key={course.id} data-course={course.color}>
-                <AppLink href={`/dersler/${course.id}`} className="group flex flex-col gap-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <AppLink href={`/alanlar/${course.id}`} className="group flex flex-col gap-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <span className="flex items-center gap-2 text-13">
                     <Icon className="size-3.5 shrink-0 text-course-solid" strokeWidth={2.2} aria-hidden />
                     <span className="min-w-0 flex-1 truncate font-medium group-hover:underline">{course.name}</span>
@@ -40,7 +40,7 @@ export function WeekGoalsCard({ now }: { now: Date }) {
         </ul>
       )}
       {rows.length > 5 && (
-        <AppLink href="/karne" className="mt-3 text-13 text-ink-muted hover:text-foreground">Tüm dersler ({rows.length}) Karne’de →</AppLink>
+        <AppLink href="/ilerleme" className="mt-3 text-13 text-ink-muted hover:text-foreground">Tüm alanlar ({rows.length}) İlerleme’de →</AppLink>
       )}
     </SectionCard>
   );

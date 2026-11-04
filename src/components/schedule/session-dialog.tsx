@@ -18,6 +18,10 @@ import { repeatLabel } from "@/lib/domain/schedule";
 import type { SessionPreset } from "@/lib/ui-store";
 import { BellFields, type BellValue } from "./bell-fields";
 import { RepeatFields } from "./repeat-fields";
+import { StickyColors } from "@/components/stickies/sticky-colors";
+import type { CourseColor } from "@/lib/course-colors";
+
+const NONE = "none";
 import { WeekdayChips } from "./weekday-chips";
 import { kindOf } from "@/lib/area-kinds";
 import type { SessionRepeat } from "@/lib/data/types";
@@ -30,7 +34,10 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
   const profile = useProfile();
   const [confirm, setConfirm] = React.useState(false);
 
-  const [courseId, setCourseId] = React.useState(session?.course_id ?? preset?.course_id ?? courses[0]?.id ?? "");
+  // Varsayılan serbest etkinlik: takvime istediğin her şey eklenebilir; bir alana bağlamak isteğe bağlı
+  const [courseId, setCourseId] = React.useState<string>(session ? (session.course_id ?? NONE) : (preset?.course_id ?? NONE));
+  const [title, setTitle] = React.useState(session?.title ?? "");
+  const [color, setColor] = React.useState<CourseColor>(session?.color ?? "sky");
   const [weekday, setWeekday] = React.useState(String(session?.weekday ?? preset?.weekday ?? 1));
   // Yeni haftalık saat birden çok güne aynı anda eklenebilir (ör. hafta içi her gün 07:00)
   const [days, setDays] = React.useState<number[]>([session?.weekday ?? preset?.weekday ?? 1]);
@@ -41,24 +48,27 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
   const [error, setError] = React.useState<string | null>(null);
   const [repeat, setRepeat] = React.useState<SessionRepeat>(session?.repeat ?? "weekly");
   const [anchor, setAnchor] = React.useState(session?.anchor_date ?? isoDate(zonedNow(profile.timezone)));
-  const vocab = kindOf(courses.find((c) => c.id === courseId));
+  const area = courses.find((c) => c.id === courseId);
+  const label = area ? kindOf(area).session : "Etkinlik";
   const multi = !session && repeat === "weekly";
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courseId) return setError("Önce bir ders seç.");
+    if (!area && !title.trim()) return setError("Bir başlık yaz ya da bir alan seç.");
     if (timeToMinutes(end) <= timeToMinutes(start)) return setError("Bitiş saati başlangıçtan sonra olmalı.");
     const values = {
-      course_id: courseId, weekday: Number(weekday), start_time: start, end_time: end,
+      course_id: area ? area.id : null,
+      title: title.trim() || null,
+      color: area ? null : color, weekday: Number(weekday), start_time: start, end_time: end,
       location: location.trim() || null, bell_overrides: bell,
       repeat, anchor_date: repeat === "weekly" ? null : anchor,
     };
-    const name = courses.find((c) => c.id === courseId)?.name;
+    const name = title.trim() || area?.name;
     if (session) data().update("class_sessions", session.id, values);
     else if (multi) {
       days.forEach((d) => data().insert("class_sessions", { ...values, weekday: d, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null }));
     } else data().insert("class_sessions", { ...values, valid_from: term?.start_date ?? null, valid_until: term?.end_date ?? null });
-    toast.success(session ? `${vocab.session} güncellendi` : `${vocab.session} eklendi`, {
+    toast.success(session ? `${label} güncellendi` : `${label} eklendi`, {
       description: multi && days.length > 1
         ? `${name} · ${days.length} gün (${days.map((d) => WEEKDAY_SHORT[d - 1]).join(", ")}) ${start}–${end}`
         : `${name} · ${repeatLabel({ repeat, anchor_date: anchor, weekday: multi ? days[0] : Number(weekday) }, WEEKDAY_NAMES)} ${start}–${end}`,
@@ -71,26 +81,34 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
       <Dialog open onOpenChange={(o) => !o && onClose()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-lg overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{session ? `${vocab.session} düzenle` : `${vocab.session} ekle`}</DialogTitle>
-            <DialogDescription>Takvimde tekrar eden zaman: örneğin her Salı 19:00–20:30 ya da her ayın ilk Cumartesisi.</DialogDescription>
+            <DialogTitle>{session ? `${label} düzenle` : `${label} ekle`}</DialogTitle>
+            <DialogDescription>Takvime istediğin her şeyi ekle: tek seferlik bir randevu ya da her Salı 19:00 gibi tekrar eden bir saat.</DialogDescription>
           </DialogHeader>
-          {courses.length === 0 ? (
-            <p className="rounded-lg bg-sunken p-4 text-sm text-ink-muted">Takvime saat eklemek için önce bir ders oluştur.</p>
-          ) : (
-            <form onSubmit={save} className="flex flex-col gap-5" noValidate>
-              <Field label="Ders">
-                <Select value={courseId} onValueChange={setCourseId}>
-                  <SelectTrigger aria-label="Ders"><SelectValue placeholder="Ders seç" /></SelectTrigger>
-                  <SelectContent>
-                    {courses.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        <span data-course={c.color} className="size-2 rounded-full bg-course-solid" aria-hidden />
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <form onSubmit={save} className="flex flex-col gap-5" noValidate>
+              <Field label="Başlık" htmlFor="s-title" hint={area ? "Boş bırakırsan alanın adı görünür." : undefined}>
+                <Input id="s-title" autoFocus={!session} placeholder="Ör. Diş hekimi, Annemle kahvaltı, Koşu" value={title} onChange={(e) => setTitle(e.target.value)} />
               </Field>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                <Field label="Alan (isteğe bağlı)">
+                  <Select value={courseId} onValueChange={setCourseId}>
+                    <SelectTrigger aria-label="Alan"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NONE}>Alan yok · serbest etkinlik</SelectItem>
+                      {courses.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          <span data-course={c.color} className="size-2 rounded-full bg-course-solid" aria-hidden />
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                {!area && (
+                  <div className="flex h-9 items-center sm:pb-0">
+                    <StickyColors size="sm" value={color} onChange={setColor} />
+                  </div>
+                )}
+              </div>
               {multi && (
                 <Field label="Günler">
                   <WeekdayChips value={days} onChange={setDays} />
@@ -138,22 +156,21 @@ export function SessionDialog({ sessionId, preset, onClose }: { sessionId?: stri
                 ) : <span />}
                 <div className="flex flex-col-reverse gap-2 sm:flex-row">
                   <Button type="button" variant="secondary" onClick={onClose}>Vazgeç</Button>
-                  <Button type="submit">{session ? "Değişiklikleri kaydet" : multi && days.length > 1 ? `${days.length} güne ekle` : `${vocab.session} ekle`}</Button>
+                  <Button type="submit">{session ? "Değişiklikleri kaydet" : multi && days.length > 1 ? `${days.length} güne ekle` : `${label} ekle`}</Button>
                 </div>
               </DialogFooter>
             </form>
-          )}
         </DialogContent>
       </Dialog>
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
-        title={`${vocab.session} silinsin mi?`}
-        description="Bu saatin geçmiş yoklama kayıtları da silinir. Ders ve içeriği etkilenmez."
+        title={`${label} silinsin mi?`}
+        description="Bu saatin geçmiş katılım kayıtları da silinir. Bağlı olduğu alan ve içeriği etkilenmez."
         confirmLabel="Sil"
         onConfirm={() => {
           if (session) data().remove("class_sessions", session.id);
-          toast(`${vocab.session} silindi`);
+          toast(`${label} silindi`);
           onClose();
         }}
       />

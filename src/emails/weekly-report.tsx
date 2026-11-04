@@ -24,7 +24,7 @@ export default function WeeklyReport(p: WeeklyProps) {
     <EmailLayout appUrl={p.appUrl} preview={`Bu hafta ${p.totalLabel} çalıştın`} title="Haftalık rapor">
       <Text style={{ fontSize: "14px", color: "#6b6b73", margin: "0 0 16px" }}>{p.rangeLabel}</Text>
       <table role="presentation" style={{ width: "100%", marginBottom: "18px" }}>
-        <tbody><tr>{stat("çalışma", p.totalLabel)}{stat("görev bitti", String(p.completedTasks))}{stat("yoklama", p.attendanceRate === null ? "—" : `%${p.attendanceRate}`)}{stat("gün seri", String(p.streak))}</tr></tbody>
+        <tbody><tr>{stat("çalışma", p.totalLabel)}{stat("görev bitti", String(p.completedTasks))}{stat("katılım", p.attendanceRate === null ? "—" : `%${p.attendanceRate}`)}{stat("gün seri", String(p.streak))}</tr></tbody>
       </table>
       {p.courses.map((c) => {
         const hex = COURSE_HEX[c.color] ?? COURSE_HEX.slate;

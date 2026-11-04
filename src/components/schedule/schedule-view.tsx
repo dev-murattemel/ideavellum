@@ -2,9 +2,8 @@
 
 import * as React from "react";
 import { addDays, addMonths, isSameMonth } from "date-fns";
-import { CalendarDays, ChevronLeft, ChevronRight, PanelRightClose, PanelRightOpen, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, PanelRightClose, PanelRightOpen, Plus } from "lucide-react";
 
-import { EmptyState } from "@/components/layout/empty-state";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -69,27 +68,13 @@ export function ScheduleView() {
           ? `${fmt(days[0], "d")}–${fmt(days[6], "d MMMM yyyy")}`
           : `${fmt(days[0], "d MMM")} – ${fmt(days[6], "d MMM yyyy")}`;
 
-  if (courses.length === 0) {
-    return (
-      <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-semibold tracking-[-0.015em]">Takvim</h1>
-        <EmptyState
-          icon={CalendarDays}
-          title="Henüz ders yok"
-          description="Önce bir ders ekle (dil, spor, okuma…), sonra saatlerini takvime yerleştir. Örneğin “Koşu” için her Salı 07:00–07:45."
-          action={<Button onClick={() => ui().open({ type: "course" })}><Plus />Ders ekle</Button>}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="flex gap-6">
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-[-0.015em]">Takvim</h1>
           <div className="flex items-center gap-2">
-            <Button onClick={() => ui().open({ type: "session" })}><Plus />Saat ekle</Button>
+            <Button onClick={() => ui().open({ type: "session" })}><Plus />Etkinlik ekle</Button>
             <Button
               variant="secondary"
               className="2xl:hidden"
@@ -110,7 +95,7 @@ export function ScheduleView() {
           </div>
         </div>
 
-        {/* Araç çubuğu: Bugün · tarih · oklar | Gün Hafta Ay | ders filtresi */}
+        {/* Araç çubuğu: Bugün · tarih · oklar | Gün Hafta Ay | alan süzgeci */}
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="secondary" size="sm" onClick={() => setAnchor(now)}>Bugün</Button>
           <h2 className="mx-1 min-w-0 text-base font-semibold first-letter:uppercase" aria-live="polite">{label}</h2>
@@ -127,9 +112,10 @@ export function ScheduleView() {
               </TabsList>
             </Tabs>
             <Select value={filter} onValueChange={setFilter}>
-              <SelectTrigger size="sm" className="w-[180px]" aria-label="Derse göre süz"><SelectValue /></SelectTrigger>
+              <SelectTrigger size="sm" className="w-[180px]" aria-label="Alana göre süz"><SelectValue /></SelectTrigger>
               <SelectContent align="end">
-                <SelectItem value={ALL}>Tüm dersler</SelectItem>
+                <SelectItem value={ALL}>Hepsi</SelectItem>
+                <SelectItem value="events">Serbest etkinlikler</SelectItem>
                 {courses.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     <span data-course={c.color} className="size-2 rounded-full bg-course-solid" aria-hidden />
@@ -153,7 +139,7 @@ export function ScheduleView() {
       <Sheet open={agendaSheet} onOpenChange={setAgendaSheet}>
         <SheetContent className="p-5 pt-6 2xl:hidden" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetTitle className="sr-only">Gündem</SheetTitle>
-          <SheetDescription className="sr-only">Bugün, yaklaşan ve yoklaması bekleyen saatler</SheetDescription>
+          <SheetDescription className="sr-only">Bugün, yaklaşan ve işaretlenmeyi bekleyen saatler</SheetDescription>
           <ScheduleAgenda filter={courseFilter} />
         </SheetContent>
       </Sheet>

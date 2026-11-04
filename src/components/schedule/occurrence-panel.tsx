@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { kindOf } from "@/lib/area-kinds";
 import { useProfile, useRow, useRows } from "@/lib/data/hooks";
 import type { EntryCheck } from "@/lib/data/types";
-import { repeatLabel } from "@/lib/domain/schedule";
+import { eventCourse, repeatLabel } from "@/lib/domain/schedule";
 import { newId } from "@/lib/data/ids";
 import { entryId, previousEntry, saveEntry, usedChecks } from "@/lib/domain/session-entries";
 import { fmt, isoDate, WEEKDAY_NAMES, zonedNow } from "@/lib/time";
@@ -60,7 +60,9 @@ function useAutosave<T>(value: T, save: (v: T) => void) {
 function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
   const { sessionId, date } = ref_;
   const session = useRow("class_sessions", sessionId)!;
-  const course = useRow("courses", session.course_id);
+  const area = useRow("courses", session.course_id);
+  // Serbest etkinlikte alan yerine sanal kayıt; alan saatinin kendi başlığı varsa adı o olur
+  const course = session.course_id ? (area && session.title ? { ...area, name: session.title } : area) : eventCourse(session);
   const entry = useRow("session_entries", entryId(sessionId, date));
   const entries = useRows("session_entries");
   const allSessions = useRows("class_sessions");
@@ -84,7 +86,7 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
   // Aynı türdeki derslerin (ör. tüm spor dersleri) daha önce kullanılan maddeleri
   const used = React.useMemo(() => {
     const kinds = new Set(allCourses.filter((c) => (c.kind ?? "course") === (course?.kind ?? "course")).map((c) => c.id));
-    return usedChecks(entries, new Set(allSessions.filter((s) => kinds.has(s.course_id)).map((s) => s.id)));
+    return usedChecks(entries, new Set(allSessions.filter((s) => s.course_id && kinds.has(s.course_id)).map((s) => s.id)));
   }, [entries, allSessions, allCourses, course?.kind]);
 
   const takePrevious = () => {
@@ -139,7 +141,7 @@ function PanelBody({ ref_ }: { ref_: OccurrenceRef }) {
               placeholder={hints.title}
               className="h-10 rounded-lg border border-line bg-surface px-3 text-[15px] font-medium outline-none placeholder:font-normal placeholder:text-ink-subtle focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
             />
-            <span className="text-xs text-ink-subtle">Takvimdeki kartta dersin adının altında görünür.</span>
+            <span className="text-xs text-ink-subtle">Takvimdeki kartta adın altında görünür.</span>
           </label>
 
           {prev && (

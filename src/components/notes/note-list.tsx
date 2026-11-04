@@ -74,7 +74,7 @@ export function NoteList({
           <SelectTrigger size="sm" aria-label="Süzgeç"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tüm notlar</SelectItem>
-            <SelectItem value={PERSONAL}>Derse bağlı olmayan notlar</SelectItem>
+            <SelectItem value={PERSONAL}>Alana bağlı olmayan notlar</SelectItem>
             <SelectSeparator />
             {courses.map((c) => (
               <SelectItem key={c.id} value={c.id}>

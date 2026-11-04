@@ -48,12 +48,40 @@ export type Occurrence = {
   end: number;
 };
 
+/**
+ * Serbest etkinlik için alan yerine geçen sanal kayıt (ekranlar tek tip veriyle çalışsın diye).
+ * Kimliği boştur; çalışma süresi ya da derse bağlı işlemler bunun için gösterilmez.
+ */
+export function eventCourse(s: ClassSession): Course {
+  return {
+    id: "", user_id: s.user_id, created_at: s.created_at, updated_at: s.updated_at,
+    kind: "other", position: null, term_id: null, name: s.title || "Etkinlik", code: null, color: s.color ?? "slate",
+    description: null, goal: null, status: "active", target_weekly_minutes: null, start_date: null, target_end_date: null,
+    completed_at: null, final_reflection: null, final_note: null, final_rating: null,
+  };
+}
+
+/** Saat bir alana bağlı değil mi (serbest etkinlik) */
+export const isEvent = (s: Pick<ClassSession, "course_id">) => !s.course_id;
+
+/** Takvim süzgeci: "all", "events" (serbest etkinlikler) ya da bir alanın kimliği */
+export const matchFilter = (s: ClassSession, filter: string | null) =>
+  !filter || filter === "all" ? true : filter === "events" ? !s.course_id : s.course_id === filter;
+
+/** Saatin bağlı olduğu alan (başlığı varsa adı başlıkla değişir) ya da serbest etkinlik */
+export function courseOf(s: ClassSession, courses: Record<string, Course>): Course | null {
+  if (!s.course_id) return eventCourse(s);
+  const c = courses[s.course_id];
+  if (!c || !isLiveCourse(c)) return null;
+  return s.title ? { ...c, name: s.title } : c;
+}
+
 export function occurrencesOn(sessions: ClassSession[], courses: Record<string, Course>, date: Date): Occurrence[] {
   return sessions
-    .filter((s) => sessionValidOn(s, date) && courses[s.course_id] && isLiveCourse(courses[s.course_id]))
+    .filter((s) => sessionValidOn(s, date) && courseOf(s, courses))
     .map((s) => ({
       session: s,
-      course: courses[s.course_id],
+      course: courseOf(s, courses)!,
       date,
       start: timeToMinutes(s.start_time),
       end: timeToMinutes(s.end_time),

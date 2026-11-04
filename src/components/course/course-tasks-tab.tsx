@@ -15,7 +15,7 @@ export function CourseTasksTab({ course }: { course: Course }) {
   return (
     <div className="flex flex-col gap-4">
       <Button className="self-start" onClick={() => ui().open({ type: "task", preset: { course_id: course.id } })}>
-        <Plus /> Bu derse görev ekle
+        <Plus /> Bu alana görev ekle
       </Button>
       <TaskListView columns={columns} now={now} />
     </div>

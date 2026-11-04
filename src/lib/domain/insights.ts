@@ -79,8 +79,8 @@ export function buildInsights(input: {
     const names = behind.map((a) => a.course.name);
     out.push({
       id: "behind", tone: "info", score: 70,
-      title: `${behind.length} ders haftalık hedefin gerisinde`,
-      detail: `${names.slice(0, 3).join(", ")}${names.length > 3 ? ` ve ${names.length - 3} ders daha` : ""}. Hafta bitmeden toplam ${formatDuration(remaining)}; takvimde saat ayır.`,
+      title: `${behind.length} alan haftalık hedefin gerisinde`,
+      detail: `${names.slice(0, 3).join(", ")}${names.length > 3 ? ` ve ${names.length - 3} alan daha` : ""}. Hafta bitmeden toplam ${formatDuration(remaining)}; takvimde saat ayır.`,
       action: { label: "Takvimde planla", kind: "schedule" },
     });
   }

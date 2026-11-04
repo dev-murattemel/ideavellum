@@ -48,7 +48,7 @@ export function BellSection() {
           </Select>
         </SettingsRow>
         <SettingsRow label="Başlangıç zili"><Switch checked={s.start_bell} onCheckedChange={(v) => set({ start_bell: v })} aria-label="Başlangıç zili" /></SettingsRow>
-        <SettingsRow label="Bitiş zili" hint="Teneffüs hatırlatması"><Switch checked={s.end_bell} onCheckedChange={(v) => set({ end_bell: v })} aria-label="Bitiş zili" /></SettingsRow>
+        <SettingsRow label="Bitiş zili" hint="Bitişte kısa bir hatırlatma"><Switch checked={s.end_bell} onCheckedChange={(v) => set({ end_bell: v })} aria-label="Bitiş zili" /></SettingsRow>
         <SettingsRow label="Ses">
           <span className="flex items-center gap-2">
             <Select value={s.sound} onValueChange={(v) => { set({ sound: v as BellSound }); void playBell(v as BellSound, s.volume); }}>

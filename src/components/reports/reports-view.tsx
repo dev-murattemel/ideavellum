@@ -34,12 +34,12 @@ export function ReportsView() {
     { label: "Ayrılan süre", value: formatDuration(r.totalMinutes), sub: `${r.activeDays} gün` },
     { label: "Tamamlanan görev", value: String(r.completedTasks), sub: "Bitti sütununa geçen" },
     { label: "Biten konu", value: String(r.completedTopics), sub: "Konular sekmesinden" },
-    { label: "Yoklama", value: r.attendanceRate === null ? "—" : `%${r.attendanceRate}`, sub: "Katıldığın program saatleri" },
+    { label: "Katılım", value: r.attendanceRate === null ? "—" : `%${r.attendanceRate}`, sub: "Katıldığın program saatleri" },
   ];
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title="Karne" description="Haftalık ve aylık ilerlemen; hedeflerine göre notun." />
+      <PageHeader title="İlerleme" description="Haftalık ve aylık ilerlemen, hedeflerine göre." />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="icon-sm" aria-label="Önceki" onClick={() => step(-1)}><ChevronLeft /></Button>
@@ -77,7 +77,7 @@ export function ReportsView() {
               </div>
             )}
             <CourseBars rows={r.perCourse} />
-            <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi dersin haftalık hedefini gösterir.</p>
+            <p className="text-xs text-ink-subtle">Çubuktaki ince dikey çizgi alanın haftalık hedefini gösterir.</p>
           </div>
         </SectionCard>
         <SectionCard title="Günlük süre" meta={`Günde ort. ${formatDuration(Math.round(r.totalMinutes / Math.max(1, r.days.length)))}`}>
@@ -93,7 +93,7 @@ export function ReportsView() {
         <StreakHeatmap cells={r.heat} />
       </SectionCard>
 
-      <SectionCard title="Yoklama">
+      <SectionCard title="Katılım">
         <AttendanceTable rows={r.perCourse} />
       </SectionCard>
     </div>

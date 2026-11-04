@@ -31,7 +31,7 @@ export function CourseWeekBlock({ o, own, fallback, date, dayName, top, height: 
     >
       <button
         type="button"
-        aria-label={own ? `${label}, günün ayrıntısı` : `${label} (başka ders)`}
+        aria-label={own ? `${label}, günün ayrıntısı` : `${label} (başka alan)`}
         onClick={() => ui().openOccurrence({ sessionId: o.session.id, date })}
         onKeyDown={(e) => {
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {

@@ -4,7 +4,7 @@ import * as React from "react";
 import { isSameDay } from "date-fns";
 
 import { useRows } from "@/lib/data/hooks";
-import { moveToWeekday, occurrencesOn } from "@/lib/domain/schedule";
+import { courseOf, matchFilter, moveToWeekday, occurrencesOn } from "@/lib/domain/schedule";
 import { data } from "@/lib/data/store";
 import { fmt, isoDate, isoWeekday, minutesOfDay, minutesToTime, timeToMinutes, WEEKDAY_SHORT } from "@/lib/time";
 import { ui, useUI } from "@/lib/ui-store";
@@ -22,7 +22,7 @@ const HOURS = Array.from({ length: (DAY_END - DAY_START) / 60 }, (_, i) => DAY_S
 
 export function WeekGrid({ days, filter = null }: { days: Date[]; filter?: string | null }) {
   const allSessions = useRows("class_sessions");
-  const sessions = React.useMemo(() => (filter ? allSessions.filter((s) => s.course_id === filter) : allSessions), [allSessions, filter]);
+  const sessions = React.useMemo(() => allSessions.filter((s) => matchFilter(s, filter)), [allSessions, filter]);
   const courses = useRows("courses");
   const attendance = useRows("attendance");
   const entries = useRows("session_entries");
@@ -39,7 +39,7 @@ export function WeekGrid({ days, filter = null }: { days: Date[]; filter?: strin
   );
   const entryMap = React.useMemo(() => new Map(entries.map((e) => [entryKey(e.class_session_id, e.date), e])), [entries]);
   const clipSession = clip ? data().class_sessions[clip.sessionId] : undefined;
-  const clipCourse = clipSession ? courseMap[clipSession.course_id] : undefined;
+  const clipCourse = clipSession ? courseOf(clipSession, courseMap) : undefined;
   const clipLen = clipSession ? timeToMinutes(clipSession.end_time) - timeToMinutes(clipSession.start_time) : 60;
   const columns = React.useMemo(
     () => days.map((d) => placeLanes(occurrencesOn(sessions, courseMap, d))),

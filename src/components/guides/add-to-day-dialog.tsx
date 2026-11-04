@@ -62,10 +62,10 @@ export function AddToDayDialog({ payload: p, onClose }: { payload: DayPayload; o
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Ders">
+            <Field label="Alan">
               {courses.length ? (
                 <Select value={courseId} onValueChange={(v) => { setCourseId(v); setChoice(null); }}>
-                  <SelectTrigger aria-label="Ders"><SelectValue /></SelectTrigger>
+                  <SelectTrigger aria-label="Alan"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {courses.map((c) => (
                       <SelectItem key={c.id} value={c.id}>

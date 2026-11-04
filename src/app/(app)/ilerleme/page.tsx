@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { ReportsView } from "@/components/reports/reports-view";
 
-export const metadata: Metadata = { title: "Karne" };
+export const metadata: Metadata = { title: "İlerleme" };
 
 export default function Page() {
   return <ReportsView />;

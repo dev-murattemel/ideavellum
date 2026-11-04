@@ -32,7 +32,7 @@ export function InsightsCard({ now, streak, studiedToday }: { now: Date; streak:
     if (a.kind === "start" && a.courseId) startStudy(a.courseId);
     else if (a.kind === "tasks") nav.push("/pano");
     else if (a.kind === "journal") nav.push("/gunluk");
-    else if (a.kind === "area" && a.courseId) nav.push(`/dersler/${a.courseId}`);
+    else if (a.kind === "area" && a.courseId) nav.push(`/alanlar/${a.courseId}`);
     else if (a.kind === "schedule") nav.push("/takvim");
   };
 

@@ -1,4 +1,5 @@
 import {
+  Archive,
   BookMarked,
   Compass,
   StickyNote,
@@ -7,7 +8,6 @@ import {
   LayoutGrid,
   Library,
   NotebookPen,
-  GraduationCap,
   Repeat,
   Settings,
   SquareKanban,
@@ -37,7 +37,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/takvim", label: "Takvim", icon: CalendarDays, description: "Haftalık ve aylık program" },
       { href: "/pano", label: "Pano", icon: SquareKanban, description: "Görevler sütunlarda" },
       { href: "/aliskanliklar", label: "Alışkanlıklar", icon: Repeat, description: "Her gün işaretlenen küçük rutinler, seriler" },
-      { href: "/dersler", label: "Müfredat", icon: LayoutGrid, description: "Dönemde takip ettiğin her şey: dil, spor, okuma, mutfak…" },
+      { href: "/alanlar", label: "Alanlar", icon: LayoutGrid, description: "Düzenli zaman ayırdığın her şey: dil, spor, okuma, mutfak, projeler…" },
     ],
   },
   {
@@ -53,8 +53,8 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "İçgörü",
     items: [
-      { href: "/karne", label: "Karne", icon: ChartColumn, description: "Haftalık ve aylık ilerleme, hedefler" },
-      { href: "/transkript", label: "Transkript", icon: GraduationCap, description: "Tamamlanan dönemler ve dersler" },
+      { href: "/ilerleme", label: "İlerleme", icon: ChartColumn, description: "Haftalık ve aylık ilerleme, hedefler" },
+      { href: "/arsiv", label: "Arşiv", icon: Archive, description: "Tamamladığın alanlar ve değerlendirmeleri" },
     ],
   },
 ];
@@ -69,7 +69,7 @@ export const SETTINGS_NAV: NavItem = {
 };
 
 /** Mobil alt çubukta doğrudan görünenler; kalanı "Daha fazla" altında. */
-export const MOBILE_PRIMARY = ["/bugun", "/takvim", "/pano", "/dersler"];
+export const MOBILE_PRIMARY = ["/bugun", "/takvim", "/pano", "/alanlar"];
 
 export function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);

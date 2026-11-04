@@ -88,7 +88,7 @@ function SortableItem({ id, as: Tag = "div", children }: { id: string; as?: "div
       style={{ transform: CSS.Translate.toString(transform), transition }}
       {...attributes}
       {...listeners}
-      aria-roledescription="Taşınabilir ders"
+      aria-roledescription="Taşınabilir alan"
       // Sürükleme bitince oluşan tıklama, derse gitmesin
       onClickCapture={(e) => {
         if (dragged.current) {

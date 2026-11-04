@@ -12,9 +12,9 @@ export function CourseSelect({ value, onChange, size }: { value: string; onChang
   const courses = useActiveCourses();
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger size={size} aria-label="Ders"><SelectValue /></SelectTrigger>
+      <SelectTrigger size={size} aria-label="Alan"><SelectValue /></SelectTrigger>
       <SelectContent>
-        <SelectItem value={NONE}>Derse bağlı değil</SelectItem>
+        <SelectItem value={NONE}>Alana bağlı değil</SelectItem>
         {courses.map((c) => (
           <SelectItem key={c.id} value={c.id}>
             <span data-course={c.color} className="size-2 rounded-full bg-course-solid" aria-hidden />

@@ -25,7 +25,7 @@ export const QUICK_ADD_ACTIONS: QuickAddAction[] = [
 
 export const ADD_COURSE_ACTION: QuickAddAction = {
   id: "course",
-  label: "Ders ekle",
+  label: "Alan ekle",
   icon: LayoutGrid,
   run: () => ui().open({ type: "course" }),
 };

@@ -58,7 +58,7 @@ function completePhase(skipped: boolean, bell: { sound: Parameters<typeof playBe
     }
     if (!skipped) {
       done += 1;
-      toast.success(`Odak turu tamam: ${formatDuration(minutes)}`, { description: st.courseId ? "Süre derse kaydedildi. Biraz mola ver." : "Biraz mola ver." });
+      toast.success(`Odak turu tamam: ${formatDuration(minutes)}`, { description: st.courseId ? "Süre alana kaydedildi. Biraz mola ver." : "Biraz mola ver." });
     }
   } else if (!skipped) {
     toast("Mola bitti, yeni tura hazırsın");
@@ -128,9 +128,9 @@ function FocusScreen() {
       <header className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
         <div className="flex items-center gap-2">
           <Select value={s.courseId ?? NONE} onValueChange={(v) => s.set({ courseId: v === NONE ? null : v })}>
-            <SelectTrigger className="h-9 w-56 bg-surface/80" aria-label="Ders"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-9 w-56 bg-surface/80" aria-label="Alan"><SelectValue /></SelectTrigger>
             <SelectContent className="z-[70]">
-              <SelectItem value={NONE}>Ders seçmeden</SelectItem>
+              <SelectItem value={NONE}>Alan seçmeden</SelectItem>
               {courses.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   <span data-course={c.color} className="size-2 rounded-full bg-course-solid" aria-hidden /> {c.name}

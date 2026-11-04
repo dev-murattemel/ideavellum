@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "ideavellum",
     short_name: "ideavellum",
-    description: "Hayatını bir üniversite dönemi gibi programla.",
+    description: "Hayatını planla: alanlar, takvim, alışkanlıklar ve notlar tek yerde.",
     lang: "tr",
     start_url: "/bugun",
     scope: "/",

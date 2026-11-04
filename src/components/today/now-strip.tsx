@@ -49,7 +49,7 @@ export function NowStrip({ t, now }: { t: T; now: Date }) {
             {day} {minutesToTime(occ.start)} · {occ.course.name}
           </button>
         </p>
-        <Button size="sm" variant="secondary" onClick={() => startStudy(occ.course.id, "timer")}><Play /> Şimdi {vocab.activity.toLocaleLowerCase("tr")}</Button>
+        {occ.session.course_id && <Button size="sm" variant="secondary" onClick={() => startStudy(occ.course.id, "timer")}><Play /> Şimdi {vocab.activity.toLocaleLowerCase("tr")}</Button>}
       </Strip>
     );
   }
@@ -80,9 +80,11 @@ export function NowStrip({ t, now }: { t: T; now: Date }) {
         </p>
         <div className="flex items-center gap-2">
           {isCurrent && <AttendanceButtons compact sessionId={occ.session.id} date={date} value={t.attendanceToday.get(occ.session.id)} />}
-          <Button size="sm" className={isCurrent ? "bg-course-fg text-surface hover:bg-course-fg/90" : undefined} onClick={() => startStudy(occ.course.id, isCurrent ? "session" : "timer")}>
-            <Play className="fill-current" /> {vocab.activity} başlat
-          </Button>
+          {occ.session.course_id && (
+            <Button size="sm" className={isCurrent ? "bg-course-fg text-surface hover:bg-course-fg/90" : undefined} onClick={() => startStudy(occ.course.id, isCurrent ? "session" : "timer")}>
+              <Play className="fill-current" /> {vocab.activity} başlat
+            </Button>
+          )}
         </div>
       </div>
       {isCurrent && <Progress value={((nowMin - occ.start) / (occ.end - occ.start)) * 100} tone="course" label="Geçen süre" className="h-1.5 bg-surface/50" />}

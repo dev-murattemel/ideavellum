@@ -33,7 +33,7 @@ export type AreaKindInfo = {
 };
 
 export const AREA_KINDS: AreaKindInfo[] = [
-  { key: "course", label: "Akademik", icon: GraduationCap, example: "İngilizce B2", session: "Ders saati", topics: "Konular", topic: "Konu", activity: "Çalışma" },
+  { key: "course", label: "Öğrenme", icon: GraduationCap, example: "İngilizce B2", session: "Çalışma saati", topics: "Konular", topic: "Konu", activity: "Çalışma" },
   { key: "fitness", label: "Spor", icon: Dumbbell, example: "Haftada 3 koşu", session: "Antrenman", topics: "Hareketler", topic: "Hareket", activity: "Antrenman" },
   { key: "cooking", label: "Mutfak", icon: ChefHat, example: "Akdeniz mutfağı", session: "Mutfak saati", topics: "Tarifler", topic: "Tarif", activity: "Mutfak" },
   { key: "watching", label: "İzleme", icon: MonitorPlay, example: "Tasarım videoları", session: "İzleme saati", topics: "İzleme listesi", topic: "Video", activity: "İzleme" },

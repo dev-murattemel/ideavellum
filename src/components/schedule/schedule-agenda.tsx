@@ -5,7 +5,7 @@ import { addDays } from "date-fns";
 import { CalendarCheck2, Search } from "lucide-react";
 
 import { useRows } from "@/lib/data/hooks";
-import { occurrencesOn, type Occurrence } from "@/lib/domain/schedule";
+import { matchFilter, occurrencesOn, type Occurrence } from "@/lib/domain/schedule";
 import { entryKey } from "@/lib/domain/session-entries";
 import { searchKey } from "@/lib/catalog";
 import { isoDate, minutesOfDay } from "@/lib/time";
@@ -17,7 +17,7 @@ type Tab = "today" | "upcoming" | "pending";
 const TABS: { id: Tab; label: string; empty: string }[] = [
   { id: "today", label: "Bugün", empty: "Bugün takvimde bir şey yok." },
   { id: "upcoming", label: "Yaklaşan", empty: "Önümüzdeki 7 günde plan yok." },
-  { id: "pending", label: "Yoklama", empty: "Yoklaması bekleyen saat yok. Harika!" },
+  { id: "pending", label: "Katılım", empty: "İşaretlenmeyi bekleyen saat yok. Harika!" },
 ];
 
 /**
@@ -35,7 +35,7 @@ export function ScheduleAgenda({ filter }: { filter: string | null }) {
 
   const lists = React.useMemo(() => {
     const map = Object.fromEntries(courses.map((c) => [c.id, c]));
-    const shown = filter ? sessions.filter((s) => s.course_id === filter) : sessions;
+    const shown = sessions.filter((s) => matchFilter(s, filter));
     const on = (d: Date) => occurrencesOn(shown, map, d);
     const marked = new Set(attendance.map((a) => `${a.class_session_id}|${a.date}`));
     const nowMin = minutesOfDay(now);
@@ -66,7 +66,7 @@ export function ScheduleAgenda({ filter }: { filter: string | null }) {
       </div>
       <label className="flex h-9 items-center gap-2 rounded-lg border border-line bg-surface px-2.5 focus-within:border-ring">
         <Search className="size-4 text-ink-subtle" aria-hidden />
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ders ya da başlık ara" aria-label="Gündemde ara" className="h-full flex-1 bg-transparent text-sm outline-none placeholder:text-ink-subtle" />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Alan ya da başlık ara" aria-label="Gündemde ara" className="h-full flex-1 bg-transparent text-sm outline-none placeholder:text-ink-subtle" />
       </label>
       <div role="tablist" aria-label="Gündem" className="flex gap-4 border-b border-line">
         {TABS.map((t) => (

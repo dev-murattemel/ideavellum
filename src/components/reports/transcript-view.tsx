@@ -30,16 +30,16 @@ export function TranscriptView() {
   if (!done.length) {
     return (
       <div className="flex flex-col gap-6">
-        <PageHeader title="Transkript" description="Tamamladığın derslerin arşivi ve değerlendirmesi." />
-        <EmptyState icon={GraduationCap} title="Transkriptin henüz boş" description="Bir dersi tamamladığında kapanış notun ve kendine verdiğin puanla birlikte burada arşivlenecek."
-          action={<Button asChild variant="secondary"><AppLink href="/dersler">Derslere git</AppLink></Button>} />
+        <PageHeader title="Arşiv" description="Tamamladığın alanlar ve değerlendirmelerin." />
+        <EmptyState icon={GraduationCap} title="Arşivin henüz boş" description="Bir alanı tamamladığında kapanış notun ve kendine verdiğin puanla birlikte burada arşivlenecek."
+          action={<Button asChild variant="secondary"><AppLink href="/alanlar">Alanlara git</AppLink></Button>} />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Transkript" description={`${done.length} ders tamamlandı · toplam ${formatDuration(totalMinutes)} · ortalama puan ${avg.toFixed(1)}`} />
+      <PageHeader title="Arşiv" description={`${done.length} alan tamamlandı · toplam ${formatDuration(totalMinutes)} · ortalama puan ${avg.toFixed(1)}`} />
       <ol className="flex flex-col gap-4">
         {done.map((c) => {
           const t = topics.filter((x) => x.course_id === c.id);
@@ -50,7 +50,7 @@ export function TranscriptView() {
                   <span className="w-1 shrink-0 self-stretch rounded-full bg-course-solid" aria-hidden />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-ink-muted">{termName(c.term_id)}{c.code ? ` · ${c.code}` : ""}</p>
-                    <AppLink href={`/dersler/${c.id}`} className="text-base font-semibold hover:underline">{c.name}</AppLink>
+                    <AppLink href={`/alanlar/${c.id}`} className="text-base font-semibold hover:underline">{c.name}</AppLink>
                     {c.final_reflection && (
                       <blockquote className="mt-3 flex gap-2 text-sm text-ink-muted">
                         <Quote className="mt-0.5 size-4 shrink-0 text-ink-subtle" aria-hidden />

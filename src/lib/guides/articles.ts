@@ -15,7 +15,7 @@ export const ARTICLES: Article[] = [
       "Anlat: Kitabı kapat, ana fikri kendi cümlenle 3–4 satır yaz.",
       "Tekrar et: Ertesi gün ve bir hafta sonra notlarına 5 dakika bak.",
     ],
-    tips: ["25 dakika okuma + 5 dakika not, odak zamanlayıcısıyla iyi gider.", "Notunu derse bağla; Notlar sekmesinde birikir."],
+    tips: ["25 dakika okuma + 5 dakika not, odak zamanlayıcısıyla iyi gider.", "Notunu ilgili alana bağla; Notlar sekmesinde birikir."],
   },
   {
     id: "cornell-not",
@@ -24,7 +24,7 @@ export const ARTICLES: Article[] = [
     summary: "Sayfayı üçe böl: notlar, anahtar sorular ve özet.",
     color: "lavender",
     steps: [
-      "Sayfanın sağ büyük kısmına ders ya da okuma sırasında notlarını al.",
+      "Sayfanın sağ büyük kısmına okurken ya da izlerken notlarını al.",
       "Sol dar sütuna her nota karşılık gelen anahtar kelime ya da soru yaz.",
       "Alta 2–3 cümlelik özet yaz.",
       "Tekrar ederken sağ tarafı kapat, sol sütundaki soruları cevaplamaya çalış.",
@@ -71,7 +71,7 @@ export const ARTICLES: Article[] = [
       "Takvimde her güne kısa bir \"Okuma\" saati ekle; listeye günün sayfa aralığını yaz.",
       "Okuyamadığın günü ertesi günlere 2'şer sayfa ekleyerek telafi et.",
     ],
-    tips: ["Mealden bir sayfa okumak anlamı derinleştirir.", "Sure listesinde ilerledikçe işaretle; Karne'de seri görünür."],
+    tips: ["Mealden bir sayfa okumak anlamı derinleştirir.", "Sure listesinde ilerledikçe işaretle; İlerleme'de seri görünür."],
   },
   {
     id: "ezber",
@@ -108,9 +108,9 @@ export const ARTICLES: Article[] = [
     summary: "Pazar akşamı 20 dakika: geçen haftaya bak, gelecek haftayı kur.",
     color: "slate",
     steps: [
-      "Karne'de geçen haftanın hedef ve gerçekleşen sürelerine bak.",
+      "İlerleme'de geçen haftanın hedef ve gerçekleşen sürelerine bak.",
       "Bitmeyen görevleri ya bu haftaya taşı ya da sil.",
-      "Takvimde her ders için saatleri yerleştir; en zor işi en enerjik saate koy.",
+      "Takvimde her alan için saatleri yerleştir; en zor işi en enerjik saate koy.",
       "Haftanın tek bir \"olmazsa olmaz\" hedefini yaz.",
     ],
     tips: ["Gözden geçirmeyi takvimde her Pazar 20:00'ye tek seferlik değil haftalık saat olarak ekle."],

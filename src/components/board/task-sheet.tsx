@@ -51,7 +51,7 @@ export function TaskSheet() {
             <dd><StatusSelect size="sm" value={task.status} onChange={(status) => set({ status, completed_at: status === "done" ? new Date().toISOString() : null })} /></dd>
             <dt className="text-ink-muted">Öncelik</dt>
             <dd><PrioritySelect size="sm" value={task.priority} onChange={(priority) => set({ priority })} /></dd>
-            <dt className="text-ink-muted">Ders</dt>
+            <dt className="text-ink-muted">Alan</dt>
             <dd><CourseSelect size="sm" value={task.course_id ?? NONE} onChange={(v) => set({ course_id: v === NONE ? null : v, topic_id: null })} /></dd>
             <dt className="text-ink-muted">Konu</dt>
             <dd><TopicSelect size="sm" courseId={task.course_id ?? NONE} value={task.topic_id ?? NONE} onChange={(v) => set({ topic_id: v === NONE ? null : v })} /></dd>

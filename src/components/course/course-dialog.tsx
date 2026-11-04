@@ -94,7 +94,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
     };
     if (course) {
       data().update("courses", course.id, values);
-      toast.success("Ders güncellendi");
+      toast.success("Alan güncellendi");
       onClose();
     } else {
       const created = data().insert("courses", {
@@ -108,10 +108,10 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
         }),
       );
       toast.success(`“${created.name}” eklendi`, {
-        description: slots.length ? `${slots.length} haftalık ders saati programa eklendi.` : "Şimdi konularını ve ders saatlerini ekleyebilirsin.",
+        description: slots.length ? `${slots.length} haftalık saat takvime eklendi.` : "Şimdi konularını ve takvim saatlerini ekleyebilirsin.",
       });
       onClose();
-      nav.push(`/dersler/${created.id}`);
+      nav.push(`/alanlar/${created.id}`);
     }
   });
 
@@ -119,8 +119,8 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{course ? "Dersi düzenle" : "Yeni ders"}</DialogTitle>
-          <DialogDescription>Kendi üniversiteni tasarla: dil, spor, mutfak, Kuran okuma… düzenli zaman ayırdığın her uğraş bir ders olabilir.</DialogDescription>
+          <DialogTitle>{course ? "Alanı düzenle" : "Yeni alan"}</DialogTitle>
+          <DialogDescription>Düzenli zaman ayırdığın her şey bir alan: dil, spor, mutfak, Kuran okuma, yan proje…</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
           <Field label="Tür">
@@ -137,7 +137,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
           <Field label="Renk">
             <Controller control={form.control} name="color" render={({ field }) => <ColorPicker value={field.value} onChange={field.onChange} />} />
           </Field>
-          <Field label="Hedef" htmlFor="c-goal" hint="Bu derste neye ulaşmak istiyorsun?">
+          <Field label="Hedef" htmlFor="c-goal" hint="Bu alanda neye ulaşmak istiyorsun?">
             <Textarea id="c-goal" rows={2} placeholder="Ocak sonunda B2 sınavına hazır olmak" {...form.register("goal")} />
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -186,7 +186,7 @@ export function CourseDialog({ courseId, onClose }: { courseId?: string; onClose
           )}
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={onClose}>Vazgeç</Button>
-            <Button type="submit">{course ? "Değişiklikleri kaydet" : "Dersi ekle"}</Button>
+            <Button type="submit">{course ? "Değişiklikleri kaydet" : "Alanı ekle"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

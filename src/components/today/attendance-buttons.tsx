@@ -15,7 +15,7 @@ const OPTIONS: { id: AttendanceStatus; label: string; icon: typeof CircleCheck }
 /** Tek tıkla yoklama. Üst öğede data-course olmalı. */
 export function AttendanceButtons({ sessionId, date, value, compact = false }: { sessionId: string; date: string; value?: AttendanceStatus; compact?: boolean }) {
   return (
-    <div role="radiogroup" aria-label="Yoklama" className="inline-flex rounded-lg bg-surface/60 p-0.5">
+    <div role="radiogroup" aria-label="Katılım" className="inline-flex rounded-lg bg-surface/60 p-0.5">
       {OPTIONS.map(({ id, label, icon: Icon }) => {
         const checked = value === id;
         return (

@@ -16,7 +16,7 @@ function HashLink({ href, onClick, ...props }: AppLinkProps) {
   );
 }
 
-/** Önizlemede sayfalar adres çubuğundaki #işaretle değişir (ör. #pano, #ders-…). */
+/** Önizlemede sayfalar adres çubuğundaki #işaretle değişir (ör. #pano, #alan-…). */
 export function HashNavProvider({ children }: { children: React.ReactNode }) {
   const [pathname, setPathname] = React.useState(() => hashToPath(window.location.hash));
 

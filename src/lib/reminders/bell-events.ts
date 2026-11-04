@@ -42,7 +42,7 @@ export function bellEvents(
         out.push({ id: `${o.session.id}|${date}|${kind}`, kind, fireAt: wallToUtc(date, minutesToTime(minute), tz), sessionId: o.session.id, courseId: o.course.id, title, body });
       if (before && before > 0) push("bell_before", timeToMinutes(o.session.start_time) - before, `${o.course.name} ${before} dk sonra başlıyor`, `${range}${where}`);
       if (ov.start_bell ?? settings.start_bell) push("bell_start", timeToMinutes(o.session.start_time), `${o.course.name} başladı`, `${range}${where}`);
-      if (ov.end_bell ?? settings.end_bell) push("bell_end", timeToMinutes(o.session.end_time), `${o.course.name} bitti`, "Teneffüs zamanı. Yoklamanı işaretlemeyi unutma.");
+      if (ov.end_bell ?? settings.end_bell) push("bell_end", timeToMinutes(o.session.end_time), `${o.course.name} bitti`, "Mola zamanı. Katılımını işaretlemeyi unutma.");
     });
   }
   return out.sort((a, b) => a.fireAt.getTime() - b.fireAt.getTime());

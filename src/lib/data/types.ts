@@ -59,7 +59,11 @@ export type BellOverrides = {
 export type SessionRepeat = "weekly" | "biweekly" | "monthly" | "once";
 
 export type ClassSession = Base & {
-  course_id: string;
+  /** Bağlı alan; boşsa serbest etkinlik (kendi başlığı ve rengiyle) */
+  course_id: string | null;
+  /** Serbest etkinliğin adı ya da alan saatine özel başlık ("Bacak günü") */
+  title?: string | null;
+  color?: CourseColor | null;
   weekday: number; // 1 = Pazartesi … 7 = Pazar
   repeat: SessionRepeat;
   /** 2 haftada bir / aylık / tek seferlik için başlangıç günü (yyyy-MM-dd) */

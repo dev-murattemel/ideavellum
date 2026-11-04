@@ -87,7 +87,7 @@ function Program({ t, now }: { t: T; now: Date }) {
                     )}
                   </span>
                   {current && <span className="rounded-full bg-course px-2 py-0.5 text-xs font-semibold text-course-fg">Şu an</span>}
-                  {Icon && <Icon className="size-4 shrink-0 text-ink-muted" aria-label="Yoklama girildi" />}
+                  {Icon && <Icon className="size-4 shrink-0 text-ink-muted" aria-label="Katılım işaretlendi" />}
                 </button>
               </li>
             );
