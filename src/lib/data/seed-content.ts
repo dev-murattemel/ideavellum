@@ -170,3 +170,28 @@ export function seedStickies(add: Add) {
     add("sticky_notes", { text, color, tags, x, y, z: i + 1, archived_at: null, converted_to: null, task_id: null, note_id: null, journal_date: null }),
   );
 }
+
+/** Forum: birkaç kategori, başlık ve yazı */
+export function seedForum(add: Add, now: Date, courses: Record<string, Course>) {
+  const at = (daysAgo: number, h: number) => new Date(now.getTime() - daysAgo * 864e5 - h * 36e5).toISOString();
+  const spor = add("forum_categories", { name: "Spor", description: "Antrenman programları, sakatlıklar, ölçüler", color: "slate", course_id: courses.run.id, position: null });
+  const mutfak = add("forum_categories", { name: "Mutfak", description: "Tarif denemeleri, haftalık menü, alışveriş", color: "peach", course_id: null, position: null });
+  add("forum_categories", { name: "Fikirler", description: "Aklıma gelen her şey; sonra toparlarım", color: "lavender", course_id: null, position: null });
+
+  const topic = (category_id: string, title: string, is_pinned: boolean, posts: [number, number, ReturnType<typeof doc>][]) => {
+    const last = posts[posts.length - 1];
+    const t = add("forum_topics", { category_id, title, is_pinned, tags: [], last_post_at: at(last[0], last[1]) }, at(posts[0][0], posts[0][1]));
+    posts.forEach(([d, hr, content]) => add("forum_posts", { topic_id: t.id, content }, at(d, hr)));
+  };
+  topic(spor.id, "Haftalık programım", true, [
+    [12, 3, doc(p("Haftada 3 gün koşu, 2 gün kuvvet. Pazartesi ve perşembe üst vücut."), ul(["Pzt: üst vücut", "Sal: tempo koşusu", "Per: üst vücut", "Cmt: uzun koşu"]))],
+    [2, 5, doc(p("Perşembeyi bacak gününe çevirdim; üst vücut tek güne indi."))],
+  ]);
+  topic(spor.id, "Diz ağrısı notları", false, [
+    [6, 2, doc(p("Yokuş inişlerde sağ diz hafif ağrıyor. Isınmayı 10 dakikaya çıkardım."))],
+    [1, 4, doc(p("Esneme sonrası ağrı yok. "), todo([[true, "Glute bridge 3×15"], [false, "Fizyoterapiste sor"]]))],
+  ]);
+  topic(mutfak.id, "Haftalık protein menüsü", false, [
+    [4, 6, doc(h(3, "Bu hafta"), ul(["Pazartesi: tavuk + bulgur", "Çarşamba: mercimek köftesi", "Cuma: somon + sebze"]))],
+  ]);
+}

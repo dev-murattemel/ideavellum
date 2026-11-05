@@ -23,7 +23,9 @@ export type DialogState =
   | { type: "habit"; habitId?: string }
   | { type: "add-to-day"; payload: DayPayload }
   | { type: "recipe-picker"; sessionId: string; date: string }
-  | { type: "highlight"; resourceId: string; highlightId?: string; page?: number };
+  | { type: "highlight"; resourceId: string; highlightId?: string; page?: number }
+  | { type: "forum-category"; categoryId?: string }
+  | { type: "forum-topic"; categoryId?: string };
 
 /** Rehberde açılan ayrıntı paneli: tarif, hareket ya da yöntem yazısı */
 export type GuideRef = { type: "recipe" | "exercise" | "article"; id: string };

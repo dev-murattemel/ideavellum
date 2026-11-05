@@ -4,6 +4,8 @@ import { TaskDialog } from "@/components/board/task-dialog";
 import { CompleteCourseDialog } from "@/components/course/complete-course-dialog";
 import { CourseDialog } from "@/components/course/course-dialog";
 import { TermDialog } from "@/components/course/term-dialog";
+import { CategoryDialog } from "@/components/forum/category-dialog";
+import { TopicDialog } from "@/components/forum/topic-dialog";
 import { HabitDialog } from "@/components/habits/habit-dialog";
 import { AddToDayDialog } from "@/components/guides/add-to-day-dialog";
 import { RecipePickerDialog } from "@/components/guides/recipe-picker-dialog";
@@ -45,6 +47,10 @@ export function DialogHost() {
       return <RecipePickerDialog sessionId={dialog.sessionId} date={dialog.date} onClose={close} />;
     case "highlight":
       return <HighlightDialog key={dialog.highlightId ?? "new"} resourceId={dialog.resourceId} highlightId={dialog.highlightId} page={dialog.page} onClose={close} />;
+    case "forum-category":
+      return <CategoryDialog key={dialog.categoryId ?? "new"} categoryId={dialog.categoryId} onClose={close} />;
+    case "forum-topic":
+      return <TopicDialog categoryId={dialog.categoryId} onClose={close} />;
     default:
       return null;
   }

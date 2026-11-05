@@ -4,6 +4,9 @@ import { CoursesView } from "@/components/course/courses-view";
 import { HabitsView } from "@/components/habits/habits-view";
 import { GuideView } from "@/components/guides/guide-view";
 import { StickiesView } from "@/components/stickies/stickies-view";
+import { CategoryView } from "@/components/forum/category-view";
+import { ForumView } from "@/components/forum/forum-view";
+import { TopicView } from "@/components/forum/topic-view";
 import { JournalView } from "@/components/journal/journal-view";
 import { NotesView } from "@/components/notes/notes-view";
 import { QuotesView } from "@/components/quotes/quotes-view";
@@ -29,9 +32,11 @@ const TITLES: Record<string, string> = {
   "/ayarlar": "Ayarlar",
   "/rehber": "Rehber",
   "/mantar-pano": "Mantar pano",
+  "/forum": "Forum",
 };
 
 export function titleFor(pathname: string) {
+  if (pathname.startsWith("/forum/")) return "Forum";
   return pathname.startsWith("/alanlar/") ? "Alan" : (TITLES[pathname] ?? "Bugün");
 }
 
@@ -40,7 +45,13 @@ export function resolveView(pathname: string) {
     const id = pathname.slice("/alanlar/".length);
     return <CourseDetailView key={id} courseId={id} />;
   }
+  if (pathname.startsWith("/forum/")) {
+    const [cat, topic] = pathname.slice("/forum/".length).split("/");
+    return topic ? <TopicView key={topic} categoryId={cat} topicId={topic} /> : <CategoryView key={cat} categoryId={cat} />;
+  }
   switch (pathname) {
+    case "/forum":
+      return <ForumView />;
     case "/takvim":
       return <ScheduleView />;
     case "/pano":

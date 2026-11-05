@@ -30,6 +30,8 @@ export function NoteEditor({
   toolbarClassName,
   contentClassName,
   placeholder,
+  onReady,
+  minHeightClassName = "min-h-72",
 }: {
   content: TiptapDoc;
   onChange: (doc: TiptapDoc) => void;
@@ -38,6 +40,10 @@ export function NoteEditor({
   toolbarClassName?: string;
   contentClassName?: string;
   placeholder?: string;
+  /** Editörün kendisi: gönder düğmesi gibi anlık okuma gerektiren yerler için */
+  onReady?: (editor: Editor) => void;
+  /** Yazı alanının en az yüksekliği (forumda daha kısa) */
+  minHeightClassName?: string;
 }) {
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
   const statsRef = React.useRef(onStats);
@@ -92,8 +98,13 @@ export function NoteEditor({
     },
   });
 
+  const readyRef = React.useRef(onReady);
+  React.useEffect(() => {
+    readyRef.current = onReady;
+  });
   React.useEffect(() => {
     editorRef.current = editor;
+    if (editor) readyRef.current?.(editor);
   }, [editor]);
 
   // Kapanırken bekleyen değişikliği kaydet
@@ -115,7 +126,7 @@ export function NoteEditor({
           <EditorBubble editor={editor} />
         </>
       )}
-      <EditorContent editor={editor} className="min-h-72" />
+      <EditorContent editor={editor} className={minHeightClassName} />
     </div>
   );
 }

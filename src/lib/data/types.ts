@@ -177,6 +177,31 @@ export type HabitCheck = Base & {
   note?: string | null;
 };
 
+/** Forum kategorisi (Spor, Mutfak…): içinde başlıklar açılır */
+export type ForumCategory = Base & {
+  name: string;
+  description: string | null;
+  color: CourseColor;
+  /** İsteğe bağlı: bağlı alan */
+  course_id: string | null;
+  position: string | null;
+};
+
+/** Forum başlığı: bir konu, içinde tarih sırasıyla yazılar */
+export type ForumTopic = Base & {
+  category_id: string;
+  title: string;
+  is_pinned: boolean;
+  tags: string[];
+  last_post_at: string;
+};
+
+/** Başlığın içindeki tek yazı (zengin metin) */
+export type ForumPost = Base & {
+  topic_id: string;
+  content: TiptapDoc;
+};
+
 /** Kitap defteri: bir kaynaktan alıntı / vurgu ve kişisel not */
 export type Highlight = Base & {
   resource_id: string;
@@ -293,6 +318,9 @@ export type Tables = {
   habit_checks: HabitCheck;
   sticky_notes: StickyNote;
   highlights: Highlight;
+  forum_categories: ForumCategory;
+  forum_topics: ForumTopic;
+  forum_posts: ForumPost;
 };
 
 export type TableName = keyof Tables;
@@ -315,6 +343,9 @@ export const TABLE_NAMES: TableName[] = [
   "habit_checks",
   "sticky_notes",
   "highlights",
+  "forum_categories",
+  "forum_topics",
+  "forum_posts",
 ];
 
 /** Yeni kayıt: id, user_id ve zaman damgaları depo tarafından doldurulur. */

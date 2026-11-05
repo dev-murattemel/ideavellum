@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, CircleCheckBig, Ellipsis, Pencil, Play, RotateCcw, Trash2 } from "lucide-react";
+import { ArrowLeft, CircleCheckBig, Ellipsis, MessagesSquare, Pencil, Play, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
@@ -13,7 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRow } from "@/lib/data/hooks";
+import { useRow, useRows } from "@/lib/data/hooks";
+import { forumPath } from "@/lib/domain/forum";
 import { data } from "@/lib/data/store";
 import type { Course } from "@/lib/data/types";
 import { useCourseStats } from "@/lib/domain/course-stats";
@@ -56,6 +57,7 @@ export function CourseHeader({ course }: { course: Course }) {
               <Play className="fill-current" /> <span className="max-sm:hidden">{kindOf(course).activity} başlat</span>
             </Button>
           )}
+          <ForumButton course={course} />
           {course.status !== "completed" && (
             <Button variant="secondary" size="sm" className="border-transparent bg-surface/70 hover:bg-surface" onClick={() => ui().open({ type: "course", courseId: course.id })}>
               <Pencil /> Düzenle
@@ -117,5 +119,20 @@ export function CourseHeader({ course }: { course: Course }) {
         }}
       />
     </header>
+  );
+}
+
+/** Alanın forum kategorisine git; yoksa aynı adla açıp git */
+function ForumButton({ course }: { course: Course }) {
+  const nav = useNav();
+  const cat = useRows("forum_categories").find((c) => c.course_id === course.id);
+  const open = () => {
+    const id = cat?.id ?? data().insert("forum_categories", { name: course.name, description: null, color: course.color, course_id: course.id, position: null }).id;
+    nav.push(forumPath(id));
+  };
+  return (
+    <Button variant="secondary" size="sm" className="border-transparent bg-surface/70 hover:bg-surface" onClick={open} title={cat ? "Bu alanın forum kategorisi" : "Bu alan için forum kategorisi aç"}>
+      <MessagesSquare /> <span className="max-sm:hidden">Forum</span>
+    </Button>
   );
 }
